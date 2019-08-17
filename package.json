@@ -1,0 +1,17 @@
+{
+  "name": "orderify-api",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/webwayer/orderify-api",
+  "author": "Rodion Balandin <webwayer@gmail.com>",
+  "license": "none",
+  "private": true,
+  "scripts": {
+    "prestart": "tsc",
+    "start": "node dist"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.0",
+    "express": "^4.17.1"
+  }
+}
