@@ -9,6 +9,8 @@ import { statefulRouterFactory } from './routes/stateful'
 import { authenticatedRouterFactory } from './routes/stateful/authenticated'
 import { photosRouterFactory } from './routes/stateful/authenticated/photos'
 
+import { UserFactory } from 'User';
+
 export async function appFactory(router: Router) {
     const app = express()
 
@@ -33,7 +35,7 @@ async function startup() {
         PG_PASSWORD: '',
         PG_HOST: 'localhost',
         PG_PORT: '5432',
-        SESSION_STARTUP: '',
+        SYNC_SEQUELIZE_MODELS: '1',
         FACEBOOK_CLIENT_ID: '',
         FACEBOOK_CLIENT_SECRET: '',
         FACEBOOK_CALLBACK_URL: 'http://localhost:3000/auth/facebook/callback'
@@ -44,8 +46,10 @@ async function startup() {
     }
 
     const sequelize = sequelizeFactory(config)
+    const User = await UserFactory(sequelize, config)
+
     const sessionStore = await sequelizeSessionStoreFactory(sequelize, config)
-    const passport = passportFactory(config)
+    const passport = passportFactory(config, User)
 
     const statefulRouter = statefulRouterFactory(sessionStore)
     const authenticatedRouter = authenticatedRouterFactory(passport)
