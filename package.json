@@ -7,7 +7,8 @@
   "license": "none",
   "private": true,
   "scripts": {
-    "prestart": "tsc",
+    "compile_with_node_modules": "rm -R dist; cp -R src/node_modules src/node_modules_x; tsc; rm -R src/node_modules_x; mv dist/node_modules_x dist/node_modules",
+    "prestart": "yarn run compile_with_node_modules",
     "start": "node dist"
   },
   "dependencies": {

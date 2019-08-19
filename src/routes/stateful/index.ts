@@ -1,32 +1,17 @@
-import { Router } from 'express'
 import * as session from 'express-session'
-import { Sequelize} from 'sequelize'
+import { Store } from 'express-session'
+import { Router } from 'express'
 
-import { router as authRouter } from './auth'
+export function statefulRouterFactory(sessionStore: Store) {
+    const router = Router();
 
-export const router = Router();
+    router.use(session({
+        secret: 'keyboard cat',
+        store: sessionStore,
+        resave: false,
+        saveUninitialized: true,
+        // cookie: { secure: true }
+    }))
 
-const sequelize = new Sequelize(
-    "orderify",
-    "",
-    "", {
-        "dialect": "postgres",
-        "host": "localhost",
-        "port": 5432
-    }
-);
-
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const sequelizeStore = new SequelizeStore({
-    db: sequelize
-})
-// sequelize.sync();
-
-router.use(session({
-    secret: 'keyboard cat',
-    store: sequelizeStore,
-    resave: false,
-    saveUninitialized: true,
-    // cookie: { secure: true }
-}))
-router.use(authRouter)
+    return router;
+}
