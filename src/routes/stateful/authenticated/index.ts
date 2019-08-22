@@ -14,7 +14,7 @@ export function authenticatedRouterFactory(passport: PassportStatic) {
     }))
 
     router.use(function (req, res, next) {
-        if (!req.session.passport) {
+        if (!req.user) {
             return res.redirect('/auth/facebook')
         }
         next()
