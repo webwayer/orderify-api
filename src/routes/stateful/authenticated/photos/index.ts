@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { AlbumType } from 'Album';
 
 export function photosRouterFactory() {
     const router = Router();

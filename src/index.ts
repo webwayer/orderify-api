@@ -10,6 +10,7 @@ import { authenticatedRouterFactory } from './routes/stateful/authenticated'
 import { photosRouterFactory } from './routes/stateful/authenticated/photos'
 
 import { UserFactory } from 'User';
+import { AlbumFactory } from 'Album';
 
 export async function appFactory(router: Router) {
     const app = express()
@@ -47,6 +48,7 @@ async function startup() {
 
     const sequelize = sequelizeFactory(config)
     const User = await UserFactory(sequelize, config)
+    const Album = await AlbumFactory(sequelize, config)
 
     const sessionStore = await sequelizeSessionStoreFactory(sequelize, config)
     const passport = passportFactory(config, User)
