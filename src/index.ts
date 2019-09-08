@@ -1,6 +1,8 @@
 import * as express from 'express'
 import { Router } from 'express'
 
+import { appFactory } from 'app'
+
 import { sequelizeFactory } from 'factory/sequelizeFactory'
 import { sequelizeSessionStoreFactory } from 'factory/sequelizeSessionStoreFactory'
 
@@ -12,23 +14,6 @@ import { photosRouterFactory } from 'routers/stateful/authenticated/photos'
 import { UserFactory } from 'database/User'
 import { PhotoFactory } from 'database/Photo'
 import { AlbumFactory } from 'database/Album'
-
-export async function appFactory(router: Router) {
-    const app = express()
-
-    app.use(router)
-
-    await new Promise((resolve, reject) => {
-        app.listen(3000, err => {
-            if (err) {
-                reject(err)
-            }
-            resolve()
-        })
-    })
-
-    return app
-}
 
 async function startup() {
     const config = {
@@ -68,7 +53,11 @@ async function startup() {
     router.use(authenticatedRouter)
     router.use(photosRouter)
 
-    return await appFactory(router);
+    const app = express()
+
+    app.use(router)
+
+    return await appFactory(app, config);
 }
 
 if (!module.parent) {
