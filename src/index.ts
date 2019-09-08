@@ -5,10 +5,11 @@ import { appFactory } from 'app'
 
 import { sequelizeFactory } from 'factory/sequelizeFactory'
 import { sequelizeSessionStoreFactory } from 'factory/sequelizeSessionStoreFactory'
+import { pkgCloudFileStorageFactory } from 'factory/pkgCloudFilesStorageFactory'
 
 import { statefulRouterFactory } from 'routers/stateful'
+import { facebookLoginRouterFactory } from 'routers/stateful/facebook'
 import { authenticatedRouterFactory } from 'routers/stateful/authenticated'
-import { facebookLoginRouterFactory } from 'routers/stateful/authenticated/facebook'
 import { photosRouterFactory } from 'routers/stateful/authenticated/photos'
 
 import { UserFactory } from 'database/User'
@@ -34,6 +35,7 @@ async function startup() {
     }
 
     const sequelize = sequelizeFactory(config)
+    const storage = pkgCloudFileStorageFactory()
 
     const User = await UserFactory(sequelize, config)
     const Album = await AlbumFactory(sequelize, config)
@@ -43,8 +45,8 @@ async function startup() {
 
     const statefulRouter = statefulRouterFactory(Router(), sessionStore)
     const authenticatedRouter = authenticatedRouterFactory(Router(), config)
-    const facebookLoginRouter = facebookLoginRouterFactory(Router(), config, User, Album, Photo)
-    const photosRouter = photosRouterFactory(Router(), Album, Photo)
+    const facebookLoginRouter = facebookLoginRouterFactory(Router(), config, User, Album, Photo, storage)
+    const photosRouter = photosRouterFactory(Router(), Album, Photo, storage)
 
     const router = Router();
 

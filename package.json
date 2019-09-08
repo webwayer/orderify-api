@@ -14,12 +14,15 @@
   "dependencies": {
     "@types/express": "^4.17.0",
     "@types/express-session": "^1.15.13",
+    "@types/pkgcloud": "^1.7.3",
     "@types/request-promise": "^4.1.44",
     "connect-session-sequelize": "^6.0.0",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
+    "filesystem-storage-pkgcloud": "^1.2.0",
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
+    "pkgcloud": "^2.1.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "sequelize": "^5.15.0"
