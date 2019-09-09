@@ -7,8 +7,12 @@
   "license": "none",
   "private": true,
   "scripts": {
-    "compile_with_node_modules": "rm -R dist; cp -R src/node_modules src/node_modules_x; tsc; rm -R src/node_modules_x; mv dist/node_modules_x dist/node_modules",
-    "prestart": "yarn run compile_with_node_modules",
+    "clear_dist": "rm -Rf dist",
+    "compile_with_node_modules": "cp -R src/node_modules src/node_modules_xxx; tsc; rm -R src/node_modules_xxx; mv dist/node_modules_xxx dist/node_modules",
+    "fix_source_maps": "find dist -type f -exec sed -i '' 's/node_modules_xxx/node_modules/g' {} +",
+    "full_compile": "npm run clear_dist; npm run compile_with_node_modules; npm run fix_source_maps;",
+    "clear_storage": "rm -Rf storage; mkdir storage",
+    "prestart": "npm run full_compile; npm run clear_storage",
     "start": "node dist"
   },
   "dependencies": {
@@ -25,6 +29,7 @@
     "pkgcloud": "^2.1.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "sequelize": "^5.15.0"
+    "sequelize": "^5.15.0",
+    "typescript": "^3.6.2"
   }
 }

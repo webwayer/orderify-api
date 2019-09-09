@@ -1,11 +1,10 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "removeComments": true,
-        "preserveConstEnums": true,
         "outDir": "dist",
         "sourceMap": true,
-        "target": "es6",
+        "target": "esnext",
+        "removeComments": true
     },
     "include": [
         "src/**/*"
