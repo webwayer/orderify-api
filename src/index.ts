@@ -17,35 +17,58 @@ import { PhotoFactory } from 'database/Photo'
 import { AlbumFactory } from 'database/Album'
 
 async function startup() {
-    const config = {
-        PG_DB_NAME: 'orderify',
-        PG_USER: '',
-        PG_PASSWORD: '',
-        PG_HOST: 'localhost',
-        PG_PORT: '5432',
-        SYNC_SEQUELIZE_MODELS: '1',
-        FACEBOOK_CLIENT_ID: '',
-        FACEBOOK_CLIENT_SECRET: '',
-        BASE_URL: 'http://localhost:3000',
-        WEB_BASE_URL: 'http://localhost:3000',
+    const CONFIG = {
+        DATABASE: {
+            DIALECT: 'postgres',
+            DATABASE_NAME: 'orderify',
+            USER: '',
+            PASSWORD: '',
+            HOST: 'localhost',
+            PORT: '5432',
+        },
+        SEQUELIZE: {
+            SYNC_SCHEMAS: '1',
+            DROP_ON_SYNC: '',
+        },
+        SESSION: {
+            SIGNING_SECRET: 'something',
+            HTTPS_ONLY_COOKIES: '1',
+        },
+        FACEBOOK: {
+            CLIENT_ID: '',
+            CLIENT_SECRET: '',
+        },
+        API: {
+            HOST: 'localhost',
+            PORT: '3000',
+            PROTOCOL: 'https',
+        },
+        WEB: {
+            BASE_URL: 'http://localhost:3000'
+        }
     }
 
-    for (const key of Object.keys(process.env)) {
-        config[key] = process.env[key]
+    for (const [key, value] of Object.entries(process.env)) {
+        const config_bundle = key.split('_')[0]
+        const config_name = key.split('_').splice(1).join('_')
+
+        if (CONFIG[config_bundle]) {
+            CONFIG[config_bundle][config_name] = value
+        }
     }
 
-    const sequelize = sequelizeFactory(config)
+    const sequelize = sequelizeFactory(CONFIG.DATABASE)
     const storage = pkgCloudFileStorageFactory()
 
-    const User = await UserFactory(sequelize, config)
-    const Album = await AlbumFactory(sequelize, config)
-    const Photo = await PhotoFactory(sequelize, config)
+    const User = await UserFactory(sequelize, CONFIG.SEQUELIZE)
+    const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
+    const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
 
-    const sessionStore = await sequelizeSessionStoreFactory(sequelize, config)
+    const sessionStore = await sequelizeSessionStoreFactory(sequelize, CONFIG.SEQUELIZE)
 
-    const statefulRouter = statefulRouterFactory(Router(), sessionStore)
-    const authenticatedRouter = authenticatedRouterFactory(Router(), config)
-    const facebookLoginRouter = facebookLoginRouterFactory(Router(), config, User, Album, Photo, storage)
+    const statefulRouter = statefulRouterFactory(Router(), sessionStore, CONFIG.SESSION)
+    const authenticatedRouter = authenticatedRouterFactory(Router(), CONFIG.WEB)
+    const facebookLoginRouter = facebookLoginRouterFactory(Router(), Object.assign({}, CONFIG.FACEBOOK, CONFIG.API), User, Album, Photo, storage)
     const photosRouter = photosRouterFactory(Router(), Album, Photo, storage)
 
     const router = Router();
@@ -59,7 +82,7 @@ async function startup() {
 
     app.use(router)
 
-    return await appFactory(app, config);
+    return await appFactory(app, CONFIG.API);
 }
 
 if (!module.parent) {
