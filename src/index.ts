@@ -1,20 +1,26 @@
 import * as express from 'express'
+
 import { Router } from 'express'
 
 import { appFactory } from 'app'
 
-import { sequelizeFactory } from 'factory/sequelizeFactory'
-import { sequelizeSessionStoreFactory } from 'factory/sequelizeSessionStoreFactory'
-import { pkgCloudFileStorageFactory } from 'factory/pkgCloudFilesStorageFactory'
+import { sequelizeFactory } from 'io/sequelizeFactory'
+import { sequelizeSessionStoreFactory } from 'io/sequelizeSessionStoreFactory'
+import { pkgcloudFactory } from 'io/pkgcloudFactory'
+import { facebookOauthFactory } from 'io/facebookOauthFactory'
+import { facebookGraphFactory } from 'io/facebookGraphFactory'
+import * as request from 'request-promise'
 
 import { statefulRouterFactory } from 'routers/stateful'
 import { facebookLoginRouterFactory } from 'routers/stateful/facebook'
 import { authenticatedRouterFactory } from 'routers/stateful/authenticated'
 import { photosRouterFactory } from 'routers/stateful/authenticated/photos'
 
-import { UserFactory } from 'database/User'
-import { PhotoFactory } from 'database/Photo'
-import { AlbumFactory } from 'database/Album'
+import { UserFactory } from 'user/_/User'
+import { fromFacebookFactory } from 'photoLibrary/fromFacebook'
+import { PhotoFactory } from 'photoLibrary/_/Photo'
+import { AlbumFactory } from 'photoLibrary/_/Album'
+import { userFactory } from 'user/user'
 
 async function startup() {
     const CONFIG = {
@@ -37,11 +43,12 @@ async function startup() {
         FACEBOOK: {
             CLIENT_ID: '',
             CLIENT_SECRET: '',
+            REDIRECT_PATH: '/login/facebook/callback'
         },
         API: {
             HOST: 'localhost',
             PORT: '3000',
-            PROTOCOL: 'https',
+            PROTOCOL: 'http',
         },
         WEB: {
             BASE_URL: 'http://localhost:3000'
@@ -58,17 +65,21 @@ async function startup() {
     }
 
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
-    const storage = pkgCloudFileStorageFactory()
+    const sessionStore = await sequelizeSessionStoreFactory(sequelize, CONFIG.SEQUELIZE)
+    const storage = pkgcloudFactory()
+    const facebookOauth = facebookOauthFactory(request, Object.assign({}, CONFIG.FACEBOOK, CONFIG.API))
+    const facebookGraph = facebookGraphFactory(request)
 
-    const User = await UserFactory(sequelize, CONFIG.SEQUELIZE)
     const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
     const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
+    const fromFacebook = fromFacebookFactory(request, storage, Album, Photo, facebookGraph)
 
-    const sessionStore = await sequelizeSessionStoreFactory(sequelize, CONFIG.SEQUELIZE)
+    const User = await UserFactory(sequelize, CONFIG.SEQUELIZE)
+    const userHelper = await userFactory(User, facebookGraph)
 
     const statefulRouter = statefulRouterFactory(Router(), sessionStore, CONFIG.SESSION)
     const authenticatedRouter = authenticatedRouterFactory(Router(), CONFIG.WEB)
-    const facebookLoginRouter = facebookLoginRouterFactory(Router(), Object.assign({}, CONFIG.FACEBOOK, CONFIG.API), User, Album, Photo, storage)
+    const facebookLoginRouter = facebookLoginRouterFactory(Router(), CONFIG.FACEBOOK, userHelper, facebookOauth, fromFacebook)
     const photosRouter = photosRouterFactory(Router(), Album, Photo, storage)
 
     const router = Router();
