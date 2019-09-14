@@ -22,6 +22,8 @@ import { PhotoFactory } from 'photoLibrary/_/Photo'
 import { AlbumFactory } from 'photoLibrary/_/Album'
 import { userFacebookFactory } from 'user/userFacebook'
 import { FacebookMetadataFactory } from 'facebook/_/FacebookMetadata'
+import { imagesFactory } from 'photoLibrary/images'
+import requestPromise = require('request-promise')
 
 async function startup() {
     const CONFIG = {
@@ -68,14 +70,15 @@ async function startup() {
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
     const sessionStore = await sequelizeSessionStoreFactory(sequelize, CONFIG.SEQUELIZE)
     const storage = pkgcloudFactory()
+
     const facebookOauth = facebookOauthFactory(request, Object.assign({}, CONFIG.FACEBOOK, CONFIG.API))
     const facebookGraph = facebookGraphFactory(request)
-
     const FacebookMetadata = await FacebookMetadataFactory(sequelize, CONFIG.SEQUELIZE)
 
     const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
     const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
-    const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(request, storage, Album, Photo, facebookGraph)
+    const images = await imagesFactory(requestPromise, storage)
+    const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(Album, Photo, FacebookMetadata, images, facebookGraph)
 
     const User = await UserFactory(sequelize, CONFIG.SEQUELIZE)
     const userFacebook = await userFacebookFactory(User, FacebookMetadata, facebookGraph)
@@ -83,7 +86,7 @@ async function startup() {
     const statefulRouter = statefulRouterFactory(Router(), sessionStore, CONFIG.SESSION)
     const authenticatedRouter = authenticatedRouterFactory(Router(), CONFIG.WEB)
     const facebookLoginRouter = facebookLoginRouterFactory(Router(), CONFIG.FACEBOOK, userFacebook, facebookOauth, photoLibraryOnFacebook)
-    const photosRouter = photosRouterFactory(Router(), Album, Photo, storage)
+    const photosRouter = photosRouterFactory(Router(), Album, Photo, images)
 
     const router = Router();
 
