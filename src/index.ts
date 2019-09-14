@@ -7,8 +7,8 @@ import { appFactory } from 'app'
 import { sequelizeFactory } from 'io/sequelizeFactory'
 import { sequelizeSessionStoreFactory } from 'io/sequelizeSessionStoreFactory'
 import { pkgcloudFactory } from 'io/pkgcloudFactory'
-import { facebookOauthFactory } from 'io/facebookOauthFactory'
-import { facebookGraphFactory } from 'io/facebookGraphFactory'
+import { facebookOauthFactory } from 'facebook/facebookOauthFactory'
+import { facebookGraphFactory } from 'facebook/facebookGraphFactory'
 import * as request from 'request-promise'
 
 import { statefulRouterFactory } from 'routers/stateful'
@@ -17,10 +17,11 @@ import { authenticatedRouterFactory } from 'routers/stateful/authenticated'
 import { photosRouterFactory } from 'routers/stateful/authenticated/photos'
 
 import { UserFactory } from 'user/_/User'
-import { fromFacebookFactory } from 'photoLibrary/fromFacebook'
+import { photoLibraryOnFacebookFactory } from 'photoLibrary/photoLibraryOnFacebook'
 import { PhotoFactory } from 'photoLibrary/_/Photo'
 import { AlbumFactory } from 'photoLibrary/_/Album'
-import { userFactory } from 'user/user'
+import { userFacebookFactory } from 'user/userFacebook'
+import { FacebookMetadataFactory } from 'facebook/_/FacebookMetadata'
 
 async function startup() {
     const CONFIG = {
@@ -70,16 +71,18 @@ async function startup() {
     const facebookOauth = facebookOauthFactory(request, Object.assign({}, CONFIG.FACEBOOK, CONFIG.API))
     const facebookGraph = facebookGraphFactory(request)
 
+    const FacebookMetadata = await FacebookMetadataFactory(sequelize, CONFIG.SEQUELIZE)
+
     const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
     const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
-    const fromFacebook = fromFacebookFactory(request, storage, Album, Photo, facebookGraph)
+    const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(request, storage, Album, Photo, facebookGraph)
 
     const User = await UserFactory(sequelize, CONFIG.SEQUELIZE)
-    const userHelper = await userFactory(User, facebookGraph)
+    const userFacebook = await userFacebookFactory(User, FacebookMetadata, facebookGraph)
 
     const statefulRouter = statefulRouterFactory(Router(), sessionStore, CONFIG.SESSION)
     const authenticatedRouter = authenticatedRouterFactory(Router(), CONFIG.WEB)
-    const facebookLoginRouter = facebookLoginRouterFactory(Router(), CONFIG.FACEBOOK, userHelper, facebookOauth, fromFacebook)
+    const facebookLoginRouter = facebookLoginRouterFactory(Router(), CONFIG.FACEBOOK, userFacebook, facebookOauth, photoLibraryOnFacebook)
     const photosRouter = photosRouterFactory(Router(), Album, Photo, storage)
 
     const router = Router();
