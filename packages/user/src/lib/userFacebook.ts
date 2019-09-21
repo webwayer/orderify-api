@@ -1,6 +1,4 @@
-import { FacebookMetadataType } from "../facebook/_/FacebookMetadata"
-import { facebookGraphFactory } from "../facebook/facebookGraphFactory"
-
+import { FacebookMetadataType, facebookGraphFactory } from "@orderify/facebook"
 import { IUserInstance, UserType } from "./_/User"
 
 export function userFacebookFactory(

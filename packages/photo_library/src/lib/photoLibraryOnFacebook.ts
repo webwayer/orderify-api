@@ -1,5 +1,4 @@
-import { FacebookMetadataType } from "../facebook/_/FacebookMetadata"
-import { facebookGraphFactory } from "../facebook/facebookGraphFactory"
+import { FacebookMetadataType, facebookGraphFactory } from "@orderify/facebook"
 
 import { AlbumType } from "./_/Album"
 import { PhotoType } from "./_/Photo"

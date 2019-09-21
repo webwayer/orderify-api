@@ -1,7 +1,6 @@
 import { Router } from "express"
 
-import { photoLibraryFactory } from "../../../../../photo_library/photoLibrary"
-import { photoStorageFactory } from "../../../../../photo_library/photoStorage"
+import { photoLibraryFactory, photoStorageFactory } from "@orderify/photo_library"
 
 export function photosRouterFactory(
     router: Router,

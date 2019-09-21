@@ -1,7 +1,9 @@
 {
     "name": "@orderify/photo_library",
     "version": "0.0.0",
+    "main": "src/index",
     "dependencies": {
+        "@orderify/facebook": "0.0.0",
         "@types/pkgcloud": "^1.7.3",
         "@types/request-promise": "^4.1.44",
         "pkgcloud": "^2.1.1",

@@ -1,9 +1,9 @@
 import { randomBytes } from "crypto"
 import { Router } from "express"
 
-import { facebookOauthFactory } from "../../../facebook/facebookOauthFactory"
-import { photoLibraryOnFacebookFactory } from "../../../photo_library/photoLibraryOnFacebook"
-import { userFacebookFactory } from "../../../user/userFacebook"
+import { facebookOauthFactory } from "@orderify/facebook"
+import { photoLibraryOnFacebookFactory } from "@orderify/photo_library"
+import { userFacebookFactory } from "@orderify/user"
 
 export function facebookLoginRouterFactory(
     router: Router,
