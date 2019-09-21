@@ -1,6 +1,6 @@
 import { UserType, UserInstance } from './_/User'
-import { facebookGraphFactory } from 'facebook/facebookGraphFactory'
-import { FacebookMetadataType } from 'facebook/_/FacebookMetadata'
+import { facebookGraphFactory } from '../facebook/facebookGraphFactory'
+import { FacebookMetadataType } from '../facebook/_/FacebookMetadata'
 
 export function userFacebookFactory(User: UserType, FacebookMetadata: FacebookMetadataType, facebookGraph: ReturnType<typeof facebookGraphFactory>) {
     async function findByFacebookAccessToken(access_token: string): Promise<UserInstance> {

@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { randomBytes } from 'crypto'
-import { userFacebookFactory } from 'user/userFacebook'
-import { photoLibraryOnFacebookFactory } from 'photoLibrary/photoLibraryOnFacebook'
-import { facebookOauthFactory } from 'facebook/facebookOauthFactory'
+import { userFacebookFactory } from '../../../user/userFacebook'
+import { photoLibraryOnFacebookFactory } from '../../../photo_library/photoLibraryOnFacebook'
+import { facebookOauthFactory } from '../../../facebook/facebookOauthFactory'
 
 export function facebookLoginRouterFactory(router: Router, CONFIG: { REDIRECT_PATH: string }, userFacebook: ReturnType<typeof userFacebookFactory>, facebookOauth: ReturnType<typeof facebookOauthFactory>, photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>) {
     router.get('/login/facebook', async (req, res) => {

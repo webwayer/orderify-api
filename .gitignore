@@ -1,6 +1,6 @@
-/node_modules
-/dist
-/script.sh
-/yarn-error.log
+node_modules
+dist
+yarn-error.log
 .DS_Store
 /storage
+/script.sh

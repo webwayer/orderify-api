@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { photoStorageFactory } from 'photoLibrary/photoStorage';
-import { photoLibraryFactory } from 'photoLibrary/photoLibrary'
+import { photoStorageFactory } from '../../../../../photo_library/photoStorage';
+import { photoLibraryFactory } from '../../../../../photo_library/photoLibrary'
 
 export function photosRouterFactory(router: Router, photoStorage: ReturnType<typeof photoStorageFactory>, photoLibrary: ReturnType<typeof photoLibraryFactory>) {
     router.get('/', function (req, res) {

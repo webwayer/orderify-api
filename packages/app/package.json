@@ -1,0 +1,9 @@
+{
+  "name": "@orderify/app",
+  "version": "0.0.0",
+  "author": "Rodion Balandin <webwayer@gmail.com>",
+  "license": "none",
+  "dependencies": {
+    "@orderify/io": "0.0.0"
+  }
+}

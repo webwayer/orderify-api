@@ -1,19 +1,17 @@
 {
-  "name": "orderify-api",
+  "name": "orderify",
   "version": "0.0.0",
-  "main": "index.js",
   "repository": "https://github.com/webwayer/orderify-api",
   "author": "Rodion Balandin <webwayer@gmail.com>",
   "license": "none",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "clear_dist": "rm -Rf dist",
-    "compile_with_node_modules": "cp -R src/node_modules src/node_modules_xxx; tsc; rm -R src/node_modules_xxx; mv dist/node_modules_xxx dist/node_modules",
-    "fix_source_maps": "find dist -type f -exec sed -i '' 's/node_modules_xxx/node_modules/g' {} +",
-    "full_compile": "npm run clear_dist; npm run compile_with_node_modules; npm run fix_source_maps;",
     "clear_storage": "rm -Rf storage; mkdir storage",
-    "prestart": "npm run full_compile; npm run clear_storage",
-    "start": "node dist"
+    "prestart": "npm run clear_storage",
+    "start": "ts-node packages/app/index.ts"
   },
   "dependencies": {
     "@types/express": "^4.17.0",
@@ -24,12 +22,13 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "filesystem-storage-pkgcloud": "^1.2.0",
+    "lerna": "^3.16.4",
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
     "pkgcloud": "^2.1.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "sequelize": "^5.15.0",
+    "ts-node": "^8.4.1",
     "typescript": "^3.6.2"
   }
 }

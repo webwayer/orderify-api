@@ -1,8 +1,8 @@
-import { AlbumType } from 'photoLibrary/_/Album'
-import { PhotoType } from 'photoLibrary/_/Photo'
-import { facebookGraphFactory } from 'facebook/facebookGraphFactory'
-import { photoStorageFactory } from 'photoLibrary/photoStorage'
-import { FacebookMetadataType } from 'facebook/_/FacebookMetadata'
+import { AlbumType } from './_/Album'
+import { PhotoType } from './_/Photo'
+import { facebookGraphFactory } from '../facebook/facebookGraphFactory'
+import { photoStorageFactory } from './photoStorage'
+import { FacebookMetadataType } from '../facebook/_/FacebookMetadata'
 
 export function photoLibraryOnFacebookFactory(Album: AlbumType, Photo: PhotoType, FacebookMetadata: FacebookMetadataType, photoStorage: ReturnType<typeof photoStorageFactory>, facebookGraph: ReturnType<typeof facebookGraphFactory>) {
     async function download(userId: number, access_token: string) {
