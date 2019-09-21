@@ -1,7 +1,7 @@
-import { AlbumType } from './_/Album'
-import { PhotoType } from './_/Photo'
+import { IAlbumStatic } from './_/Album'
+import { IPhotoStatic } from './_/Photo'
 
-export function photoLibraryFactory(Photo: PhotoType, Album: AlbumType) {
+export function photoLibraryFactory(Photo: IPhotoStatic, Album: IAlbumStatic) {
     async function getPhotoById(id: number, userId: number) {
         const photo = await Photo.findOne({ where: { userId, id } })
 

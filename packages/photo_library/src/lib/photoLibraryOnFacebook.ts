@@ -1,13 +1,13 @@
-import { FacebookMetadataType, facebookGraphFactory } from '@orderify/facebook'
+import { IMetadataStatic, facebookGraphFactory } from '@orderify/facebook'
 
-import { AlbumType } from './_/Album'
-import { PhotoType } from './_/Photo'
+import { IAlbumStatic } from './_/Album'
+import { IPhotoStatic } from './_/Photo'
 import { photoStorageFactory } from './photoStorage'
 
 export function photoLibraryOnFacebookFactory(
-    Album: AlbumType,
-    Photo: PhotoType,
-    FacebookMetadata: FacebookMetadataType,
+    Album: IAlbumStatic,
+    Photo: IPhotoStatic,
+    Metadata: IMetadataStatic,
     photoStorage: ReturnType<typeof photoStorageFactory>,
     facebookGraph: ReturnType<typeof facebookGraphFactory>,
 ) {
@@ -36,9 +36,9 @@ export function photoLibraryOnFacebookFactory(
                 userId,
             })
 
-            await FacebookMetadata.create({
+            await Metadata.create({
                 sourceId: album.id,
-                sourcetype: 'ALBUM',
+                sourceType: 'ALBUM',
                 data: albums.find((alb) => album.id === alb.id),
             })
 
@@ -65,7 +65,7 @@ export function photoLibraryOnFacebookFactory(
                     data: album.photos.find((ph) => ph.link === ourPhoto.link),
                 }))
 
-            await FacebookMetadata.bulkCreate(metadataToSave)
+            await Metadata.bulkCreate(metadataToSave)
 
             // Should be awaited some time
             Promise.all(ourPhotos.map((ourPhoto) => photoStorage.uploadFromUrl(ourPhoto.id, ourPhoto.link)))

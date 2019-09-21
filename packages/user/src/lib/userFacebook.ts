@@ -1,22 +1,22 @@
-import { FacebookMetadataType, facebookGraphFactory } from '@orderify/facebook'
-import { IUserInstance, UserType } from './_/User'
+import { IMetadataStatic, facebookGraphFactory } from '@orderify/facebook'
+import { IUserStatic } from './_/User'
 
 export function userFacebookFactory(
-    User: UserType,
-    FacebookMetadata: FacebookMetadataType,
+    User: IUserStatic,
+    Metadata: IMetadataStatic,
     facebookGraph: ReturnType<typeof facebookGraphFactory>,
 ) {
-    async function findByFacebookAccessToken(access_token: string): Promise<IUserInstance> {
+    async function findByFacebookAccessToken(access_token: string) {
         const facebookUserProfile = await facebookGraph.makeRequest(access_token, 'me', '', {
             fields: 'email',
         })
 
         const user = await User.findOne({ where: { email: facebookUserProfile.email } })
 
-        return user ? user.toJSON() as any : undefined
+        return user ? user.toJSON() : undefined
     }
 
-    async function createFromFacebook(accessData: IFacebookAccessData): Promise<IUserInstance> {
+    async function createFromFacebook(accessData: IFacebookAccessData) {
         const facebookUserProfile = await facebookGraph.makeRequest(accessData.access_token, 'me', '', {
             fields: 'email,id,first_name,last_name,middle_name,name,name_format,picture,short_name',
         })
@@ -26,24 +26,24 @@ export function userFacebookFactory(
             name: facebookUserProfile.short_name,
         })
 
-        await FacebookMetadata.create({
+        await Metadata.create({
             sourceId: user.id,
-            sourceType: 'USER',
+            sourceType: 'FACEBOOK.USER',
             data: {
                 facebookUserProfile,
                 accessData,
             },
         })
 
-        return user.toJSON() as any
+        return user.toJSON()
     }
 
-    async function updateFacebookMetadata(userId: number, accessData: IFacebookAccessData) {
+    async function updateMetadata(userId: number, accessData: IFacebookAccessData) {
         const facebookUserProfile = await facebookGraph.makeRequest(accessData.access_token, 'me', '', {
             fields: 'email,id,first_name,last_name,middle_name,name,name_format,picture,short_name',
         })
 
-        await FacebookMetadata.update({
+        await Metadata.update({
             data: {
                 facebookUserProfile,
                 accessData,
@@ -51,7 +51,7 @@ export function userFacebookFactory(
         }, {
             where: {
                 sourceId: userId,
-                sourceType: 'USER',
+                sourceType: 'FACEBOOK.USER',
             },
         })
     }
@@ -59,7 +59,7 @@ export function userFacebookFactory(
     return {
         findByFacebookAccessToken,
         createFromFacebook,
-        updateFacebookMetadata,
+        updateMetadata,
     }
 }
 

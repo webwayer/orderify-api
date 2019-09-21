@@ -49,7 +49,7 @@ export function facebookLoginRouterFactory(
 
                     await photoLibraryOnFacebook.download(user.id, access_token)
                 } else {
-                    await userFacebook.updateFacebookMetadata(user.id, accessData)
+                    await userFacebook.updateMetadata(user.id, accessData)
                 }
 
                 await new Promise((resolve, reject) => {
