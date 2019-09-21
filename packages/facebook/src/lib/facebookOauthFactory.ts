@@ -1,6 +1,6 @@
-import { RequestPromiseAPI } from "request-promise"
+import { IRequest } from "@orderify/io"
 
-export function facebookOauthFactory(requestPromise: RequestPromiseAPI, CONFIG: IApiConfig & IFacebookConfig) {
+export function facebookOauthFactory(requestPromise: IRequest, CONFIG: IApiConfig & IFacebookConfig) {
     const redirect_uri = `${CONFIG.PROTOCOL}://${CONFIG.HOST}:${CONFIG.PORT}/${CONFIG.REDIRECT_PATH}`
 
     function generateStartOauthUrl(queryParams: IGenerateStartOauthUrlQueryParams): string {

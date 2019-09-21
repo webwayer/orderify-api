@@ -1,6 +1,6 @@
-import { RequestPromiseAPI } from "request-promise"
+import { IRequest } from "@orderify/io"
 
-export function facebookGraphFactory(request: RequestPromiseAPI) {
+export function facebookGraphFactory(request: IRequest) {
     async function makeRequest(
         access_token: string,
         sourceId: string,

@@ -1,5 +1,5 @@
 import pkgcloudlocal from "filesystem-storage-pkgcloud"
-import pkgcloud from "pkgcloud"
+import pkgcloud, { storage } from "pkgcloud"
 
 export function pkgcloudFactory() {
     (pkgcloud as any).providers.filesystem = {};
@@ -12,3 +12,5 @@ export function pkgcloudFactory() {
 
     return storageClient
 }
+
+export type IStorageClient = storage.Client

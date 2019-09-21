@@ -1,8 +1,7 @@
-import { storage as pkgcloudStorage } from "pkgcloud"
-import { RequestPromiseAPI } from "request-promise"
+import { IStorageClient, IRequest } from "@orderify/io"
 import { Readable } from "stream"
 
-export function photoStorageFactory(request: RequestPromiseAPI, storage: pkgcloudStorage.Client) {
+export function photoStorageFactory(request: IRequest, storage: IStorageClient) {
     async function uploadFromUrl(id: number, url: string) {
         const readStream = request.get(url)
         const writeStream = storage.upload({
