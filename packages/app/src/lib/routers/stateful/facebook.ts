@@ -1,9 +1,9 @@
-import { randomBytes } from "crypto"
-import { Router } from "express"
+import { randomBytes } from 'crypto'
+import { Router } from 'express'
 
-import { facebookOauthFactory } from "@orderify/facebook"
-import { photoLibraryOnFacebookFactory } from "@orderify/photo_library"
-import { userFacebookFactory } from "@orderify/user"
+import { facebookOauthFactory } from '@orderify/facebook'
+import { photoLibraryOnFacebookFactory } from '@orderify/photo_library'
+import { userFacebookFactory } from '@orderify/user'
 
 export function facebookLoginRouterFactory(
     router: Router,
@@ -12,15 +12,15 @@ export function facebookLoginRouterFactory(
     facebookOauth: ReturnType<typeof facebookOauthFactory>,
     photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>,
 ) {
-    router.get("/login/facebook", async (req, res) => {
+    router.get('/login/facebook', async (req, res) => {
         const csrf_token = await cryptoRandomBytes(128)
 
         req.session.facebook_login_csrf_token = csrf_token
 
         const queryParams = {
-            scope: "email,user_photos",
+            scope: 'email,user_photos',
             state: csrf_token,
-            response_type: "code,granted_scopes",
+            response_type: 'code,granted_scopes',
         }
 
         const facebookLoginUrl = facebookOauth.generateStartOauthUrl(queryParams)
@@ -60,7 +60,7 @@ export function facebookLoginRouterFactory(
             }
         }
 
-        res.redirect("/photos")
+        res.redirect('/photos')
     })
 
     return router
@@ -72,7 +72,7 @@ async function cryptoRandomBytes(num: number): Promise<string> {
             if (err) {
                 reject(err)
             }
-            resolve(buffer.toString("hex"))
+            resolve(buffer.toString('hex'))
         })
     })
 }

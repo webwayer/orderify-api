@@ -1,4 +1,4 @@
-import { IRequest } from "@orderify/io"
+import { IRequest } from '@orderify/io'
 
 export function facebookGraphFactory(request: IRequest) {
     async function makeRequest(

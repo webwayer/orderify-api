@@ -1,11 +1,11 @@
-import session from "express-session"
-import { Sequelize } from "sequelize"
+import session from 'express-session'
+import { Sequelize } from 'sequelize'
 
 export async function sequelizeSessionStoreFactory(
     sequelize: Sequelize,
     CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string },
 ) {
-    const SequelizeStore = require("connect-session-sequelize")(session.Store)
+    const SequelizeStore = require('connect-session-sequelize')(session.Store)
 
     const store = new SequelizeStore({
         db: sequelize,

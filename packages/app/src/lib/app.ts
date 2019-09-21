@@ -1,29 +1,30 @@
-import express, { Router } from "express"
+import express, { Router } from 'express'
 
-import { pkgcloudFactory, sequelizeFactory, sequelizeSessionStoreFactory, requestPromiseFactory } from "@orderify/io"
-import { FacebookMetadataFactory, facebookGraphFactory, facebookOauthFactory } from "@orderify/facebook"
-import { AlbumFactory, PhotoFactory, photoLibraryFactory, photoLibraryOnFacebookFactory, photoStorageFactory } from "@orderify/photo_library"
-import { UserFactory, userFacebookFactory } from "@orderify/user"
+import { pkgcloudFactory, sequelizeFactory, sequelizeSessionStoreFactory, requestPromiseFactory, Model, DataTypes } from '@orderify/io'
+import { FacebookMetadataFactory, facebookGraphFactory, facebookOauthFactory } from '@orderify/facebook'
+import { AlbumFactory, PhotoFactory, photoLibraryFactory, photoLibraryOnFacebookFactory, photoStorageFactory } from '@orderify/photo_library'
+import { UserFactory, userFacebookFactory } from '@orderify/user'
 
-import { statefulRouterFactory } from "./routers/stateful"
-import { authenticatedRouterFactory } from "./routers/stateful/authenticated"
-import { photosRouterFactory } from "./routers/stateful/authenticated/photos"
-import { facebookLoginRouterFactory } from "./routers/stateful/facebook"
+import { statefulRouterFactory } from './routers/stateful'
+import { authenticatedRouterFactory } from './routers/stateful/authenticated'
+import { photosRouterFactory } from './routers/stateful/authenticated/photos'
+import { facebookLoginRouterFactory } from './routers/stateful/facebook'
 
-import { IAppConfig } from "./config"
+import { IAppConfig } from './config'
 
 export async function appFactory(CONFIG: IAppConfig) {
     const request = requestPromiseFactory()
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
+    const sequelizeBundle = { sequelize, Model, DataTypes }
     const sessionStore = await sequelizeSessionStoreFactory(sequelize, CONFIG.SEQUELIZE)
     const storage = pkgcloudFactory()
 
     const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, ...CONFIG.API })
     const facebookGraph = facebookGraphFactory(request)
-    const FacebookMetadata = await FacebookMetadataFactory(sequelize, CONFIG.SEQUELIZE)
+    const FacebookMetadata = await FacebookMetadataFactory(sequelizeBundle, CONFIG.SEQUELIZE)
 
-    const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
-    const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
+    const Album = await AlbumFactory(sequelizeBundle, CONFIG.SEQUELIZE)
+    const Photo = await PhotoFactory(sequelizeBundle, CONFIG.SEQUELIZE)
     const photoStorage = await photoStorageFactory(request, storage)
     const photoLibrary = photoLibraryFactory(Photo, Album)
     const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(
@@ -34,7 +35,7 @@ export async function appFactory(CONFIG: IAppConfig) {
         facebookGraph,
     )
 
-    const User = await UserFactory(sequelize, CONFIG.SEQUELIZE)
+    const User = await UserFactory(sequelizeBundle, CONFIG.SEQUELIZE)
     const userFacebook = await userFacebookFactory(User, FacebookMetadata, facebookGraph)
 
     const statefulRouter = statefulRouterFactory(Router(), sessionStore, CONFIG.SESSION)

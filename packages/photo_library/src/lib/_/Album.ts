@@ -1,6 +1,9 @@
-import { DataTypes, Model, Sequelize } from "sequelize"
+import { IDatabase } from '@orderify/io'
 
-export async function AlbumFactory(sequelize: Sequelize, CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string }) {
+export async function AlbumFactory(
+    { DataTypes, Model, sequelize }: IDatabase,
+    CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string },
+) {
     class Album extends Model {
 
         // Timestamps!
@@ -26,10 +29,10 @@ export async function AlbumFactory(sequelize: Sequelize, CONFIG: { DROP_ON_SYNC:
             type: new DataTypes.STRING(128),
             allowNull: true,
         },
-    },         {
-            tableName: "Album",
-            sequelize,
-        },
+    }, {
+        tableName: 'Album',
+        sequelize,
+    },
     )
 
     if (CONFIG.SYNC_SCHEMAS) {

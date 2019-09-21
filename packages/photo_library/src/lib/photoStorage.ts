@@ -1,11 +1,11 @@
-import { IStorageClient, IRequest } from "@orderify/io"
-import { Readable } from "stream"
+import { IStorageClient, IRequest } from '@orderify/io'
+import { Readable } from 'stream'
 
 export function photoStorageFactory(request: IRequest, storage: IStorageClient) {
     async function uploadFromUrl(id: number, url: string) {
         const readStream = request.get(url)
         const writeStream = storage.upload({
-            container: "photos",
+            container: 'photos',
             remote: id.toString(),
         })
 
@@ -14,7 +14,7 @@ export function photoStorageFactory(request: IRequest, storage: IStorageClient) 
 
     function downloadAsStream(id: number): Readable {
         return storage.download({
-            container: "photos",
+            container: 'photos',
             remote: id.toString(),
         })
     }
@@ -48,7 +48,7 @@ async function promisifiedPipe(input, output) {
 
     return new Promise((resolve, reject) => {
         input.pipe(output)
-        input.on("error", errorEnding)
+        input.on('error', errorEnding)
 
         function niceEnding() {
             if (end()) { resolve() }
@@ -58,8 +58,8 @@ async function promisifiedPipe(input, output) {
             if (end()) { reject(error) }
         }
 
-        output.on("finish", niceEnding)
-        output.on("end", niceEnding)
-        output.on("error", errorEnding)
+        output.on('finish', niceEnding)
+        output.on('end', niceEnding)
+        output.on('error', errorEnding)
     })
 }

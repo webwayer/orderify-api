@@ -1,4 +1,4 @@
-import request, { RequestPromiseAPI } from "request-promise"
+import request, { RequestPromiseAPI } from 'request-promise'
 
 export function requestPromiseFactory() {
     return request

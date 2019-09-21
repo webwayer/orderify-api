@@ -1,5 +1,5 @@
-import { AlbumType } from "./_/Album"
-import { PhotoType } from "./_/Photo"
+import { AlbumType } from './_/Album'
+import { PhotoType } from './_/Photo'
 
 export function photoLibraryFactory(Photo: PhotoType, Album: AlbumType) {
     async function getPhotoById(id: number, userId: number) {

@@ -13,7 +13,7 @@
     "prestart": "yarn setup_storage",
     "lint": "tslint 'packages/**/*.ts'",
     "lint_fix": "tslint 'packages/**/*.ts' --fix",
-    "start": "ts-node packages/app/index.ts --project tsconfig.json"
+    "start": "ts-node packages/app/src/server.ts"
   },
   "dependencies": {
     "lerna": "^3.16.4",

@@ -1,5 +1,5 @@
-import { Router } from "express"
-import session, { Store } from "express-session"
+import { Router } from 'express'
+import session, { Store } from 'express-session'
 
 export function statefulRouterFactory(
     router: Router,
@@ -13,7 +13,7 @@ export function statefulRouterFactory(
         saveUninitialized: false,
         cookie: {
             secure: !!CONFIG.HTTPS_ONLY_COOKIES,
-            sameSite: "lux",
+            sameSite: 'lux',
             httpOnly: true,
         },
     }))

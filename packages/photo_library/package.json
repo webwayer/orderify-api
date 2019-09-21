@@ -4,7 +4,6 @@
     "main": "src/index",
     "dependencies": {
         "@orderify/facebook": "0.0.0",
-        "@orderify/io": "0.0.0",
-        "sequelize": "^5.19.0"
+        "@orderify/io": "0.0.0"
     }
 }

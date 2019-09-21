@@ -1,23 +1,26 @@
-import { DataTypes, Model, Sequelize } from "sequelize"
+import { IDatabase } from '@orderify/io'
 
-class Photo extends Model {
-    public readonly albumId!: string
-    public readonly alt_text: string
+export async function PhotoFactory(
+    { DataTypes, Model, sequelize }: IDatabase,
+    CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string },
+) {
+    class Photo extends Model {
+        public readonly albumId!: string
+        public readonly alt_text: string
 
-    // Timestamps!
-    public readonly createdAt!: Date
-    public readonly height!: number
-    public readonly id!: number // Note that the `null assertion` `!` is required in strict mode.
+        // Timestamps!
+        public readonly createdAt!: Date
+        public readonly height!: number
+        public readonly id!: number // Note that the `null assertion` `!` is required in strict mode.
 
-    public readonly link!: string
+        public readonly link!: string
 
-    public readonly name: string
-    public readonly updatedAt!: Date
-    public readonly userId!: string
-    public readonly width!: number
-}
+        public readonly name: string
+        public readonly updatedAt!: Date
+        public readonly userId!: string
+        public readonly width!: number
+    }
 
-export async function PhotoFactory(sequelize: Sequelize, CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string }) {
     Photo.init({
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -52,8 +55,8 @@ export async function PhotoFactory(sequelize: Sequelize, CONFIG: { DROP_ON_SYNC:
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
         },
-    },         {
-        tableName: "Photo",
+    }, {
+        tableName: 'Photo',
         sequelize,
     },
     )
@@ -65,7 +68,7 @@ export async function PhotoFactory(sequelize: Sequelize, CONFIG: { DROP_ON_SYNC:
     return Photo
 }
 
-export type PhotoType = typeof Photo
+export type PhotoType = Unpromise<ReturnType<typeof PhotoFactory>>
 interface IPhotoInstance {
     readonly albumId: number
     readonly alt_text?: string

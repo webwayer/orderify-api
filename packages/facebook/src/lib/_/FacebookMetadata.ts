@@ -1,7 +1,7 @@
-import { DataTypes, Model, Sequelize } from "sequelize"
+import { IDatabase } from '@orderify/io'
 
 export async function FacebookMetadataFactory(
-    sequelize: Sequelize,
+    { DataTypes, Model, sequelize }: IDatabase,
     CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string },
 ) {
     class FacebookMetadata extends Model {
@@ -30,7 +30,7 @@ export async function FacebookMetadataFactory(
             allowNull: false,
         },
     }, {
-        tableName: "FacebookMetadata",
+        tableName: 'FacebookMetadata',
         sequelize,
     },
     )

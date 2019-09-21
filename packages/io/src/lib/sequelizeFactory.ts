@@ -1,4 +1,4 @@
-import { Dialect, Sequelize } from "sequelize"
+import { Dialect, Sequelize, Model, DataTypes } from 'sequelize'
 
 export function sequelizeFactory(CONFIG: IDatabaseConfig) {
     return new Sequelize(
@@ -11,7 +11,13 @@ export function sequelizeFactory(CONFIG: IDatabaseConfig) {
     })
 }
 
-export type IDatabase = Sequelize
+export { Model, DataTypes } from 'sequelize'
+
+export interface IDatabase {
+    sequelize: Sequelize
+    Model: typeof Model
+    DataTypes: typeof DataTypes
+}
 
 export interface IDatabaseConfig {
     DATABASE_NAME: string

@@ -1,10 +1,10 @@
-import { IRequest } from "@orderify/io"
+import { IRequest } from '@orderify/io'
 
 export function facebookOauthFactory(requestPromise: IRequest, CONFIG: IApiConfig & IFacebookConfig) {
     const redirect_uri = `${CONFIG.PROTOCOL}://${CONFIG.HOST}:${CONFIG.PORT}/${CONFIG.REDIRECT_PATH}`
 
     function generateStartOauthUrl(queryParams: IGenerateStartOauthUrlQueryParams): string {
-        const query = Object.entries({...queryParams,  client_id: CONFIG.CLIENT_ID, redirect_uri}).map(([key, value]) => `${key}=${value}`).join("&")
+        const query = Object.entries({...queryParams,  client_id: CONFIG.CLIENT_ID, redirect_uri}).map(([key, value]) => `${key}=${value}`).join('&')
 
         return `https://www.facebook.com/v4.0/dialog/oauth?${query}`
     }
@@ -23,14 +23,14 @@ export function facebookOauthFactory(requestPromise: IRequest, CONFIG: IApiConfi
                 client_secret: CONFIG.CLIENT_SECRET,
                 redirect_uri,
             },
-            uri: "https://graph.facebook.com/v4.0/oauth/access_token",
+            uri: 'https://graph.facebook.com/v4.0/oauth/access_token',
         }))
     }
 
     interface IExchangeCodeForAcessTokenReturnObject {
         access_token: string
         expires_in: number
-        token_type: "bearer"
+        token_type: 'bearer'
     }
 
     return {
