@@ -1,5 +1,5 @@
-import * as pkgcloudlocal from "filesystem-storage-pkgcloud"
-import * as pkgcloud from "pkgcloud"
+import pkgcloudlocal from "filesystem-storage-pkgcloud"
+import pkgcloud from "pkgcloud"
 
 export function pkgcloudFactory() {
     (pkgcloud as any).providers.filesystem = {};

@@ -1,14 +1,14 @@
 import { FacebookMetadataType } from "../facebook/_/FacebookMetadata"
 import { facebookGraphFactory } from "../facebook/facebookGraphFactory"
 
-import { UserInstance, UserType } from "./_/User"
+import { IUserInstance, UserType } from "./_/User"
 
 export function userFacebookFactory(
     User: UserType,
     FacebookMetadata: FacebookMetadataType,
     facebookGraph: ReturnType<typeof facebookGraphFactory>,
 ) {
-    async function findByFacebookAccessToken(access_token: string): Promise<UserInstance> {
+    async function findByFacebookAccessToken(access_token: string): Promise<IUserInstance> {
         const facebookUserProfile = await facebookGraph.makeRequest(access_token, "me", "", {
             fields: "email",
         })
@@ -18,7 +18,7 @@ export function userFacebookFactory(
         return user ? user.toJSON() as any : undefined
     }
 
-    async function createFromFacebook(accessData: IFacebookAccessData): Promise<UserInstance> {
+    async function createFromFacebook(accessData: IFacebookAccessData): Promise<IUserInstance> {
         const facebookUserProfile = await facebookGraph.makeRequest(accessData.access_token, "me", "", {
             fields: "email,id,first_name,last_name,middle_name,name,name_format,picture,short_name",
         })

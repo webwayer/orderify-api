@@ -1,6 +1,6 @@
 import { pkgcloudFactory, sequelizeFactory, sequelizeSessionStoreFactory } from "@orderify/io"
 import express, { Router } from "express"
-import * as request from "request-promise"
+import request from "request-promise"
 
 import { FacebookMetadataFactory } from "../facebook/_/FacebookMetadata"
 import { facebookGraphFactory } from "../facebook/facebookGraphFactory"

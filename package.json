@@ -13,15 +13,10 @@
     "prestart": "yarn setup_storage",
     "lint": "tslint 'packages/**/*.ts'",
     "lint_fix": "tslint 'packages/**/*.ts' --fix",
-    "start": "ts-node packages/app/index.ts"
+    "start": "ts-node packages/app/index.ts --project tsconfig.json"
   },
   "dependencies": {
-    "@types/express": "^4.17.0",
-    "@types/request-promise": "^4.1.44",
-    "express": "^4.17.1",
     "lerna": "^3.16.4",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
     "typescript": "^3.6.2"

@@ -1,4 +1,4 @@
-import * as session from "express-session"
+import session from "express-session"
 import { Sequelize } from "sequelize"
 
 export async function sequelizeSessionStoreFactory(
