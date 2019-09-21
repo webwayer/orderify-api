@@ -1,8 +1,6 @@
 {
     "name": "@orderify/photo_library",
     "version": "0.0.0",
-    "author": "Rodion Balandin <webwayer@gmail.com>",
-    "license": "none",
     "dependencies": {
         "sequelize": "^5.19.0"
     }

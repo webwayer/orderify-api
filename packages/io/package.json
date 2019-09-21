@@ -1,12 +1,15 @@
 {
   "name": "@orderify/io",
   "version": "0.0.0",
-  "author": "Rodion Balandin <webwayer@gmail.com>",
-  "license": "none",
   "main": "src/index.ts",
   "dependencies": {
+    "@types/express-session": "^1.15.14",
+    "@types/pkgcloud": "^1.7.3",
+    "connect-session-sequelize": "^6.0.0",
     "express-session": "^1.16.2",
     "filesystem-storage-pkgcloud": "^1.2.0",
+    "pg": "^7.12.1",
+    "pg-hstore": "^2.3.3",
     "pkgcloud": "^2.1.1",
     "sequelize": "^5.19.0"
   }
