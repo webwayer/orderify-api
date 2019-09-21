@@ -1,15 +1,15 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { DataTypes, Model, Sequelize } from "sequelize"
 
-export async function AlbumFactory(sequelize: Sequelize, CONFIG: { SYNC_SCHEMAS: string, DROP_ON_SYNC: string }) {
+export async function AlbumFactory(sequelize: Sequelize, CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string }) {
     class Album extends Model {
-        public readonly id!: number; // Note that the `null assertion` `!` is required in strict mode.
-        public readonly userId!: string;
 
-        public readonly name: string;
+        // Timestamps!
+        public readonly createdAt!: Date
+        public readonly id!: number // Note that the `null assertion` `!` is required in strict mode.
 
-        // timestamps!
-        public readonly createdAt!: Date;
-        public readonly updatedAt!: Date;
+        public readonly name: string
+        public readonly updatedAt!: Date
+        public readonly userId!: string
     }
 
     Album.init({
@@ -26,18 +26,18 @@ export async function AlbumFactory(sequelize: Sequelize, CONFIG: { SYNC_SCHEMAS:
             type: new DataTypes.STRING(128),
             allowNull: true,
         },
-    }, {
-            tableName: 'Album',
-            sequelize
-        }
-    );
+    },         {
+            tableName: "Album",
+            sequelize,
+        },
+    )
 
     if (CONFIG.SYNC_SCHEMAS) {
         await Album.sync({ force: !!CONFIG.DROP_ON_SYNC })
     }
 
-    return Album;
+    return Album
 }
 
-type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
+type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never
 export type AlbumType = Unpromise<ReturnType<typeof AlbumFactory>>

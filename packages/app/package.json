@@ -2,6 +2,12 @@
   "name": "@orderify/app",
   "version": "0.0.0",
   "dependencies": {
-    "@orderify/io": "0.0.0"
+    "@orderify/io": "0.0.0",
+    "@types/express": "^4.17.1",
+    "@types/request-promise": "^4.1.44",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
   }
 }

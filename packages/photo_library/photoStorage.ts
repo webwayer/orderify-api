@@ -1,12 +1,12 @@
-import { Readable } from 'stream'
-import { RequestPromiseAPI } from 'request-promise';
-import { storage } from 'pkgcloud';
+import { storage as pkgcloudStorage } from "pkgcloud"
+import { RequestPromiseAPI } from "request-promise"
+import { Readable } from "stream"
 
-export function photoStorageFactory(request: RequestPromiseAPI, storage: storage.Client) {
+export function photoStorageFactory(request: RequestPromiseAPI, storage: pkgcloudStorage.Client) {
     async function uploadFromUrl(id: number, url: string) {
         const readStream = request.get(url)
         const writeStream = storage.upload({
-            container: 'photos',
+            container: "photos",
             remote: id.toString(),
         })
 
@@ -15,8 +15,8 @@ export function photoStorageFactory(request: RequestPromiseAPI, storage: storage
 
     function downloadAsStream(id: number): Readable {
         return storage.download({
-            container: 'photos',
-            remote: id.toString()
+            container: "photos",
+            remote: id.toString(),
         })
     }
 
@@ -34,30 +34,33 @@ export function photoStorageFactory(request: RequestPromiseAPI, storage: storage
  * @return Promise Resolves only after the output stream is "end"ed or "finish"ed.
  */
 async function promisifiedPipe(input, output) {
-    let ended = false;
+    let ended = false
     function end() {
         if (!ended) {
-            ended = true;
-            output.close && output.close();
-            input.close && input.close();
-            return true;
+            ended = true
+            // tslint:disable-next-line: no-unused-expression
+            output.close && output.close()
+            // tslint:disable-next-line: no-unused-expression
+            input.close && input.close()
+
+            return true
         }
     }
 
     return new Promise((resolve, reject) => {
-        input.pipe(output);
-        input.on('error', errorEnding);
+        input.pipe(output)
+        input.on("error", errorEnding)
 
         function niceEnding() {
-            if (end()) resolve();
+            if (end()) { resolve() }
         }
 
         function errorEnding(error) {
-            if (end()) reject(error);
+            if (end()) { reject(error) }
         }
 
-        output.on('finish', niceEnding);
-        output.on('end', niceEnding);
-        output.on('error', errorEnding);
-    });
-};
+        output.on("finish", niceEnding)
+        output.on("end", niceEnding)
+        output.on("error", errorEnding)
+    })
+}

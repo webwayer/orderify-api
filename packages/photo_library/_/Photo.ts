@@ -1,23 +1,23 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { DataTypes, Model, Sequelize } from "sequelize"
 
 class Photo extends Model {
-    public readonly id!: number; // Note that the `null assertion` `!` is required in strict mode.
-    public readonly userId!: string;
-    public readonly albumId!: string;
+    public readonly albumId!: string
+    public readonly alt_text: string
 
-    public readonly name: string;
-    public readonly alt_text: string;
+    // Timestamps!
+    public readonly createdAt!: Date
+    public readonly height!: number
+    public readonly id!: number // Note that the `null assertion` `!` is required in strict mode.
 
-    // timestamps!
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+    public readonly link!: string
 
-    public readonly link!: string;
-    public readonly width!: number;
-    public readonly height!: number;
+    public readonly name: string
+    public readonly updatedAt!: Date
+    public readonly userId!: string
+    public readonly width!: number
 }
 
-export async function PhotoFactory(sequelize: Sequelize, CONFIG: { SYNC_SCHEMAS: string, DROP_ON_SYNC: string }) {
+export async function PhotoFactory(sequelize: Sequelize, CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string }) {
     Photo.init({
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -51,32 +51,32 @@ export async function PhotoFactory(sequelize: Sequelize, CONFIG: { SYNC_SCHEMAS:
         userId: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
-        }
-    }, {
-        tableName: 'Photo',
-        sequelize
-    }
-    );
+        },
+    },         {
+        tableName: "Photo",
+        sequelize,
+    },
+    )
 
     if (CONFIG.SYNC_SCHEMAS) {
         await Photo.sync({ force: !!CONFIG.DROP_ON_SYNC })
     }
 
-    return Photo;
+    return Photo
 }
 
 export type PhotoType = typeof Photo
-interface PhotoInstance {
-    readonly id: number,
-    readonly userId: number,
-    readonly albumId: number,
-    readonly name?: string,
-    readonly alt_text?: string,
-    readonly link: string,
-    readonly width: number,
-    readonly height: number,
-    readonly createdAt: Date,
-    readonly updatedAt: Date,
+interface IPhotoInstance {
+    readonly albumId: number
+    readonly alt_text?: string
+    readonly createdAt: Date
+    readonly height: number
+    readonly id: number
+    readonly link: string
+    readonly name?: string
+    readonly updatedAt: Date
+    readonly userId: number
+    readonly width: number
 }
 
-type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
+type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never

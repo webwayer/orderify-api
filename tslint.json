@@ -1,0 +1,24 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:latest"
+    ],
+    "jsRules": {},
+    "rules": {
+        "object-literal-sort-keys": false,
+        "semicolon": [
+            true,
+            "never"
+        ],
+        "variable-name": {
+            "options": [
+                "ban-keywords",
+                "check-format",
+                "allow-snake-case",
+                "allow-pascal-case",
+                "require-const-for-all-caps"
+            ]
+        }
+    },
+    "rulesDirectory": []
+}

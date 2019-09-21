@@ -1,14 +1,17 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { DataTypes, Model, Sequelize } from "sequelize"
 
-export async function FacebookMetadataFactory(sequelize: Sequelize, CONFIG: { SYNC_SCHEMAS: string, DROP_ON_SYNC: string }) {
+export async function FacebookMetadataFactory(
+    sequelize: Sequelize,
+    CONFIG: { DROP_ON_SYNC: string; SYNC_SCHEMAS: string },
+) {
     class FacebookMetadata extends Model {
-        public readonly sourceId!: number;
-        public readonly sourceType!: string;
-        public readonly data!: any;
 
-        // timestamps!
-        public readonly createdAt!: Date;
-        public readonly updatedAt!: Date;
+        // Timestamps!
+        public readonly createdAt!: Date
+        public readonly data!: any
+        public readonly sourceId!: number
+        public readonly sourceType!: string
+        public readonly updatedAt!: Date
     }
 
     FacebookMetadata.init({
@@ -25,19 +28,19 @@ export async function FacebookMetadataFactory(sequelize: Sequelize, CONFIG: { SY
         data: {
             type: DataTypes.JSON,
             allowNull: false,
-        }
+        },
     }, {
-            tableName: 'FacebookMetadata',
-            sequelize
-        }
-    );
+        tableName: "FacebookMetadata",
+        sequelize,
+    },
+    )
 
     if (CONFIG.SYNC_SCHEMAS) {
         await FacebookMetadata.sync({ force: !!CONFIG.DROP_ON_SYNC })
     }
 
-    return FacebookMetadata;
+    return FacebookMetadata
 }
 
-type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
+type Unpromise<T extends Promise<any>> = T extends Promise<infer U> ? U : never
 export type FacebookMetadataType = Unpromise<ReturnType<typeof FacebookMetadataFactory>>

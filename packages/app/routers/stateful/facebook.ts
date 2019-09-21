@@ -1,19 +1,26 @@
-import { Router } from 'express'
-import { randomBytes } from 'crypto'
-import { userFacebookFactory } from '../../../user/userFacebook'
-import { photoLibraryOnFacebookFactory } from '../../../photo_library/photoLibraryOnFacebook'
-import { facebookOauthFactory } from '../../../facebook/facebookOauthFactory'
+import { randomBytes } from "crypto"
+import { Router } from "express"
 
-export function facebookLoginRouterFactory(router: Router, CONFIG: { REDIRECT_PATH: string }, userFacebook: ReturnType<typeof userFacebookFactory>, facebookOauth: ReturnType<typeof facebookOauthFactory>, photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>) {
-    router.get('/login/facebook', async (req, res) => {
+import { facebookOauthFactory } from "../../../facebook/facebookOauthFactory"
+import { photoLibraryOnFacebookFactory } from "../../../photo_library/photoLibraryOnFacebook"
+import { userFacebookFactory } from "../../../user/userFacebook"
+
+export function facebookLoginRouterFactory(
+    router: Router,
+    CONFIG: { REDIRECT_PATH: string },
+    userFacebook: ReturnType<typeof userFacebookFactory>,
+    facebookOauth: ReturnType<typeof facebookOauthFactory>,
+    photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>,
+) {
+    router.get("/login/facebook", async (req, res) => {
         const csrf_token = await cryptoRandomBytes(128)
 
         req.session.facebook_login_csrf_token = csrf_token
 
         const queryParams = {
-            scope: 'email,user_photos',
+            scope: "email,user_photos",
             state: csrf_token,
-            response_type: 'code,granted_scopes'
+            response_type: "code,granted_scopes",
         }
 
         const facebookLoginUrl = facebookOauth.generateStartOauthUrl(queryParams)
@@ -39,33 +46,33 @@ export function facebookLoginRouterFactory(router: Router, CONFIG: { REDIRECT_PA
                 let user = await userFacebook.findByFacebookAccessToken(access_token)
                 if (!user) {
                     user = await userFacebook.createFromFacebook(accessData)
-                    
+
                     await photoLibraryOnFacebook.download(user.id, access_token)
                 } else {
                     await userFacebook.updateFacebookMetadata(user.id, accessData)
                 }
 
                 await new Promise((resolve, reject) => {
-                    req.session.regenerate(err => err ? reject(err) : resolve())
+                    req.session.regenerate((err) => err ? reject(err) : resolve())
                 })
 
                 req.session.userId = user.id
             }
         }
 
-        res.redirect('/photos')
+        res.redirect("/photos")
     })
 
-    return router;
+    return router
 }
 
 async function cryptoRandomBytes(num: number): Promise<string> {
-    return await new Promise((resolve, reject) => {
-        randomBytes(num, function (err, buffer) {
+    return new Promise((resolve, reject) => {
+        randomBytes(num, (err, buffer) => {
             if (err) {
                 reject(err)
             }
-            resolve(buffer.toString('hex'))
-        });
+            resolve(buffer.toString("hex"))
+        })
     })
 }

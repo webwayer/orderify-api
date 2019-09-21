@@ -1,22 +1,22 @@
-import { Sequelize, Dialect } from 'sequelize'
+import { Dialect, Sequelize } from "sequelize"
 
-export function sequelizeFactory(CONFIG: DATABASE_CONFIG) {
+export function sequelizeFactory(CONFIG: IDatabaseConfig) {
     return new Sequelize(
         CONFIG.DATABASE_NAME,
         CONFIG.USER,
         CONFIG.PASSWORD, {
-            "dialect": <Dialect>CONFIG.DIALECT,
-            "host": CONFIG.HOST,
-            "port": parseInt(CONFIG.PORT),
-        }
+            dialect: CONFIG.DIALECT as Dialect,
+            host: CONFIG.HOST,
+            port: parseInt(CONFIG.PORT, 10),
+        },
     )
 }
 
-export interface DATABASE_CONFIG {
-    DIALECT: string,
-    DATABASE_NAME: string,
-    USER: string,
-    PASSWORD: string,
-    HOST: string,
-    PORT: string,
+export interface IDatabaseConfig {
+    DATABASE_NAME: string
+    DIALECT: string
+    HOST: string
+    PASSWORD: string
+    PORT: string
+    USER: string
 }

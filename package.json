@@ -9,8 +9,10 @@
     "packages/*"
   ],
   "scripts": {
-    "clear_storage": "rm -Rf storage; mkdir storage",
-    "prestart": "npm run clear_storage",
+    "setup_storage": "rm -Rf storage; mkdir storage",
+    "prestart": "yarn setup_storage",
+    "lint": "tslint 'packages/**/*.ts'",
+    "lint_fix": "tslint 'packages/**/*.ts' --fix",
     "start": "ts-node packages/app/index.ts"
   },
   "dependencies": {
@@ -21,6 +23,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "ts-node": "^8.4.1",
+    "tslint": "^5.20.0",
     "typescript": "^3.6.2"
   }
 }
