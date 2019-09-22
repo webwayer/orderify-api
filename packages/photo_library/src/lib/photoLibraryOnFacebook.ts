@@ -17,59 +17,62 @@ export function photoLibraryOnFacebookFactory(
             fields: 'name,type,created_time,updated_time',
         })
 
-        const library = []
+        const albumsToSave = []
+        const photosToSave = []
+
         for (const album of albums) {
             if (album.type === 'profile') {
-                library.push({
-                    ...album,
-                    photos: await facebookGraph.makeRequest(access_token, album.id, 'photos', {
-                        limit: 1000,
-                        fields: 'name,alt_text,images,created_time,updated_time,album',
-                    }),
-                })
+                albumsToSave.push(album)
+                photosToSave.push(await facebookGraph.makeRequest(access_token, album.id, 'photos', {
+                    limit: 1000,
+                    fields: 'name,alt_text,images,created_time,updated_time,album',
+                }))
             }
         }
 
-        for (const album of library) {
-            const ourAlbum = await Album.create({
+        const ourAlbums = await Album.bulkCreate(albumsToSave.map((album) => {
+            return {
                 name: album.name,
                 userId,
-            })
+            }
+        }))
 
-            await Metadata.create({
-                sourceId: album.id,
-                sourceType: 'ALBUM',
-                data: albums.find((alb) => album.id === alb.id),
-            })
-
-            const photosToCreate = album.photos.map((photo) => {
+        const ourPhotosToSaveProps = photosToSave.map((photosCollection, photosCollectionIndex) => {
+            return photosCollection.map((photo) => {
+                const album = ourAlbums[photosCollectionIndex]
                 const image = photo.images.find((image2) => image2.width + image2.height < 2000)
 
                 return {
                     name: photo.name,
                     alt_text: photo.alt_text,
                     userId,
-                    albumId: ourAlbum.id,
+                    albumId: album.id,
                     link: image.source,
                     width: image.width,
                     height: image.height,
                 }
             })
+        })
+        const ourPhotos = await Photo.bulkCreate([].concat(...ourPhotosToSaveProps))
 
-            const ourPhotos = await Photo.bulkCreate(photosToCreate)
+        await Metadata.bulkCreate(albumsToSave.map((album, albumIndex) => {
+            return {
+                sourceId: ourAlbums[albumIndex].id,
+                sourceType: 'FACEBOOK.ALBUM',
+                data: { album },
+            }
+        }))
 
-            const metadataToSave = ourPhotos.map((ourPhoto) =>
-                ({
-                    sourceId: ourPhoto.id,
-                    sourceType: 'PHOTO',
-                    data: album.photos.find((ph) => ph.link === ourPhoto.link),
-                }))
+        await Metadata.bulkCreate([].concat(...photosToSave).map((photo, photoIndex) => {
+            return {
+                sourceId: ourPhotos[photoIndex].id,
+                sourceType: 'FACEBOOK.PHOTO',
+                data: { photo },
+            }
+        }))
 
-            await Metadata.bulkCreate(metadataToSave)
-
-            // Should be awaited some time
-            Promise.all(ourPhotos.map((ourPhoto) => photoStorage.uploadFromUrl(ourPhoto.id, ourPhoto.link)))
-        }
+        // Should be awaited some time
+        Promise.all(ourPhotos.map((ourPhoto) => photoStorage.uploadFromUrl(ourPhoto.id, ourPhoto.link)))
     }
 
     return {

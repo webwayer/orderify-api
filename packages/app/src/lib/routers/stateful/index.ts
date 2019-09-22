@@ -13,7 +13,7 @@ export function statefulRouterFactory(
         saveUninitialized: false,
         cookie: {
             secure: !!CONFIG.HTTPS_ONLY_COOKIES,
-            sameSite: 'lux',
+            sameSite: 'lax',
             httpOnly: true,
         },
     }))

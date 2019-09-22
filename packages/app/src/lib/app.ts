@@ -1,4 +1,6 @@
 import express, { Router } from 'express'
+import graphqlHTTP from 'express-graphql'
+import { GraphQLList, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from 'graphql'
 
 import { pkgcloudFactory, sequelizeFactory, sequelizeSessionStoreFactory, requestPromiseFactory } from '@orderify/io'
 import { MetadataFactory, facebookGraphFactory, facebookOauthFactory } from '@orderify/facebook'
@@ -49,6 +51,44 @@ export async function appFactory(CONFIG: IAppConfig) {
     const photosRouter = photosRouterFactory(Router(), photoStorage, photoLibrary)
 
     const router = Router()
+
+    const UserType = new GraphQLObjectType({
+        name: 'User',
+        fields: () => ({
+            id: { type: new GraphQLNonNull(GraphQLInt) },
+            email: { type: new GraphQLNonNull(GraphQLString) },
+            name: { type: new GraphQLNonNull(GraphQLString) },
+        }),
+    })
+
+    const QueryRootType = new GraphQLObjectType({
+        name: 'App',
+        fields: () => ({
+            users: {
+                type: new GraphQLList(UserType),
+                description: 'List of all Users',
+                async resolve() {
+                    return User.findAll({ where: {} })
+                },
+            },
+        }),
+    })
+
+    const AppSchema = new GraphQLSchema({
+        query: QueryRootType,
+    })
+
+    const rootValue = {
+        hello: () => {
+            return 'Hello world!'
+        },
+    }
+
+    router.use('/graphql', graphqlHTTP({
+        schema: AppSchema,
+        rootValue,
+        graphiql: true,
+    }))
 
     router.use(statefulRouter)
     router.use(facebookLoginRouter)

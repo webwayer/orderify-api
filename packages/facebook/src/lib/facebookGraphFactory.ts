@@ -12,7 +12,7 @@ export function facebookGraphFactory(request: IRequest) {
             uri: `https://graph.facebook.com/${sourceId}/${type}`,
         }))
 
-        return raw.data
+        return raw.data || raw
     }
 
     interface IDefaultGetQueryParams {
