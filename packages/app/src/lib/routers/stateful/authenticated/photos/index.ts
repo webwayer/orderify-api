@@ -11,8 +11,6 @@ export function photosRouterFactory(
     //     const photo = await photoLibrary.getPhotoById(Number(req.params.id), req.session.userId)
     //     if (photo) {
     //         photoStorage.downloadAsStream(photo.id).pipe(res)
-    //     } else {
-    //         res.end()
     //     }
     // })
 

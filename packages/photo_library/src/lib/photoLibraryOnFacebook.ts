@@ -72,7 +72,7 @@ export function photoLibraryOnFacebookFactory(
         }))
 
         // Should be awaited some time
-        Promise.all(ourPhotos.map((ourPhoto) => photoStorage.uploadFromUrl(ourPhoto.id, ourPhoto.link)))
+        await Promise.all(ourPhotos.map((ourPhoto) => photoStorage.uploadFromUrl(ourPhoto.id, ourPhoto.link)))
     }
 
     return {

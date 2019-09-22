@@ -1,11 +1,11 @@
 import { IStorageClient, IRequest } from '@orderify/io'
 import { Readable } from 'stream'
 
-export function photoStorageFactory(request: IRequest, storage: IStorageClient) {
+export function photoStorageFactory(request: IRequest, storage: IStorageClient, CONFIG: { BUCKET_NAME: string }) {
     async function uploadFromUrl(id: number, url: string) {
         const readStream = request.get(url)
         const writeStream = storage.upload({
-            container: 'photos',
+            container: CONFIG.BUCKET_NAME,
             remote: id.toString(),
         })
 
@@ -14,7 +14,7 @@ export function photoStorageFactory(request: IRequest, storage: IStorageClient) 
 
     function downloadAsStream(id: number): Readable {
         return storage.download({
-            container: 'photos',
+            container: CONFIG.BUCKET_NAME,
             remote: id.toString(),
         })
     }

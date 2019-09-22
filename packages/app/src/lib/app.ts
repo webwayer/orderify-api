@@ -17,7 +17,7 @@ import {
     photoLibraryFactory,
     photoLibraryOnFacebookFactory,
     photoStorageFactory,
-    PhotoLibraryInterfaceFactory
+    PhotoLibraryInterfaceFactory,
 } from '@orderify/photo_library'
 import { UserFactory, userFacebookFactory, UserInterfaceFactory } from '@orderify/user'
 
@@ -32,7 +32,7 @@ export async function appFactory(CONFIG: IAppConfig) {
     const request = requestPromiseFactory()
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
     const sessionStore = await sequelizeSessionStoreFactory(sequelize, CONFIG.SEQUELIZE)
-    const storage = pkgcloudFactory()
+    const storage = pkgcloudFactory(CONFIG.STORAGE)
 
     const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, ...CONFIG.API })
     const facebookGraph = facebookGraphFactory(request)
@@ -40,7 +40,7 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
     const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
-    const photoStorage = await photoStorageFactory(request, storage)
+    const photoStorage = await photoStorageFactory(request, storage, CONFIG.STORAGE)
     const photoLibrary = photoLibraryFactory(Photo, Album)
     const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(
         Album,

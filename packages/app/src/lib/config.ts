@@ -7,6 +7,13 @@ export const DEFAULT_CONFIG = {
         HOST: 'localhost',
         PORT: '5432',
     },
+    STORAGE: {
+        PROVIDER: 'amazon',
+        KEY: '',
+        KEY_ID: '',
+        REGION: '',
+        BUCKET_NAME: 'orderify-test-images',
+    },
     SEQUELIZE: {
         SYNC_SCHEMAS: '1',
         DROP_ON_SYNC: '',

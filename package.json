@@ -9,8 +9,6 @@
     "packages/*"
   ],
   "scripts": {
-    "setup_storage": "rm -Rf storage; mkdir storage",
-    "prestart": "yarn setup_storage",
     "lint": "tslint 'packages/**/*.ts'",
     "lint_fix": "tslint 'packages/**/*.ts' --fix",
     "start": "ts-node packages/app/src/server.ts"

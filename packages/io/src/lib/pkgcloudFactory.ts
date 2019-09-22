@@ -1,16 +1,21 @@
-import pkgcloudlocal from 'filesystem-storage-pkgcloud'
 import pkgcloud, { storage } from 'pkgcloud'
 
-export function pkgcloudFactory() {
-    (pkgcloud as any).providers.filesystem = {};
-    (pkgcloud as any).providers.filesystem.storage = pkgcloudlocal
-
+export function pkgcloudFactory(CONFIG: IStorageConfig) {
     const storageClient = pkgcloud.storage.createClient({
-        provider: 'filesystem',
-        root: './storage',
-    } as any)
+        provider: CONFIG.PROVIDER as any,
+        key: CONFIG.KEY,
+        keyId: CONFIG.KEY_ID,
+        region: CONFIG.REGION,
+    })
 
     return storageClient
 }
 
 export type IStorageClient = storage.Client
+
+interface IStorageConfig {
+    PROVIDER: string
+    KEY: string
+    KEY_ID: string
+    REGION: string
+}
