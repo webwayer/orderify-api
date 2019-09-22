@@ -1,8 +1,8 @@
-import { IMetadataStatic, facebookGraphFactory } from '@orderify/facebook'
+import { facebookGraphFactory } from './facebookGraphFactory'
+import { IMetadataStatic } from '@orderify/metadata'
 
-import { IAlbumStatic } from './Album'
-import { IPhotoStatic } from './Photo'
-import { photoStorageFactory } from './photoStorage'
+import { IAlbumStatic, IPhotoStatic, photoStorageFactory } from '@orderify/photo_library'
+import { IRequest } from '@orderify/io'
 
 export function photoLibraryOnFacebookFactory(
     Album: IAlbumStatic,
@@ -71,7 +71,6 @@ export function photoLibraryOnFacebookFactory(
             }
         }))
 
-        // Should be awaited some time
         await Promise.all(ourPhotos.map((ourPhoto) => photoStorage.uploadFromUrl(ourPhoto.id, ourPhoto.link)))
     }
 

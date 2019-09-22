@@ -5,20 +5,18 @@ import {
     GraphQLObjectType,
 } from 'graphql'
 
-import { pkgcloudFactory, sequelizeFactory, requestPromiseFactory } from '@orderify/io'
-import { MetadataFactory, facebookGraphFactory, facebookOauthFactory } from '@orderify/facebook'
+import { sequelizeFactory, requestPromiseFactory } from '@orderify/io'
+import { facebookGraphFactory, facebookOauthFactory, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook'
+import { MetadataFactory } from '@orderify/metadata'
 import {
     AlbumFactory,
     PhotoFactory,
-    photoLibraryFactory,
-    photoLibraryOnFacebookFactory,
     photoStorageFactory,
     PhotoLibraryInterfaceFactory,
 } from '@orderify/photo_library'
-import { UserFactory, userFacebookFactory, UserInterfaceFactory, AccessTokenFactory } from '@orderify/user'
+import { UserFactory, UserInterfaceFactory, AccessTokenFactory } from '@orderify/user'
 
 import { authenticatedRouterFactory } from './routers/stateful/authenticated'
-import { photosRouterFactory } from './routers/stateful/authenticated/photos'
 import { facebookLoginRouterFactory } from './routers/stateful/facebook'
 
 import { IAppConfig } from './config'
@@ -26,7 +24,6 @@ import { IAppConfig } from './config'
 export async function appFactory(CONFIG: IAppConfig) {
     const request = requestPromiseFactory()
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
-    const storage = pkgcloudFactory(CONFIG.STORAGE)
 
     const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, ...CONFIG.API })
     const facebookGraph = facebookGraphFactory(request)
@@ -34,8 +31,7 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
     const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
-    const photoStorage = await photoStorageFactory(request, storage, CONFIG.STORAGE)
-    const photoLibrary = photoLibraryFactory(Photo, Album)
+    const photoStorage = await photoStorageFactory(request, { ...CONFIG.STORAGE, ...CONFIG.AWS })
     const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(
         Album,
         Photo,
@@ -57,7 +53,6 @@ export async function appFactory(CONFIG: IAppConfig) {
         AccessToken,
     )
     const authenticatedRouter = authenticatedRouterFactory(Router(), CONFIG.WEB, AccessToken)
-    const photosRouter = photosRouterFactory(Router(), photoStorage, photoLibrary)
 
     const userInterface = UserInterfaceFactory(User)
     const photoLibraryInterface = PhotoLibraryInterfaceFactory(Album, Photo)
@@ -78,7 +73,6 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     router.use(facebookLoginRouter)
     router.use(authenticatedRouter)
-    router.use(photosRouter)
 
     router.use('/', graphqlHTTP({
         schema: AppSchema,

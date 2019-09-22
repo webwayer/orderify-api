@@ -1,5 +1,5 @@
 {
-    "name": "@orderify/photo_library",
+    "name": "@orderify/metadata",
     "version": "0.0.0",
     "main": "src/index",
     "dependencies": {

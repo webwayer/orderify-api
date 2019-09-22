@@ -1,5 +1,6 @@
-import { IMetadataStatic, facebookGraphFactory } from '@orderify/facebook'
-import { IUserStatic } from './User'
+import { facebookGraphFactory } from './facebookGraphFactory'
+import { IMetadataStatic } from '@orderify/metadata'
+import { IUserStatic } from '@orderify/user'
 
 export function userFacebookFactory(
     User: IUserStatic,

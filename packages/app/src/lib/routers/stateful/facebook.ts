@@ -1,8 +1,7 @@
 import { Router } from 'express'
 
-import { facebookOauthFactory } from '@orderify/facebook'
-import { photoLibraryOnFacebookFactory } from '@orderify/photo_library'
-import { userFacebookFactory, IAccessTokenStatic, createToken } from '@orderify/user'
+import { facebookOauthFactory, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook'
+import { IAccessTokenStatic, createToken } from '@orderify/user'
 
 export function facebookLoginRouterFactory(
     router: Router,

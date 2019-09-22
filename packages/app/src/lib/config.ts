@@ -14,6 +14,9 @@ export const DEFAULT_CONFIG = {
         REGION: '',
         BUCKET_NAME: 'orderify-test-images',
     },
+    AWS: {
+        API_GATEWAY_KEY: '',
+    },
     SEQUELIZE: {
         SYNC_SCHEMAS: '1',
         DROP_ON_SYNC: '',
