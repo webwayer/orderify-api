@@ -1,9 +1,8 @@
-import { randomBytes } from 'crypto'
 import { Router } from 'express'
 
 import { facebookOauthFactory } from '@orderify/facebook'
 import { photoLibraryOnFacebookFactory } from '@orderify/photo_library'
-import { userFacebookFactory } from '@orderify/user'
+import { userFacebookFactory, IAccessTokenStatic, createToken } from '@orderify/user'
 
 export function facebookLoginRouterFactory(
     router: Router,
@@ -11,15 +10,12 @@ export function facebookLoginRouterFactory(
     userFacebook: ReturnType<typeof userFacebookFactory>,
     facebookOauth: ReturnType<typeof facebookOauthFactory>,
     photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>,
+    AccessToken: IAccessTokenStatic,
 ) {
     router.get('/login/facebook', async (req, res) => {
-        const csrf_token = await cryptoRandomBytes(128)
-
-        req.session.facebook_login_csrf_token = csrf_token
 
         const queryParams = {
             scope: 'email,user_photos',
-            state: csrf_token,
             response_type: 'code,granted_scopes',
         }
 
@@ -31,7 +27,7 @@ export function facebookLoginRouterFactory(
     router.get(`/${CONFIG.REDIRECT_PATH}`, async (req, res) => {
         const { code, granted_scopes, denied_scopes, state, error_reason, error, error_description } = req.query
 
-        if (!error && state === req.session.facebook_login_csrf_token) {
+        if (code) {
             const { access_token, expires_in, token_type } = await facebookOauth.exchangeCodeForAcessToken(code)
 
             const accessData = {
@@ -52,27 +48,13 @@ export function facebookLoginRouterFactory(
                     await userFacebook.updateMetadata(user.id, accessData)
                 }
 
-                await new Promise((resolve, reject) => {
-                    req.session.regenerate((err) => err ? reject(err) : resolve())
-                })
-
-                req.session.userId = user.id
+                res.redirect(`/login?token=${createToken({
+                    id: 1,
+                    uid: user.id,
+                })}`)
             }
         }
-
-        res.redirect('/photos')
     })
 
     return router
-}
-
-async function cryptoRandomBytes(num: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-        randomBytes(num, (err, buffer) => {
-            if (err) {
-                reject(err)
-            }
-            resolve(buffer.toString('hex'))
-        })
-    })
 }

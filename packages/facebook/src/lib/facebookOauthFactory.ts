@@ -12,7 +12,7 @@ export function facebookOauthFactory(requestPromise: IRequest, CONFIG: IApiConfi
     interface IGenerateStartOauthUrlQueryParams {
         response_type: string
         scope: string
-        state: string
+        state?: string
     }
 
     async function exchangeCodeForAcessToken(code: string): Promise<IExchangeCodeForAcessTokenReturnObject> {

@@ -18,10 +18,6 @@ export const DEFAULT_CONFIG = {
         SYNC_SCHEMAS: '1',
         DROP_ON_SYNC: '',
     },
-    SESSION: {
-        SIGNING_SECRET: 'something',
-        HTTPS_ONLY_COOKIES: '1',
-    },
     FACEBOOK: {
         CLIENT_ID: '',
         CLIENT_SECRET: '',
