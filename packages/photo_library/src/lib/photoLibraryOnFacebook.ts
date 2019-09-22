@@ -1,7 +1,7 @@
 import { IMetadataStatic, facebookGraphFactory } from '@orderify/facebook'
 
-import { IAlbumStatic } from './_/Album'
-import { IPhotoStatic } from './_/Photo'
+import { IAlbumStatic } from './Album'
+import { IPhotoStatic } from './Photo'
 import { photoStorageFactory } from './photoStorage'
 
 export function photoLibraryOnFacebookFactory(

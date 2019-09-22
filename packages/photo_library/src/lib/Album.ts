@@ -30,5 +30,5 @@ export async function AlbumFactory(
 export type IAlbumStatic = ISSStatic<IAlbumProps>
 interface IAlbumProps {
     userId: number
-    name: string
+    name?: string
 }

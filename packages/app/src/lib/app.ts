@@ -1,11 +1,25 @@
 import express, { Router } from 'express'
 import graphqlHTTP from 'express-graphql'
-import { GraphQLList, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from 'graphql'
+import {
+    GraphQLList,
+    GraphQLSchema,
+    GraphQLObjectType,
+    GraphQLString,
+    GraphQLInt,
+    GraphQLNonNull,
+} from 'graphql'
 
 import { pkgcloudFactory, sequelizeFactory, sequelizeSessionStoreFactory, requestPromiseFactory } from '@orderify/io'
 import { MetadataFactory, facebookGraphFactory, facebookOauthFactory } from '@orderify/facebook'
-import { AlbumFactory, PhotoFactory, photoLibraryFactory, photoLibraryOnFacebookFactory, photoStorageFactory } from '@orderify/photo_library'
-import { UserFactory, userFacebookFactory } from '@orderify/user'
+import {
+    AlbumFactory,
+    PhotoFactory,
+    photoLibraryFactory,
+    photoLibraryOnFacebookFactory,
+    photoStorageFactory,
+    PhotoLibraryInterfaceFactory
+} from '@orderify/photo_library'
+import { UserFactory, userFacebookFactory, UserInterfaceFactory } from '@orderify/user'
 
 import { statefulRouterFactory } from './routers/stateful'
 import { authenticatedRouterFactory } from './routers/stateful/authenticated'
@@ -50,27 +64,16 @@ export async function appFactory(CONFIG: IAppConfig) {
     const authenticatedRouter = authenticatedRouterFactory(Router(), CONFIG.WEB)
     const photosRouter = photosRouterFactory(Router(), photoStorage, photoLibrary)
 
-    const router = Router()
+    const userInterface = UserInterfaceFactory(User)
+    const photoLibraryInterface = PhotoLibraryInterfaceFactory(Album, Photo)
 
-    const UserType = new GraphQLObjectType({
-        name: 'User',
-        fields: () => ({
-            id: { type: new GraphQLNonNull(GraphQLInt) },
-            email: { type: new GraphQLNonNull(GraphQLString) },
-            name: { type: new GraphQLNonNull(GraphQLString) },
-        }),
-    })
+    const router = Router()
 
     const QueryRootType = new GraphQLObjectType({
         name: 'App',
         fields: () => ({
-            users: {
-                type: new GraphQLList(UserType),
-                description: 'List of all Users',
-                async resolve() {
-                    return User.findAll({ where: {} })
-                },
-            },
+            ...userInterface,
+            ...photoLibraryInterface,
         }),
     })
 
@@ -78,22 +81,16 @@ export async function appFactory(CONFIG: IAppConfig) {
         query: QueryRootType,
     })
 
-    const rootValue = {
-        hello: () => {
-            return 'Hello world!'
-        },
-    }
-
-    router.use('/graphql', graphqlHTTP({
-        schema: AppSchema,
-        rootValue,
-        graphiql: true,
-    }))
-
     router.use(statefulRouter)
     router.use(facebookLoginRouter)
     router.use(authenticatedRouter)
     router.use(photosRouter)
+
+    router.use('/', graphqlHTTP({
+        schema: AppSchema,
+        rootValue: {},
+        graphiql: true,
+    }))
 
     const app = express()
 

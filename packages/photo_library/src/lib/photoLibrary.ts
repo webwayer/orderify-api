@@ -1,5 +1,5 @@
-import { IAlbumStatic } from './_/Album'
-import { IPhotoStatic } from './_/Photo'
+import { IAlbumStatic } from './Album'
+import { IPhotoStatic } from './Photo'
 
 export function photoLibraryFactory(Photo: IPhotoStatic, Album: IAlbumStatic) {
     async function getPhotoById(id: number, userId: number) {
