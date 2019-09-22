@@ -16,8 +16,8 @@ import {
 } from '@orderify/photo_library'
 import { UserFactory, UserInterfaceFactory, AccessTokenFactory } from '@orderify/user'
 
-import { authenticatedRouterFactory } from './routers/stateful/authenticated'
-import { facebookLoginRouterFactory } from './routers/stateful/facebook'
+import { authenticatedRouterFactory } from './authGuardRouter'
+import { facebookLoginRouterFactory } from './facebookRouter'
 
 import { IAppConfig } from './config'
 
@@ -31,7 +31,7 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
     const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
-    const photoStorage = await photoStorageFactory(request, { ...CONFIG.STORAGE, ...CONFIG.AWS })
+    const photoStorage = await photoStorageFactory(request, CONFIG.AWS)
     const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(
         Album,
         Photo,

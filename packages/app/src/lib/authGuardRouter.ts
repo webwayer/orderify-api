@@ -16,11 +16,20 @@ export function authenticatedRouterFactory(
             const tokenRaw = authHeader[1]
             const token = verifyToken(tokenRaw)
 
-            // tslint:disable-next-line: no-string-literal
-            req['userId'] = token.uid
-            return next()
+            AccessToken.findByPk(token.id).then((accessToken) => {
+                if (accessToken) {
+                    // tslint:disable-next-line: no-string-literal
+                    req['userId'] = token.uid
+                    next()
+                } else {
+                    res.redirect('/login')
+                }
+            }).catch((err) => {
+                next(err)
+            })
+        } else {
+            res.redirect('/login')
         }
-        res.redirect('/login')
     })
 
     return router
