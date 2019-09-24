@@ -31,7 +31,7 @@ export function UserInterfaceFactory(
             },
             async resolve(_, where, req) {
                 // tslint:disable-next-line: curly
-                if (where.userId === 'me') where.userId = req.userId
+                if (where.id === 'me') where.userId = req.userId
 
                 return User.findAll({ where })
             },

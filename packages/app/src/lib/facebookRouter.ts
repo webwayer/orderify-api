@@ -58,7 +58,6 @@ export function facebookLoginRouterFactory(
                     })
 
                     res.redirect(`/?token=${tokenRaw}`)
-                    // res.end()
                 }
             }
         } catch (err) {
