@@ -3,7 +3,7 @@ import graphqlHTTP from 'express-graphql'
 import {
     GraphQLSchema,
     GraphQLObjectType,
-    GraphQLScalarType,
+    GraphQLString,
 } from 'graphql'
 
 import { sequelizeFactory, requestPromiseFactory } from '@orderify/io'
@@ -16,6 +16,7 @@ import {
     PhotoLibraryInterfaceFactory,
 } from '@orderify/photo_library'
 import { UserFactory, UserInterfaceFactory, AccessTokenFactory } from '@orderify/user'
+import { CampaignFactory, ComparisonFactory, CampaignInterfaceFactory } from '@orderify/campaign'
 
 import { authenticatedRouterFactory } from './authGuardRouter'
 import { facebookLoginRouterFactory } from './facebookRouter'
@@ -55,21 +56,34 @@ export async function appFactory(CONFIG: IAppConfig) {
     )
     const authenticatedRouter = authenticatedRouterFactory(Router(), AccessToken)
 
+    const Campaign = await CampaignFactory(sequelize, CONFIG.SEQUELIZE)
+    const Comparison = await ComparisonFactory(sequelize, CONFIG.SEQUELIZE)
+
+    const campaignInterface = CampaignInterfaceFactory(Comparison, Campaign)
     const userInterface = UserInterfaceFactory(User)
     const photoLibraryInterface = PhotoLibraryInterfaceFactory(Album, Photo, photoStorage)
 
     const router = Router()
 
     const QueryRootType = new GraphQLObjectType({
-        name: 'App',
+        name: 'Query',
         fields: () => ({
             ...userInterface,
             ...photoLibraryInterface,
+            ...campaignInterface.query,
+        }),
+    })
+
+    const MutationRootType = new GraphQLObjectType({
+        name: 'Mutation',
+        fields: () => ({
+            ...campaignInterface.mutation,
         }),
     })
 
     const AppSchema = new GraphQLSchema({
         query: QueryRootType,
+        mutation: MutationRootType,
     })
 
     router.use(facebookLoginRouter)
