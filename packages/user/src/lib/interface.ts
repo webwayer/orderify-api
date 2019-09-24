@@ -15,7 +15,7 @@ export function UserInterfaceFactory(
     const UserType = new GraphQLObjectType({
         name: 'User',
         fields: () => ({
-            id: { type: new GraphQLNonNull(GraphQLInt) },
+            id: { type: new GraphQLNonNull(GraphQLString) },
             email: { type: new GraphQLNonNull(GraphQLString) },
             name: { type: new GraphQLNonNull(GraphQLString) },
         }),
@@ -26,10 +26,13 @@ export function UserInterfaceFactory(
             type: new GraphQLList(UserType),
             args: {
                 id: {
-                    type: new GraphQLNonNull(GraphQLInt),
+                    type: new GraphQLNonNull(GraphQLString),
                 },
             },
-            async resolve(_, where) {
+            async resolve(_, where, req) {
+                // tslint:disable-next-line: curly
+                if (where.userId === 'me') where.userId = req.userId
+
                 return User.findAll({ where })
             },
         },

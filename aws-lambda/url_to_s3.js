@@ -9,7 +9,8 @@ exports.handler = (event, context, callback) => {
         s3.upload({
             Bucket: process.env.BUCKET_NAME || event.queryStringParameters.Bucket,
             Key: event.queryStringParameters.Key,
-            Body: res
+            Body: res,
+            ContentType: event.queryStringParameters.ContentType,
         }, (err2, result) => {
             if (err2) { return callback(err2) }
 

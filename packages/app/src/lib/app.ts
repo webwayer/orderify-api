@@ -3,6 +3,7 @@ import graphqlHTTP from 'express-graphql'
 import {
     GraphQLSchema,
     GraphQLObjectType,
+    GraphQLScalarType,
 } from 'graphql'
 
 import { sequelizeFactory, requestPromiseFactory } from '@orderify/io'
@@ -55,7 +56,7 @@ export async function appFactory(CONFIG: IAppConfig) {
     const authenticatedRouter = authenticatedRouterFactory(Router(), AccessToken)
 
     const userInterface = UserInterfaceFactory(User)
-    const photoLibraryInterface = PhotoLibraryInterfaceFactory(Album, Photo)
+    const photoLibraryInterface = PhotoLibraryInterfaceFactory(Album, Photo, photoStorage)
 
     const router = Router()
 
@@ -76,9 +77,6 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     router.use('/', graphqlHTTP({
         schema: AppSchema,
-        rootValue: {
-            hello : 'world',
-        },
         graphiql: true,
     }))
 

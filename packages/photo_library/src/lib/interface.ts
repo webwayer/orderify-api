@@ -9,16 +9,18 @@ import {
 
 import { IPhotoStatic } from './Photo'
 import { IAlbumStatic } from './Album'
+import { IImageStorage } from './photoStorage'
 
 export function PhotoLibraryInterfaceFactory(
     Album: IAlbumStatic,
     Photo: IPhotoStatic,
+    imageStorage: IImageStorage,
 ) {
     const AlbumType = new GraphQLObjectType({
         name: 'Album',
         fields: () => ({
-            id: { type: new GraphQLNonNull(GraphQLInt) },
-            userId: { type: new GraphQLNonNull(GraphQLInt) },
+            id: { type: new GraphQLNonNull(GraphQLString) },
+            userId: { type: new GraphQLNonNull(GraphQLString) },
             name: { type: GraphQLString },
         }),
     })
@@ -26,14 +28,15 @@ export function PhotoLibraryInterfaceFactory(
     const PhotoType = new GraphQLObjectType({
         name: 'Photo',
         fields: () => ({
-            id: { type: new GraphQLNonNull(GraphQLInt) },
-            userId: { type: new GraphQLNonNull(GraphQLInt) },
-            albumId: { type: new GraphQLNonNull(GraphQLInt) },
-            width: { type: new GraphQLNonNull(GraphQLInt) },
-            height: { type: new GraphQLNonNull(GraphQLInt) },
-            name: { type: GraphQLString },
-            alt_text: { type: GraphQLString },
-            link: { type: new GraphQLNonNull(GraphQLString) },
+            id: { type: new GraphQLNonNull(GraphQLString) },
+            userId: { type: new GraphQLNonNull(GraphQLString) },
+            albumId: { type: new GraphQLNonNull(GraphQLString) },
+            link: {
+                type: new GraphQLNonNull(GraphQLString),
+                resolve: (source) => {
+                    return imageStorage.getPresignedImageUrl(source.id)
+                },
+            },
         }),
     })
 
@@ -42,13 +45,16 @@ export function PhotoLibraryInterfaceFactory(
             type: new GraphQLList(AlbumType),
             args: {
                 id: {
-                    type: GraphQLInt,
+                    type: GraphQLString,
                 },
                 userId: {
-                    type: new GraphQLNonNull(GraphQLInt),
+                    type: new GraphQLNonNull(GraphQLString),
                 },
             },
-            async resolve(_, where) {
+            async resolve(_, where, req) {
+                // tslint:disable-next-line: curly
+                if (where.userId === 'me') where.userId = req.userId
+
                 return Album.findAll({ where })
             },
         },
@@ -56,13 +62,16 @@ export function PhotoLibraryInterfaceFactory(
             type: new GraphQLList(PhotoType),
             args: {
                 id: {
-                    type: GraphQLInt,
+                    type: GraphQLString,
                 },
                 userId: {
-                    type: new GraphQLNonNull(GraphQLInt),
+                    type: new GraphQLNonNull(GraphQLString),
                 },
             },
-            async resolve(_, where) {
+            async resolve(_, where, req) {
+                // tslint:disable-next-line: curly
+                if (where.userId === 'me') where.userId = req.userId
+
                 return Photo.findAll({ where })
             },
         },

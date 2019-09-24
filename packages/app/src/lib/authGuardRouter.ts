@@ -24,6 +24,9 @@ export function authenticatedRouterFactory(
 
                 const accessToken = AccessToken.findByPk(token.id)
                 if (accessToken) {
+                    // tslint:disable-next-line: no-string-literal
+                    req['userId'] = token.uid
+
                     next()
                 } else {
                     throw new Error('accessToken doesnt exist in database')
