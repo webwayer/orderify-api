@@ -76,13 +76,21 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     router.use('/', graphqlHTTP({
         schema: AppSchema,
-        rootValue: {},
+        rootValue: {
+            hello : 'world',
+        },
         graphiql: true,
     }))
 
     const app = express()
 
     app.use(router)
+
+    app.use((err, req, res, next) => {
+        // tslint:disable-next-line: no-console
+        console.error(err.stack)
+        res.status(500).end()
+    })
 
     return app
 }

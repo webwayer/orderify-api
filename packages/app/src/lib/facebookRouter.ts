@@ -13,18 +13,16 @@ export function facebookLoginRouterFactory(
     AccessToken: IAccessTokenStatic,
 ) {
     router.get('/login/facebook', (req, res) => {
-        const queryParams = {
+        const facebookLoginUrl = facebookOauth.generateStartOauthUrl({
             scope: 'email,user_photos',
             response_type: 'code,granted_scopes',
-        }
-
-        const facebookLoginUrl = facebookOauth.generateStartOauthUrl(queryParams)
+        })
 
         res.redirect(facebookLoginUrl)
     })
 
-    router.get(`/${CONFIG.REDIRECT_PATH}`, (req, res) => {
-        (async () => {
+    router.get(`/${CONFIG.REDIRECT_PATH}`, async (req, res, next) => {
+        try {
             const { code, granted_scopes, denied_scopes, state, error_reason, error, error_description } = req.query
 
             if (code) {
@@ -59,16 +57,13 @@ export function facebookLoginRouterFactory(
                         uid: user.id,
                     })
 
-                    return tokenRaw
+                    res.redirect(`/?token=${tokenRaw}`)
+                    // res.end()
                 }
             }
-        })().then((tokenRaw) => {
-            console.log(1)
-            res.redirect(`/login?token=${tokenRaw}`)
-        }).catch((err) => {
-            console.log(2)
-            throw err
-        })
+        } catch (err) {
+            next(err)
+        }
     })
 
     return router
