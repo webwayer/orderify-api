@@ -52,7 +52,7 @@ export async function appFactory(CONFIG: IAppConfig) {
         photoLibraryOnFacebook,
         AccessToken,
     )
-    const authenticatedRouter = authenticatedRouterFactory(Router(), CONFIG.WEB, AccessToken)
+    const authenticatedRouter = authenticatedRouterFactory(Router(), AccessToken)
 
     const userInterface = UserInterfaceFactory(User)
     const photoLibraryInterface = PhotoLibraryInterfaceFactory(Album, Photo)

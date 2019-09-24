@@ -7,6 +7,10 @@ export async function UserFactory(
     class User extends SequelizeModel { }
 
     User.init({
+        id: {
+            type: SequelizeDataTypes.STRING(32),
+            primaryKey: true,
+        },
         name: {
             type: SequelizeDataTypes.STRING(128),
             allowNull: false,
@@ -29,6 +33,7 @@ export async function UserFactory(
 
 export type IUserStatic = ISSStatic<IUserProps>
 interface IUserProps {
+    id: string
     email: string
     name: string
 }

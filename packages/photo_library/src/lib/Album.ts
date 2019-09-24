@@ -7,8 +7,12 @@ export async function AlbumFactory(
     class Album extends SequelizeModel { }
 
     Album.init({
+        id: {
+            type: SequelizeDataTypes.STRING(32),
+            primaryKey: true,
+        },
         userId: {
-            type: SequelizeDataTypes.INTEGER.UNSIGNED,
+            type: SequelizeDataTypes.STRING(32),
             allowNull: false,
         },
         name: {
@@ -29,6 +33,7 @@ export async function AlbumFactory(
 
 export type IAlbumStatic = ISSStatic<IAlbumProps>
 interface IAlbumProps {
-    userId: number
+    id: string
+    userId: string
     name?: string
 }

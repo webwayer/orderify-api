@@ -1,13 +1,14 @@
 import { Router } from 'express'
 
-import { facebookOauthFactory, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook'
+import { IFacebookOauth, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook'
 import { IAccessTokenStatic, createToken } from '@orderify/user'
+import { newId } from '@orderify/io'
 
 export function facebookLoginRouterFactory(
     router: Router,
     CONFIG: { REDIRECT_PATH: string },
     userFacebook: ReturnType<typeof userFacebookFactory>,
-    facebookOauth: ReturnType<typeof facebookOauthFactory>,
+    facebookOauth: IFacebookOauth,
     photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>,
     AccessToken: IAccessTokenStatic,
 ) {
@@ -47,11 +48,14 @@ export function facebookLoginRouterFactory(
                         await userFacebook.updateMetadata(user.id, accessData)
                     }
 
+                    const accessTokenId = newId()
+
                     await AccessToken.create({
+                        id: accessTokenId,
                         userId: user.id,
                     })
                     const tokenRaw = createToken({
-                        id: 1,
+                        id: accessTokenId,
                         uid: user.id,
                     })
 
@@ -59,8 +63,10 @@ export function facebookLoginRouterFactory(
                 }
             }
         })().then((tokenRaw) => {
+            console.log(1)
             res.redirect(`/login?token=${tokenRaw}`)
         }).catch((err) => {
+            console.log(2)
             throw err
         })
     })

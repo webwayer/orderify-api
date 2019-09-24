@@ -1,6 +1,7 @@
 import { facebookGraphFactory } from './facebookGraphFactory'
 import { IMetadataStatic } from '@orderify/metadata'
 import { IUserStatic } from '@orderify/user'
+import { newId } from '@orderify/io'
 
 export function userFacebookFactory(
     User: IUserStatic,
@@ -23,11 +24,13 @@ export function userFacebookFactory(
         })
 
         const user = await User.create({
+            id: newId(),
             email: facebookUserProfile.email,
             name: facebookUserProfile.short_name,
         })
 
         await Metadata.create({
+            id: newId(),
             sourceId: user.id,
             sourceType: 'FACEBOOK.USER',
             data: {
@@ -39,7 +42,7 @@ export function userFacebookFactory(
         return user.toJSON()
     }
 
-    async function updateMetadata(userId: number, accessData: IFacebookAccessData) {
+    async function updateMetadata(userId: string, accessData: IFacebookAccessData) {
         const facebookUserProfile = await facebookGraph.makeRequest(accessData.access_token, 'me', '', {
             fields: 'email,id,first_name,last_name,middle_name,name,name_format,picture,short_name',
         })

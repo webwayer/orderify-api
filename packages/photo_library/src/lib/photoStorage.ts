@@ -1,4 +1,6 @@
 import { IRequest } from '@orderify/io'
+// tslint:disable-next-line: no-submodule-imports
+import S3 from 'aws-sdk/clients/s3'
 
 export function photoStorageFactory(request: IRequest, CONFIG: { BUCKET_NAME: string, API_GATEWAY_KEY: string }) {
     async function uploadFromUrl(id: number, url: string) {
@@ -6,7 +8,7 @@ export function photoStorageFactory(request: IRequest, CONFIG: { BUCKET_NAME: st
             method: 'GET',
             uri: 'https://etswpy5xvl.execute-api.eu-central-1.amazonaws.com/default/url_to_s3',
             qs: {
-                Key: id,
+                Key: id.toString(),
                 Url: url,
                 Bucket: CONFIG.BUCKET_NAME,
             },
@@ -16,7 +18,24 @@ export function photoStorageFactory(request: IRequest, CONFIG: { BUCKET_NAME: st
         })
     }
 
+    async function getPresignedImageUrl(id: number) {
+        const s3 = new S3({
+            signatureVersion: 'v4',
+            region: 'eu-central-1',
+        })
+        const url = await s3.getSignedUrlPromise('getObject', {
+            Key: id.toString(),
+            Bucket: CONFIG.BUCKET_NAME,
+            // Expires: new Date().setDate(new Date().getDate() + 2),
+        })
+
+        return url
+    }
+
     return {
         uploadFromUrl,
+        getPresignedImageUrl,
     }
 }
+
+export type IImageStorage = ReturnType<typeof photoStorageFactory>

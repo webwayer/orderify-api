@@ -9,6 +9,6 @@ export function createToken(token: IJWTToken) {
 }
 
 interface IJWTToken {
-    id: number
-    uid: number
+    id: string
+    uid: string
 }

@@ -7,8 +7,12 @@ export async function MetadataFactory(
     class Metadata extends SequelizeModel { }
 
     Metadata.init({
+        id: {
+            type: SequelizeDataTypes.STRING(32),
+            primaryKey: true,
+        },
         sourceId: {
-            type: SequelizeDataTypes.INTEGER.UNSIGNED,
+            type: SequelizeDataTypes.STRING(32),
             allowNull: false,
         },
         sourceType: {
@@ -33,7 +37,8 @@ export async function MetadataFactory(
 
 export type IMetadataStatic = ISSStatic<IMetadataProps>
 interface IMetadataProps {
-    sourceId: number
+    id: string
+    sourceId: string
     sourceType: string
     data: any
 }

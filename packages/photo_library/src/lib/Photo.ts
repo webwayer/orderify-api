@@ -7,32 +7,16 @@ export async function PhotoFactory(
     class Photo extends SequelizeModel { }
 
     Photo.init({
-        width: {
-            type: SequelizeDataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
-        },
-        height: {
-            type: SequelizeDataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
-        },
-        name: {
-            type: SequelizeDataTypes.STRING(128),
-            allowNull: true,
-        },
-        alt_text: {
-            type: SequelizeDataTypes.STRING(512),
-            allowNull: true,
-        },
-        link: {
-            type: SequelizeDataTypes.STRING(256),
-            allowNull: false,
+        id: {
+            type: SequelizeDataTypes.STRING(32),
+            primaryKey: true,
         },
         albumId: {
-            type: SequelizeDataTypes.INTEGER.UNSIGNED,
+            type: SequelizeDataTypes.STRING(32),
             allowNull: false,
         },
         userId: {
-            type: SequelizeDataTypes.INTEGER.UNSIGNED,
+            type: SequelizeDataTypes.STRING(32),
             allowNull: false,
         },
     }, {
@@ -49,11 +33,7 @@ export async function PhotoFactory(
 
 export type IPhotoStatic = ISSStatic<IPhotoProps>
 interface IPhotoProps {
-    albumId: number
-    alt_text?: string
-    height: number
-    link: string
-    name?: string
-    userId: number
-    width: number
+    id: string
+    albumId: string
+    userId: string
 }

@@ -7,8 +7,12 @@ export async function AccessTokenFactory(
     class AccessToken extends SequelizeModel { }
 
     AccessToken.init({
+        id: {
+            type: SequelizeDataTypes.STRING(32),
+            primaryKey: true,
+        },
         userId: {
-            type: SequelizeDataTypes.INTEGER.UNSIGNED,
+            type: SequelizeDataTypes.STRING(32),
             allowNull: false,
         },
     }, {
@@ -25,5 +29,6 @@ export async function AccessTokenFactory(
 
 export type IAccessTokenStatic = ISSStatic<IAccessTokenProps>
 interface IAccessTokenProps {
-    userId: number
+    id: string
+    userId: string
 }

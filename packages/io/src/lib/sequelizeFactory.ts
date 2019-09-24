@@ -1,4 +1,5 @@
 import { Dialect, Sequelize, Model, DataTypes } from 'sequelize'
+import shortUuid from 'short-uuid'
 
 export function sequelizeFactory(CONFIG: IDatabaseConfig) {
     return new Sequelize(
@@ -9,6 +10,10 @@ export function sequelizeFactory(CONFIG: IDatabaseConfig) {
         host: CONFIG.HOST,
         port: parseInt(CONFIG.PORT, 10),
     })
+}
+
+export function newId() {
+    return shortUuid().generate()
 }
 
 export { Model as SequelizeModel, DataTypes as SequelizeDataTypes, Sequelize as SequelizeType } from 'sequelize'
@@ -29,7 +34,7 @@ interface IDatabaseConfig {
 }
 
 export interface ISSStatic<I> {
-    findByPk(pk: number): Promise<ISSFullInstance<I>>
+    findByPk(pk: string): Promise<ISSFullInstance<I>>
     findAll(options: ISSFindOptions<ISSInstanceProps<I>>): Promise<Array<ISSFullInstance<I>>>
     findOne(options: ISSFindOptions<ISSInstanceProps<I>>): Promise<ISSFullInstance<I>>
     create(instance: I): Promise<ISSFullInstance<I>>
@@ -37,7 +42,6 @@ export interface ISSStatic<I> {
     bulkCreate(instances: I[]): Promise<Array<ISSFullInstance<I>>>
 }
 interface ISSDefaultProperties {
-    id: number
     updatedAt: Date
     createdAt: Date
 }

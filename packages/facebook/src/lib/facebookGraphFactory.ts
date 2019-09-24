@@ -24,3 +24,5 @@ export function facebookGraphFactory(request: IRequest) {
         makeRequest,
     }
 }
+
+export type IFacebookGraph = ReturnType<typeof facebookGraphFactory>
