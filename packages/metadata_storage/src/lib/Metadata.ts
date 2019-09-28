@@ -2,7 +2,7 @@ import { ISSStaticRead, ISSStaticWrite, ISSTimestampsParanoid } from '@orderify/
 import { Sequelize, DataTypes } from 'sequelize'
 import shortUUID from 'short-uuid'
 
-export async function MetadataFactory(
+export function MetadataFactory(
     sequelize: Sequelize,
 ) {
     const Metadata = sequelize.define('Metadata', {

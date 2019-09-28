@@ -3,7 +3,7 @@ import { ISSStaticRead, ISSStaticWrite, ISSTimestampsParanoid } from '@orderify/
 import { DataTypes, Sequelize } from 'sequelize'
 import shortUUID from 'short-uuid'
 
-export async function ComparisonFactory(
+export function ComparisonFactory(
     sequelize: Sequelize,
 ) {
     return sequelize.define('Comparison', {

@@ -6,7 +6,7 @@ import {
     GraphQLObjectType,
 } from 'graphql'
 
-import { sequelizeFactory } from '@orderify/io'
+import { sequelizeFactory, S3Factory } from '@orderify/io'
 import { facebookGraphFactory, facebookOauthFactory, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook_integration'
 import { MetadataFactory } from '@orderify/metadata_storage'
 import {
@@ -23,16 +23,17 @@ import { facebookLoginRouterFactory } from './facebookRouter'
 
 import { IAppConfig } from './config'
 
-export async function appFactory(CONFIG: IAppConfig) {
+export function appFactory(CONFIG: IAppConfig) {
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
+    const s3 = S3Factory(CONFIG.AWS)
 
     const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, ...CONFIG.API })
     const facebookGraph = facebookGraphFactory(request)
-    const Metadata = await MetadataFactory(sequelize)
+    const Metadata = MetadataFactory(sequelize)
 
-    const Album = await AlbumFactory(sequelize)
-    const Image = await ImageFactory(sequelize)
-    const imageStorage = await imageStorageFactory(request, CONFIG.AWS)
+    const Album = AlbumFactory(sequelize)
+    const Image = ImageFactory(sequelize)
+    const imageStorage = imageStorageFactory(request, s3, CONFIG.AWS)
     const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(
         Album,
         Image,
@@ -41,9 +42,9 @@ export async function appFactory(CONFIG: IAppConfig) {
         facebookGraph,
     )
 
-    const User = await UserFactory(sequelize)
-    const AccessToken = await AccessTokenFactory(sequelize)
-    const userFacebook = await userFacebookFactory(User, Metadata, facebookGraph)
+    const User = UserFactory(sequelize)
+    const AccessToken = AccessTokenFactory(sequelize)
+    const userFacebook = userFacebookFactory(User, Metadata, facebookGraph)
 
     const facebookLoginRouter = facebookLoginRouterFactory(
         Router(),
@@ -55,8 +56,8 @@ export async function appFactory(CONFIG: IAppConfig) {
     )
     const authenticatedRouter = authenticatedRouterFactory(Router(), AccessToken)
 
-    const Campaign = await CampaignFactory(sequelize)
-    const Comparison = await ComparisonFactory(sequelize)
+    const Campaign = CampaignFactory(sequelize)
+    const Comparison = ComparisonFactory(sequelize)
 
     const campaignInterface = CampaignInterfaceFactory(Comparison, Campaign)
     const userProfileReadGraphQL = UserProfileReadGraphQLFactory(User)

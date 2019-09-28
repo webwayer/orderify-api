@@ -7,7 +7,7 @@ import {
 
 import { IImageStaticRead } from './Image'
 import { IAlbumStaticRead } from './Album'
-import { IImageStorage } from './photoStorage'
+import { IImageStorage } from './imageStorage'
 
 export function ImageLibraryReadGraphQLFactory(
     Album: IAlbumStaticRead,

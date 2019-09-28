@@ -1,9 +1,9 @@
 import { RequestPromiseAPI } from 'request-promise'
-// tslint:disable-next-line: no-submodule-imports
-import S3 from 'aws-sdk/clients/s3'
+import AWS from 'aws-sdk'
 
 export function imageStorageFactory(
     request: RequestPromiseAPI,
+    s3: AWS.S3,
     CONFIG: { BUCKET_NAME: string, API_GATEWAY_KEY: string },
 ) {
     async function uploadFromUrl(id: string, url: string) {
@@ -23,10 +23,6 @@ export function imageStorageFactory(
     }
 
     async function getPresignedImageUrl(id: string) {
-        const s3 = new S3({
-            signatureVersion: 'v4',
-            region: 'eu-central-1',
-        })
         const url = await s3.getSignedUrlPromise('getObject', {
             Key: id.toString(),
             Bucket: CONFIG.BUCKET_NAME,

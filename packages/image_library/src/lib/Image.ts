@@ -2,7 +2,7 @@ import { ISSStaticRead, ISSStaticWrite, ISSTimestampsParanoid } from '@orderify/
 import { Sequelize, DataTypes } from 'sequelize'
 import shortUUID from 'short-uuid'
 
-export async function ImageFactory(
+export function ImageFactory(
     sequelize: Sequelize,
 ) {
     const Image = sequelize.define('Image', {

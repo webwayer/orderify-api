@@ -2,7 +2,7 @@ import { ISSStaticRead, ISSStaticWrite, ISSTimestamps } from '@orderify/io'
 import { Sequelize, DataTypes } from 'sequelize'
 import shortUUID from 'short-uuid'
 
-export async function AccessTokenFactory(
+export function AccessTokenFactory(
     sequelize: Sequelize,
 ) {
     const AccessToken = sequelize.define('AccessToken', {
