@@ -3,13 +3,11 @@ import { appFactory } from './lib/app'
 
 const config = updateConfig(DEFAULT_CONFIG, process.env)
 
-appFactory(config).then((app) => {
-    app.listen(config.API.PORT, (err) => {
-        if (err) {
-            throw err
-        }
-        // tslint:disable-next-line: no-console
-        console.log('ready')
-    })
+const app = appFactory(config)
+app.listen(config.API.PORT, (err) => {
+    if (err) {
+        throw err
+    }
     // tslint:disable-next-line: no-console
-}).catch(console.error)
+    console.log('ready')
+})

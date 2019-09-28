@@ -5,7 +5,7 @@ import { IAccessTokenStatic, createToken } from '@orderify/user_profile'
 
 export function facebookLoginRouterFactory(
     router: Router,
-    CONFIG: { REDIRECT_PATH: string },
+    CONFIG: { OAUTH_REDIRECT_PATH: string },
     userFacebook: ReturnType<typeof userFacebookFactory>,
     facebookOauth: IFacebookOauth,
     photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>,
@@ -20,7 +20,7 @@ export function facebookLoginRouterFactory(
         res.redirect(facebookLoginUrl)
     })
 
-    router.get(`/${CONFIG.REDIRECT_PATH}`, async (req, res, next) => {
+    router.get(`/${CONFIG.OAUTH_REDIRECT_PATH}`, async (req, res, next) => {
         try {
             const { code, granted_scopes, denied_scopes, state, error_reason, error, error_description } = req.query
 

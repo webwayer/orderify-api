@@ -23,7 +23,7 @@ export const DEFAULT_CONFIG = {
     FACEBOOK: {
         CLIENT_ID: '',
         CLIENT_SECRET: '',
-        REDIRECT_PATH: 'login/facebook/callback',
+        OAUTH_REDIRECT_PATH: 'login/facebook/callback',
     },
     API: {
         HOST: 'localhost',

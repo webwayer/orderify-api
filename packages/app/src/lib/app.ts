@@ -27,8 +27,10 @@ export function appFactory(CONFIG: IAppConfig) {
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
     const s3 = S3Factory(CONFIG.AWS)
 
-    const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, ...CONFIG.API })
+    const OAUTH_REDIRECT_URL = `${CONFIG.API.PROTOCOL}://${CONFIG.API.HOST}:${CONFIG.API.PORT}/${CONFIG.FACEBOOK.OAUTH_REDIRECT_PATH}`
+    const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
     const facebookGraph = facebookGraphFactory(request)
+
     const Metadata = MetadataFactory(sequelize)
 
     const Album = AlbumFactory(sequelize)

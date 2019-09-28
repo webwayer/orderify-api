@@ -1,13 +1,16 @@
 import { RequestPromiseAPI } from 'request-promise'
 
-export function facebookOauthFactory(requestPromise: RequestPromiseAPI, CONFIG: IApiConfig & IFacebookConfig) {
-    const redirect_uri = `${CONFIG.PROTOCOL}://${CONFIG.HOST}:${CONFIG.PORT}/${CONFIG.REDIRECT_PATH}`
+interface IFacebookConfig { CLIENT_ID: string; CLIENT_SECRET: string }
 
+export function facebookOauthFactory(
+    requestPromise: RequestPromiseAPI,
+    CONFIG: IFacebookConfig & { OAUTH_REDIRECT_URL: string },
+) {
     function generateStartOauthUrl(queryParams: IGenerateStartOauthUrlQueryParams): string {
         const query = Object.entries({
             ...queryParams,
             client_id: CONFIG.CLIENT_ID,
-            redirect_uri,
+            redirect_uri: CONFIG.OAUTH_REDIRECT_URL,
         }).map(([key, value]) => `${key}=${value}`).join('&')
 
         return `https://www.facebook.com/v4.0/dialog/oauth?${query}`
@@ -25,7 +28,7 @@ export function facebookOauthFactory(requestPromise: RequestPromiseAPI, CONFIG: 
                 code,
                 client_id: CONFIG.CLIENT_ID,
                 client_secret: CONFIG.CLIENT_SECRET,
-                redirect_uri,
+                redirect_uri: CONFIG.OAUTH_REDIRECT_URL,
             },
             uri: 'https://graph.facebook.com/v4.0/oauth/access_token',
         }))
@@ -42,8 +45,5 @@ export function facebookOauthFactory(requestPromise: RequestPromiseAPI, CONFIG: 
         generateStartOauthUrl,
     }
 }
-
-interface IApiConfig { HOST: string; PORT: string; PROTOCOL: string }
-interface IFacebookConfig { CLIENT_ID: string; CLIENT_SECRET: string; REDIRECT_PATH: string }
 
 export type IFacebookOauth = ReturnType<typeof facebookOauthFactory>
