@@ -22,6 +22,6 @@ jobs:
         npm install -g yarn
         yarn
         yarn lint
-        tsc
+        yarn build
       env:
         CI: true

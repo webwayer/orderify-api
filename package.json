@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "lint": "tslint --project tsconfig.json",
+    "build": "tsc",
     "start": "ts-node packages/app/src/server.ts"
   },
   "dependencies": {
