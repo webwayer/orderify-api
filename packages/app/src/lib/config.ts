@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 export const DEFAULT_CONFIG = {
     DATABASE: {
         DATABASE_NAME: 'orderify',

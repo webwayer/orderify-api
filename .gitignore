@@ -1,4 +1,4 @@
 node_modules
-/script.sh
+.env
 yarn-error.log
 .DS_Store
