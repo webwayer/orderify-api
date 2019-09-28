@@ -1,6 +1,5 @@
 export const DEFAULT_CONFIG = {
     DATABASE: {
-        DIALECT: 'postgres',
         DATABASE_NAME: 'orderify',
         USER: '',
         PASSWORD: '',

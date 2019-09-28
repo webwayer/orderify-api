@@ -9,8 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "lint": "tslint 'packages/**/*.ts'",
-    "lint_fix": "tslint 'packages/**/*.ts' --fix",
+    "lint": "tslint --project tsconfig.json",
     "start": "ts-node packages/app/src/server.ts"
   },
   "dependencies": {

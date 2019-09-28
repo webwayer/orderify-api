@@ -1,0 +1,13 @@
+{
+    "name": "@orderify/facebook_integration",
+    "version": "0.0.0",
+    "main": "src/index",
+    "dependencies": {
+        "@orderify/metadata_storage": "0.0.0",
+        "@orderify/image_library": "0.0.0",
+        "@orderify/user_profile": "0.0.0",
+        "@types/request-promise": "^4.1.44",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.4"
+    }
+}

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { IAccessTokenStatic, verifyToken } from '@orderify/user'
+import { IAccessTokenStatic, verifyToken } from '@orderify/user_profile'
 
 export function authenticatedRouterFactory(
     router: Router,

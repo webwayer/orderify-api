@@ -1,22 +1,22 @@
 import express, { Router } from 'express'
+import request from 'request-promise'
 import graphqlHTTP from 'express-graphql'
 import {
     GraphQLSchema,
     GraphQLObjectType,
-    GraphQLString,
 } from 'graphql'
 
-import { sequelizeFactory, requestPromiseFactory } from '@orderify/io'
-import { facebookGraphFactory, facebookOauthFactory, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook'
-import { MetadataFactory } from '@orderify/metadata'
+import { sequelizeFactory } from '@orderify/io'
+import { facebookGraphFactory, facebookOauthFactory, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook_integration'
+import { MetadataFactory } from '@orderify/metadata_storage'
 import {
     AlbumFactory,
-    PhotoFactory,
-    photoStorageFactory,
-    PhotoLibraryInterfaceFactory,
-} from '@orderify/photo_library'
-import { UserFactory, UserInterfaceFactory, AccessTokenFactory } from '@orderify/user'
-import { CampaignFactory, ComparisonFactory, CampaignInterfaceFactory } from '@orderify/campaign'
+    ImageFactory,
+    imageStorageFactory,
+    ImageLibraryReadGraphQLFactory,
+} from '@orderify/image_library'
+import { UserFactory, UserProfileReadGraphQLFactory, AccessTokenFactory } from '@orderify/user_profile'
+import { CampaignFactory, ComparisonFactory, CampaignInterfaceFactory } from '@orderify/compare_campaigns'
 
 import { authenticatedRouterFactory } from './authGuardRouter'
 import { facebookLoginRouterFactory } from './facebookRouter'
@@ -24,26 +24,25 @@ import { facebookLoginRouterFactory } from './facebookRouter'
 import { IAppConfig } from './config'
 
 export async function appFactory(CONFIG: IAppConfig) {
-    const request = requestPromiseFactory()
     const sequelize = sequelizeFactory(CONFIG.DATABASE)
 
     const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, ...CONFIG.API })
     const facebookGraph = facebookGraphFactory(request)
-    const Metadata = await MetadataFactory(sequelize, CONFIG.SEQUELIZE)
+    const Metadata = await MetadataFactory(sequelize)
 
-    const Album = await AlbumFactory(sequelize, CONFIG.SEQUELIZE)
-    const Photo = await PhotoFactory(sequelize, CONFIG.SEQUELIZE)
-    const photoStorage = await photoStorageFactory(request, CONFIG.AWS)
+    const Album = await AlbumFactory(sequelize)
+    const Image = await ImageFactory(sequelize)
+    const imageStorage = await imageStorageFactory(request, CONFIG.AWS)
     const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(
         Album,
-        Photo,
+        Image,
         Metadata,
-        photoStorage,
+        imageStorage,
         facebookGraph,
     )
 
-    const User = await UserFactory(sequelize, CONFIG.SEQUELIZE)
-    const AccessToken = await AccessTokenFactory(sequelize, CONFIG.SEQUELIZE)
+    const User = await UserFactory(sequelize)
+    const AccessToken = await AccessTokenFactory(sequelize)
     const userFacebook = await userFacebookFactory(User, Metadata, facebookGraph)
 
     const facebookLoginRouter = facebookLoginRouterFactory(
@@ -56,20 +55,20 @@ export async function appFactory(CONFIG: IAppConfig) {
     )
     const authenticatedRouter = authenticatedRouterFactory(Router(), AccessToken)
 
-    const Campaign = await CampaignFactory(sequelize, CONFIG.SEQUELIZE)
-    const Comparison = await ComparisonFactory(sequelize, CONFIG.SEQUELIZE)
+    const Campaign = await CampaignFactory(sequelize)
+    const Comparison = await ComparisonFactory(sequelize)
 
     const campaignInterface = CampaignInterfaceFactory(Comparison, Campaign)
-    const userInterface = UserInterfaceFactory(User)
-    const photoLibraryInterface = PhotoLibraryInterfaceFactory(Album, Photo, photoStorage)
+    const userProfileReadGraphQL = UserProfileReadGraphQLFactory(User)
+    const imageLibraryReadGraphQL = ImageLibraryReadGraphQLFactory(Album, Image, imageStorage)
 
     const router = Router()
 
     const QueryRootType = new GraphQLObjectType({
         name: 'Query',
         fields: () => ({
-            ...userInterface,
-            ...photoLibraryInterface,
+            ...userProfileReadGraphQL,
+            ...imageLibraryReadGraphQL,
             ...campaignInterface.query,
         }),
     })

@@ -1,55 +1,55 @@
-import { Dialect, Sequelize, Model, DataTypes } from 'sequelize'
-import shortUuid from 'short-uuid'
-
-export function sequelizeFactory(CONFIG: IDatabaseConfig) {
-    return new Sequelize(
-        CONFIG.DATABASE_NAME,
-        CONFIG.USER,
-        CONFIG.PASSWORD, {
-        dialect: CONFIG.DIALECT as Dialect,
-        host: CONFIG.HOST,
-        port: parseInt(CONFIG.PORT, 10),
-    })
-}
-
-export function newId() {
-    return shortUuid().generate()
-}
-
-export { Model as SequelizeModel, DataTypes as SequelizeDataTypes, Sequelize as SequelizeType } from 'sequelize'
-
-export interface IDatabase {
-    sequelize: Sequelize
-    Model: typeof Model
-    DataTypes: typeof DataTypes
-}
+import { Sequelize } from 'sequelize'
 
 interface IDatabaseConfig {
     DATABASE_NAME: string
-    DIALECT: string
     HOST: string
     PASSWORD: string
     PORT: string
     USER: string
 }
 
-export interface ISSStatic<I> {
-    findByPk(pk: string): Promise<ISSFullInstance<I>>
-    findAll(options: ISSFindOptions<ISSInstanceProps<I>>): Promise<Array<ISSFullInstance<I>>>
-    findOne(options: ISSFindOptions<ISSInstanceProps<I>>): Promise<ISSFullInstance<I>>
-    create(instance: I): Promise<ISSFullInstance<I>>
-    update(instance: Partial<I>, options: ISSFindOptions<ISSInstanceProps<I>>): Promise<void>
-    bulkCreate(instances: I[]): Promise<Array<ISSFullInstance<I>>>
+export function sequelizeFactory(CONFIG: IDatabaseConfig) {
+    return new Sequelize(
+        CONFIG.DATABASE_NAME,
+        CONFIG.USER,
+        CONFIG.PASSWORD, {
+        dialect: 'postgres',
+        host: CONFIG.HOST,
+        port: parseInt(CONFIG.PORT, 10),
+    })
 }
-interface ISSDefaultProperties {
+
+export interface ISSStaticRead<I, ITimestamps, IID = ISSDefaultId> {
+    findByPk(pk: string): Promise<ISSFullInstance<I & IID & ITimestamps>>
+    findAll(options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>):
+        Promise<Array<ISSFullInstance<I & IID & ITimestamps>>>
+    findOne(options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>):
+        Promise<ISSFullInstance<I & IID & ITimestamps>>
+}
+export interface ISSStaticWrite<I, ITimestamps, IID = ISSDefaultId> {
+    build(instance: I): ISSFullInstance<I & IID & ITimestamps>
+    create(instance: I & Partial<IID>): Promise<ISSFullInstance<I & IID & ITimestamps>>
+    update(instance: Partial<I>, options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>): Promise<void>
+    bulkCreate(instances: Array<I & Partial<IID>>): Promise<Array<ISSFullInstance<I & IID & ITimestamps>>>
+}
+
+export interface ISSDefaultId {
+    id: string
+}
+export interface ISSTimestamps {
     updatedAt: Date
     createdAt: Date
 }
+export interface ISSTimestampsParanoid extends ISSTimestamps {
+    deletedAt: Date
+}
+
 type ISSFullInstance<I> = ISSInstanceMethods<I> & ISSInstanceProps<I>
-type ISSInstanceProps<I> = Readonly<I & ISSDefaultProperties>
+type ISSInstanceProps<I> = Readonly<I>
 interface ISSInstanceMethods<I> {
     toJSON(): ISSInstanceProps<I>
 }
+
 interface ISSFindOptions<I> {
     where?: Partial<I>
 }

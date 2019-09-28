@@ -2,15 +2,18 @@
   "name": "@orderify/app",
   "version": "0.0.0",
   "dependencies": {
-    "@orderify/facebook": "0.0.0",
+    "@orderify/compare_campaigns": "0.0.0",
+    "@orderify/facebook_integration": "0.0.0",
     "@orderify/io": "0.0.0",
-    "@orderify/photo_library": "0.0.0",
-    "@orderify/user": "0.0.0",
-    "@orderify/metadata": "0.0.0",
-    "@orderify/campaign": "0.0.0",
+    "@orderify/metadata_storage": "0.0.0",
+    "@orderify/image_library": "0.0.0",
+    "@orderify/user_profile": "0.0.0",
     "@types/express": "^4.17.1",
+    "@types/request-promise": "^4.1.44",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
-    "graphql": "^14.5.7"
+    "graphql": "^14.5.7",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
   }
 }

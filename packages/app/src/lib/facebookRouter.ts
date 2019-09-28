@@ -1,8 +1,7 @@
 import { Router } from 'express'
 
-import { IFacebookOauth, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook'
-import { IAccessTokenStatic, createToken } from '@orderify/user'
-import { newId } from '@orderify/io'
+import { IFacebookOauth, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook_integration'
+import { IAccessTokenStatic, createToken } from '@orderify/user_profile'
 
 export function facebookLoginRouterFactory(
     router: Router,
@@ -46,14 +45,11 @@ export function facebookLoginRouterFactory(
                         await userFacebook.updateMetadata(user.id, accessData)
                     }
 
-                    const accessTokenId = newId()
-
-                    await AccessToken.create({
-                        id: accessTokenId,
+                    const accessToken = await AccessToken.create({
                         userId: user.id,
                     })
                     const tokenRaw = createToken({
-                        id: accessTokenId,
+                        id: accessToken.id,
                         uid: user.id,
                     })
 
