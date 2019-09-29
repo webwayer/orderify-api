@@ -1,9 +1,8 @@
 import { Router } from 'express'
-import { IAccessTokenStatic } from './AccessToken'
-import { verifyToken } from './jwt'
+import { Auth } from './Auth'
 
 export function authGuardRouterFactory(
-    AccessToken: IAccessTokenStatic,
+    auth: Auth,
 ) {
     const router = Router()
 
@@ -22,12 +21,11 @@ export function authGuardRouterFactory(
                 // const authHeader = req.headers.authorization.split('_')
                 // const tokenRaw = authHeader[1]
                 const tokenRaw = req.query.token
-                const token = verifyToken(tokenRaw)
+                const accessToken = await auth.verify(tokenRaw)
 
-                const accessToken = AccessToken.findByPk(token.id)
                 if (accessToken) {
                     // tslint:disable-next-line: no-string-literal
-                    req['userId'] = token.uid
+                    req['userId'] = accessToken.userId
 
                     next()
                 } else {

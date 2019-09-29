@@ -26,6 +26,10 @@ export const DEFAULT_CONFIG = {
         CLIENT_SECRET: '',
         OAUTH_REDIRECT_PATH: 'login/facebook/callback',
     },
+    TOKENS: {
+        SECRET: 'secret cat',
+        EXPIRES: '7d',
+    },
     API: {
         HOST: 'localhost',
         PORT: '80',

@@ -7,7 +7,14 @@ import {
 } from 'graphql'
 
 import { SequelizeFactory, S3Factory, LambdaFactory } from '@orderify/io'
-import { facebookGraphFactory, facebookOauthFactory, PhotoLibraryOnFacebook, UserProfileOnFacebook } from '@orderify/facebook_integration'
+import {
+    FacebookGraph,
+    FacebookOauth,
+    PhotoLibraryOnFacebook,
+    UserProfileOnFacebook,
+    facebookAuthRouterFactory,
+    photoLibraryGrapjQLMutationFactory,
+} from '@orderify/facebook_integration'
 import { MetadataFactory } from '@orderify/metadata_storage'
 import {
     AlbumFactory,
@@ -15,11 +22,8 @@ import {
     ImageStorage,
     ImageLibraryReadGraphQLFactory,
 } from '@orderify/image_library'
-import { UserFactory, UserProfileReadGraphQLFactory, AccessTokenFactory } from '@orderify/user_profile'
+import { UserFactory, UserProfileReadGraphQLFactory, AccessTokenFactory, authGuardRouterFactory, Auth, JWT } from '@orderify/user_profile'
 import { CampaignFactory, ComparisonFactory, CampaignInterfaceFactory } from '@orderify/compare_campaigns'
-
-import { authenticatedRouterFactory } from './authGuardRouter'
-import { facebookLoginRouterFactory } from './facebookRouter'
 
 import { IAppConfig } from './config'
 
@@ -29,8 +33,8 @@ export async function appFactory(CONFIG: IAppConfig) {
     const lambda = LambdaFactory(CONFIG.AWS)
 
     const OAUTH_REDIRECT_URL = `${CONFIG.API.PROTOCOL}://${CONFIG.API.HOST}:${CONFIG.API.PORT}/${CONFIG.FACEBOOK.OAUTH_REDIRECT_PATH}`
-    const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
-    const facebookGraph = facebookGraphFactory(request)
+    const facebookOauth = new FacebookOauth(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
+    const facebookGraph = new FacebookGraph(request)
 
     const Metadata = MetadataFactory(sequelize)
 
@@ -47,15 +51,17 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const User = UserFactory(sequelize)
     const AccessToken = AccessTokenFactory(sequelize)
-    const userFacebook = new UserProfileOnFacebook(User, AccessToken, Metadata, facebookGraph)
+    const jwt = new JWT(CONFIG.TOKENS)
+    const auth = new Auth(AccessToken, jwt)
+    const userFacebook = new UserProfileOnFacebook(User, auth, Metadata, facebookGraph)
 
-    const facebookLoginRouter = facebookLoginRouterFactory(
-        Router(),
+    const authenticatedRouter = authGuardRouterFactory(auth)
+    const facebookLoginRouter = facebookAuthRouterFactory(
         CONFIG.FACEBOOK,
         userFacebook,
         facebookOauth,
+        auth,
     )
-    const authenticatedRouter = authenticatedRouterFactory(Router(), AccessToken)
 
     const Campaign = CampaignFactory(sequelize)
     const Comparison = ComparisonFactory(sequelize)
@@ -63,6 +69,7 @@ export async function appFactory(CONFIG: IAppConfig) {
     const campaignInterface = CampaignInterfaceFactory(Comparison, Campaign)
     const userProfileReadGraphQL = UserProfileReadGraphQLFactory(User)
     const imageLibraryReadGraphQL = ImageLibraryReadGraphQLFactory(Album, Image, imageStorage)
+    const photoLibraryGrapjQLMutation = photoLibraryGrapjQLMutationFactory(photoLibraryOnFacebook, Metadata)
 
     const router = Router()
 
@@ -79,6 +86,7 @@ export async function appFactory(CONFIG: IAppConfig) {
         name: 'Mutation',
         fields: () => ({
             ...campaignInterface.mutation,
+            ...photoLibraryGrapjQLMutation,
         }),
     })
 

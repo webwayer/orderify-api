@@ -1,11 +1,20 @@
 import jwt from 'jsonwebtoken'
 
-export function verifyToken(tokenRaw: string) {
-    return jwt.verify(tokenRaw, 'secret') as IJWTToken
+interface ITokenConfig {
+    SECRET: string
+    EXPIRES: string
 }
 
-export function createToken(token: IJWTToken) {
-    return jwt.sign(token, 'secret', { expiresIn: '7d' }) as string
+export class JWT {
+    constructor(private CONFIG: ITokenConfig) { }
+
+    public verifyToken(tokenRaw: string) {
+        return jwt.verify(tokenRaw, this.CONFIG.SECRET) as IJWTToken
+    }
+
+    public createToken(token: IJWTToken) {
+        return jwt.sign(token, this.CONFIG.SECRET, { expiresIn: this.CONFIG.EXPIRES }) as string
+    }
 }
 
 interface IJWTToken {

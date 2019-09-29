@@ -1,6 +1,6 @@
-import { IFacebookGraph } from './facebookGraphFactory'
+import { FacebookGraph } from './FacebookGraph'
 import { IMetadataStatic } from '../../../metadata_storage/src'
-import { IUserStatic, IAccessTokenStatic } from '@orderify/user_profile'
+import { IUserStatic, Auth } from '@orderify/user_profile'
 
 interface IFacebookAccessData {
     access_token: string
@@ -13,9 +13,9 @@ interface IFacebookAccessData {
 export class UserProfileOnFacebook {
     constructor(
         private User: IUserStatic,
-        private AccessToken: IAccessTokenStatic,
+        private auth: Auth,
         private Metadata: IMetadataStatic,
-        private facebookGraph: IFacebookGraph,
+        private facebookGraph: FacebookGraph,
     ) { }
 
     public async findByAccessToken(access_token: string) {
@@ -47,11 +47,7 @@ export class UserProfileOnFacebook {
             },
         })
 
-        const accessToken = await this.AccessToken.create({
-            userId: user.id,
-        })
-
-        return accessToken
+        return this.auth.auth(user.id)
     }
 
     public async signIn(accessData: IFacebookAccessData) {
@@ -74,10 +70,6 @@ export class UserProfileOnFacebook {
             },
         })
 
-        const accessToken = await this.AccessToken.create({
-            userId: user.id,
-        })
-
-        return accessToken
+        return this.auth.auth(user.id)
     }
 }

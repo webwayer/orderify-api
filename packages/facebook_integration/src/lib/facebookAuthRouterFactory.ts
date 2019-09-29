@@ -1,14 +1,17 @@
 import { Router } from 'express'
 
-import { IFacebookOauth, PhotoLibraryOnFacebook, UserProfileOnFacebook } from '@orderify/facebook_integration'
-import { IAccessTokenStatic, createToken } from '@orderify/user_profile'
+import { FacebookOauth } from './FacebookOauth'
+import { UserProfileOnFacebook } from './UserProfileOnFacebook'
+import { Auth } from '@orderify/user_profile'
 
-export function facebookLoginRouterFactory(
-    router: Router,
+export function facebookAuthRouterFactory(
     CONFIG: { OAUTH_REDIRECT_PATH: string },
     userProfileOnFacebook: UserProfileOnFacebook,
-    facebookOauth: IFacebookOauth,
+    facebookOauth: FacebookOauth,
+    auth: Auth,
 ) {
+    const router = Router()
+
     router.get('/login/facebook', (req, res) => {
         const facebookLoginUrl = facebookOauth.generateStartOauthUrl({
             scope: 'email,user_photos',
@@ -34,14 +37,9 @@ export function facebookLoginRouterFactory(
                         denied_scopes,
                     }
 
-                    const accessToken = await userProfileOnFacebook.findByAccessToken(access_token) ?
+                    const tokenRaw = await userProfileOnFacebook.findByAccessToken(access_token) ?
                         await userProfileOnFacebook.signIn(accessData) :
                         await userProfileOnFacebook.signUp(accessData)
-
-                    const tokenRaw = createToken({
-                        id: accessToken.id,
-                        uid: accessToken.userId,
-                    })
 
                     res.redirect(`/?token=${tokenRaw}`)
                 }
