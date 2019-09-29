@@ -7,12 +7,12 @@ import {
 
 import { IImageStaticRead } from './Image'
 import { IAlbumStaticRead } from './Album'
-import { IImageStorage } from './imageStorage'
+import { ImageStorage } from './imageStorage'
 
 export function ImageLibraryReadGraphQLFactory(
     Album: IAlbumStaticRead,
     Image: IImageStaticRead,
-    imageStorage: IImageStorage,
+    imageStorage: ImageStorage,
 ) {
     const AlbumType = new GraphQLObjectType({
         name: 'Album',

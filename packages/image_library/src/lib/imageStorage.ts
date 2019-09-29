@@ -8,15 +8,15 @@ export class ImageStorage {
     ) { }
 
     public async uploadFromUrl(id: string, url: string) {
-        return this.lambda.invokeAsync({
+        return this.lambda.invoke({
             FunctionName: 'url_to_s3',
-            InvokeArgs: {
+            Payload: JSON.stringify({
                 Key: id.toString(),
                 Url: url,
                 Bucket: this.CONFIG.BUCKET_NAME,
                 ContentType: 'image/jpeg',
-            },
-        }).promise
+            }),
+        }).promise()
     }
 
     public async getPresignedImageUrl(id: string) {

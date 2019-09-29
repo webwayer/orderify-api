@@ -29,7 +29,7 @@ export function UserProfileReadGraphQLFactory(
             },
             async resolve(_, where, req) {
                 // tslint:disable-next-line: curly
-                if (where.id === 'me') where.userId = req.userId
+                if (where.id === 'me') where.id = req.userId
 
                 return User.findAll({ where })
             },

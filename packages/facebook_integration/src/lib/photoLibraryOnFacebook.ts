@@ -16,6 +16,8 @@ interface IFBPhoto {
     alt_text: string
     album: {
         id: string,
+        name: string,
+        created_time: string,
     },
     created_time: string
     updated_time: string
@@ -49,7 +51,7 @@ export class PhotoLibraryOnFacebook {
         const albumsOfSyncedPhotos = [...new Set(localLibrary.map(entry => entry.album))]
 
         const notSyncedAlbums = albumsOfNotSyncedPhotos.filter(remoteAlbum => {
-            return !albumsOfSyncedPhotos.filter(localAlbum => localAlbum.id === remoteAlbum.id)
+            return !albumsOfSyncedPhotos.find(localAlbum => localAlbum.id === remoteAlbum.id)
         })
 
         const albumsBuilded = notSyncedAlbums.map(album => {
@@ -58,7 +60,7 @@ export class PhotoLibraryOnFacebook {
                 album: this.Album.build({
                     userId,
                     name: album.name,
-                }),
+                }).toJSON(),
             }
         })
 
@@ -71,7 +73,7 @@ export class PhotoLibraryOnFacebook {
                 image: this.Image.build({
                     userId,
                     albumId: albumsBuilded.find(albumBuilded => albumBuilded.albumFB.id === entry.album.id).album.id,
-                }),
+                }).toJSON(),
             }
         })
 
@@ -84,7 +86,7 @@ export class PhotoLibraryOnFacebook {
                 data: {
                     album: albumBuilded.albumFB,
                 },
-            })
+            }).toJSON()
         })
         const photosMetadataBuilded = photosBuilded.map(photoBuilded => {
             return this.Metadata.build({
@@ -95,7 +97,7 @@ export class PhotoLibraryOnFacebook {
                 data: {
                     photo: photoBuilded.photoFB,
                 },
-            })
+            }).toJSON()
         })
 
         await Promise.all([
