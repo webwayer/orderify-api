@@ -18,6 +18,7 @@ export function UserFactory(
         email: {
             type: DataTypes.STRING(128),
             allowNull: false,
+            unique: true,
         },
     }, {
         paranoid: true,

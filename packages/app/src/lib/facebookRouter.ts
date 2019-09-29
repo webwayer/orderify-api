@@ -1,15 +1,13 @@
 import { Router } from 'express'
 
-import { IFacebookOauth, PhotoLibraryOnFacebook, userFacebookFactory } from '@orderify/facebook_integration'
+import { IFacebookOauth, PhotoLibraryOnFacebook, UserProfileOnFacebook } from '@orderify/facebook_integration'
 import { IAccessTokenStatic, createToken } from '@orderify/user_profile'
 
 export function facebookLoginRouterFactory(
     router: Router,
     CONFIG: { OAUTH_REDIRECT_PATH: string },
-    userFacebook: ReturnType<typeof userFacebookFactory>,
+    userProfileOnFacebook: UserProfileOnFacebook,
     facebookOauth: IFacebookOauth,
-    photoLibraryOnFacebook: PhotoLibraryOnFacebook,
-    AccessToken: IAccessTokenStatic,
 ) {
     router.get('/login/facebook', (req, res) => {
         const facebookLoginUrl = facebookOauth.generateStartOauthUrl({
@@ -27,30 +25,22 @@ export function facebookLoginRouterFactory(
             if (code) {
                 const { access_token, expires_in, token_type } = await facebookOauth.exchangeCodeForAcessToken(code)
 
-                const accessData = {
-                    access_token,
-                    expires_in,
-                    token_type,
-                    granted_scopes,
-                    denied_scopes,
-                }
-
                 if (access_token) {
-                    let user = await userFacebook.findByFacebookAccessToken(access_token)
-                    if (!user) {
-                        user = await userFacebook.createFromFacebook(accessData)
-
-                        await photoLibraryOnFacebook.sync(access_token, user.id)
-                    } else {
-                        await userFacebook.updateMetadata(user.id, accessData)
+                    const accessData = {
+                        access_token,
+                        expires_in,
+                        token_type,
+                        granted_scopes,
+                        denied_scopes,
                     }
 
-                    const accessToken = await AccessToken.create({
-                        userId: user.id,
-                    })
+                    const accessToken = await userProfileOnFacebook.findByAccessToken(access_token) ?
+                        await userProfileOnFacebook.signIn(accessData) :
+                        await userProfileOnFacebook.signUp(accessData)
+
                     const tokenRaw = createToken({
                         id: accessToken.id,
-                        uid: user.id,
+                        uid: accessToken.userId,
                     })
 
                     res.redirect(`/?token=${tokenRaw}`)

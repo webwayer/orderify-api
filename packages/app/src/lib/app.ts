@@ -7,7 +7,7 @@ import {
 } from 'graphql'
 
 import { SequelizeFactory, S3Factory, LambdaFactory } from '@orderify/io'
-import { facebookGraphFactory, facebookOauthFactory, PhotoLibraryOnFacebook, userFacebookFactory } from '@orderify/facebook_integration'
+import { facebookGraphFactory, facebookOauthFactory, PhotoLibraryOnFacebook, UserProfileOnFacebook } from '@orderify/facebook_integration'
 import { MetadataFactory } from '@orderify/metadata_storage'
 import {
     AlbumFactory,
@@ -23,25 +23,11 @@ import { facebookLoginRouterFactory } from './facebookRouter'
 
 import { IAppConfig } from './config'
 
-export function ioFactory(CONFIG: IAppConfig) {
+export async function appFactory(CONFIG: IAppConfig) {
     const sequelize = SequelizeFactory(CONFIG.DATABASE)
     const s3 = S3Factory(CONFIG.AWS)
     const lambda = LambdaFactory(CONFIG.AWS)
 
-    return {
-        sequelize,
-        s3,
-        lambda,
-    }
-}
-
-export async function startup({ sequelize }: ReturnType<typeof ioFactory>, CONFIG: IAppConfig) {
-    if (CONFIG.SEQUELIZE.SYNC_SCHEMAS) {
-        await sequelize.sync({ force: !!CONFIG.SEQUELIZE.DROP_ON_SYNC })
-    }
-}
-
-export function appFactory({ sequelize, s3, lambda }: ReturnType<typeof ioFactory>, CONFIG: IAppConfig) {
     const OAUTH_REDIRECT_URL = `${CONFIG.API.PROTOCOL}://${CONFIG.API.HOST}:${CONFIG.API.PORT}/${CONFIG.FACEBOOK.OAUTH_REDIRECT_PATH}`
     const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
     const facebookGraph = facebookGraphFactory(request)
@@ -61,15 +47,13 @@ export function appFactory({ sequelize, s3, lambda }: ReturnType<typeof ioFactor
 
     const User = UserFactory(sequelize)
     const AccessToken = AccessTokenFactory(sequelize)
-    const userFacebook = userFacebookFactory(User, Metadata, facebookGraph)
+    const userFacebook = new UserProfileOnFacebook(User, AccessToken, Metadata, facebookGraph)
 
     const facebookLoginRouter = facebookLoginRouterFactory(
         Router(),
         CONFIG.FACEBOOK,
         userFacebook,
         facebookOauth,
-        photoLibraryOnFacebook,
-        AccessToken,
     )
     const authenticatedRouter = authenticatedRouterFactory(Router(), AccessToken)
 
@@ -120,6 +104,10 @@ export function appFactory({ sequelize, s3, lambda }: ReturnType<typeof ioFactor
         console.error(err.stack)
         res.status(500).end()
     })
+
+    if (CONFIG.SEQUELIZE.SYNC_SCHEMAS) {
+        await sequelize.sync({ force: !!CONFIG.SEQUELIZE.DROP_ON_SYNC })
+    }
 
     return app
 }
