@@ -23,6 +23,10 @@ export function MetadataFactory(
             type: DataTypes.STRING(32),
             allowNull: false,
         },
+        userId: {
+            type: DataTypes.STRING(32),
+            allowNull: false,
+        },
         data: {
             type: DataTypes.JSONB,
             allowNull: false,
@@ -39,7 +43,8 @@ export type IMetadataStaticWrite = ISSStaticWrite<IMetadataProps, ISSTimestampsP
 export type IMetadataStatic = IMetadataStaticRead & IMetadataStaticWrite
 interface IMetadataProps {
     instanceId: string
-    instanceType: string
-    source: string
+    instanceType: 'USER' | 'ALBUM' | 'IMAGE'
+    source: 'FACEBOOK.USER' | 'FACEBOOK.PHOTO' | 'FACEBOOK.ALBUM'
+    userId: string
     data: any
 }

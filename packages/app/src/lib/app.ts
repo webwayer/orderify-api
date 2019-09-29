@@ -7,7 +7,7 @@ import {
 } from 'graphql'
 
 import { sequelizeFactory, S3Factory } from '@orderify/io'
-import { facebookGraphFactory, facebookOauthFactory, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook_integration'
+import { facebookGraphFactory, facebookOauthFactory, PhotoLibraryOnFacebook, userFacebookFactory } from '@orderify/facebook_integration'
 import { MetadataFactory } from '@orderify/metadata_storage'
 import {
     AlbumFactory,
@@ -36,7 +36,7 @@ export function appFactory(CONFIG: IAppConfig) {
     const Album = AlbumFactory(sequelize)
     const Image = ImageFactory(sequelize)
     const imageStorage = imageStorageFactory(request, s3, CONFIG.AWS)
-    const photoLibraryOnFacebook = photoLibraryOnFacebookFactory(
+    const photoLibraryOnFacebook = new PhotoLibraryOnFacebook(
         Album,
         Image,
         Metadata,

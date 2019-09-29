@@ -30,7 +30,8 @@ export function userFacebookFactory(
         await Metadata.create({
             instanceId: user.id,
             instanceType: 'USER',
-            source: 'FACEBOOK',
+            source: 'FACEBOOK.USER',
+            userId: user.id,
             data: {
                 facebookUserProfile,
                 accessData,

@@ -31,7 +31,7 @@ export function ImageLibraryReadGraphQLFactory(
             albumId: { type: new GraphQLNonNull(GraphQLString) },
             link: {
                 type: new GraphQLNonNull(GraphQLString),
-                resolve: (source) => {
+                resolve: source => {
                     return imageStorage.getPresignedImageUrl(source.id)
                 },
             },

@@ -27,11 +27,8 @@ export const DEFAULT_CONFIG = {
     },
     API: {
         HOST: 'localhost',
-        PORT: '3000',
+        PORT: '80',
         PROTOCOL: 'http',
-    },
-    WEB: {
-        BASE_URL: 'http://localhost:3000',
     },
 }
 

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { IFacebookOauth, photoLibraryOnFacebookFactory, userFacebookFactory } from '@orderify/facebook_integration'
+import { IFacebookOauth, PhotoLibraryOnFacebook, userFacebookFactory } from '@orderify/facebook_integration'
 import { IAccessTokenStatic, createToken } from '@orderify/user_profile'
 
 export function facebookLoginRouterFactory(
@@ -8,7 +8,7 @@ export function facebookLoginRouterFactory(
     CONFIG: { OAUTH_REDIRECT_PATH: string },
     userFacebook: ReturnType<typeof userFacebookFactory>,
     facebookOauth: IFacebookOauth,
-    photoLibraryOnFacebook: ReturnType<typeof photoLibraryOnFacebookFactory>,
+    photoLibraryOnFacebook: PhotoLibraryOnFacebook,
     AccessToken: IAccessTokenStatic,
 ) {
     router.get('/login/facebook', (req, res) => {
@@ -40,7 +40,7 @@ export function facebookLoginRouterFactory(
                     if (!user) {
                         user = await userFacebook.createFromFacebook(accessData)
 
-                        await photoLibraryOnFacebook.download(user.id, access_token)
+                        await photoLibraryOnFacebook.sync(access_token, user.id)
                     } else {
                         await userFacebook.updateMetadata(user.id, accessData)
                     }

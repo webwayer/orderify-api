@@ -23,7 +23,11 @@
                 "allow-pascal-case",
                 "require-const-for-all-caps"
             ]
-        }
+        },
+        "arrow-parens": [
+            true,
+            "ban-single-arg-parens"
+        ]
     },
     "rulesDirectory": []
 }
