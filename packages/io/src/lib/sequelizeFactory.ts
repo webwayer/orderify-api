@@ -8,7 +8,7 @@ interface IDatabaseConfig {
     USER: string
 }
 
-export function sequelizeFactory(CONFIG: IDatabaseConfig) {
+export function SequelizeFactory(CONFIG: IDatabaseConfig) {
     return new Sequelize(
         CONFIG.DATABASE_NAME,
         CONFIG.USER,

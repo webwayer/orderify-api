@@ -1,6 +1,6 @@
 import { IFacebookGraph } from './facebookGraphFactory'
 import { IMetadataStatic } from '@orderify/metadata_storage'
-import { IImageStorage, IAlbumStaticWrite, IImageStaticWrite } from '@orderify/image_library'
+import { ImageStorage, IAlbumStaticWrite, IImageStaticWrite } from '@orderify/image_library'
 
 interface IFBAlbum {
     id: string
@@ -31,7 +31,7 @@ export class PhotoLibraryOnFacebook {
         private Album: IAlbumStaticWrite,
         private Image: IImageStaticWrite,
         private Metadata: IMetadataStatic,
-        private imageStorage: IImageStorage,
+        private imageStorage: ImageStorage,
         private facebookGraph: IFacebookGraph,
     ) { }
 

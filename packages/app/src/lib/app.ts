@@ -6,13 +6,13 @@ import {
     GraphQLObjectType,
 } from 'graphql'
 
-import { sequelizeFactory, S3Factory } from '@orderify/io'
+import { SequelizeFactory, S3Factory, LambdaFactory } from '@orderify/io'
 import { facebookGraphFactory, facebookOauthFactory, PhotoLibraryOnFacebook, userFacebookFactory } from '@orderify/facebook_integration'
 import { MetadataFactory } from '@orderify/metadata_storage'
 import {
     AlbumFactory,
     ImageFactory,
-    imageStorageFactory,
+    ImageStorage,
     ImageLibraryReadGraphQLFactory,
 } from '@orderify/image_library'
 import { UserFactory, UserProfileReadGraphQLFactory, AccessTokenFactory } from '@orderify/user_profile'
@@ -23,10 +23,25 @@ import { facebookLoginRouterFactory } from './facebookRouter'
 
 import { IAppConfig } from './config'
 
-export function appFactory(CONFIG: IAppConfig) {
-    const sequelize = sequelizeFactory(CONFIG.DATABASE)
+export function ioFactory(CONFIG: IAppConfig) {
+    const sequelize = SequelizeFactory(CONFIG.DATABASE)
     const s3 = S3Factory(CONFIG.AWS)
+    const lambda = LambdaFactory(CONFIG.AWS)
 
+    return {
+        sequelize,
+        s3,
+        lambda,
+    }
+}
+
+export async function startup({ sequelize }: ReturnType<typeof ioFactory>, CONFIG: IAppConfig) {
+    if (CONFIG.SEQUELIZE.SYNC_SCHEMAS) {
+        await sequelize.sync({ force: !!CONFIG.SEQUELIZE.DROP_ON_SYNC })
+    }
+}
+
+export function appFactory({ sequelize, s3, lambda }: ReturnType<typeof ioFactory>, CONFIG: IAppConfig) {
     const OAUTH_REDIRECT_URL = `${CONFIG.API.PROTOCOL}://${CONFIG.API.HOST}:${CONFIG.API.PORT}/${CONFIG.FACEBOOK.OAUTH_REDIRECT_PATH}`
     const facebookOauth = facebookOauthFactory(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
     const facebookGraph = facebookGraphFactory(request)
@@ -35,7 +50,7 @@ export function appFactory(CONFIG: IAppConfig) {
 
     const Album = AlbumFactory(sequelize)
     const Image = ImageFactory(sequelize)
-    const imageStorage = imageStorageFactory(request, s3, CONFIG.AWS)
+    const imageStorage = new ImageStorage(s3, lambda, CONFIG.STORAGE)
     const photoLibraryOnFacebook = new PhotoLibraryOnFacebook(
         Album,
         Image,

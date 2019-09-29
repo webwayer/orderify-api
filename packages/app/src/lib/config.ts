@@ -10,11 +10,12 @@ export const DEFAULT_CONFIG = {
         PORT: '5432',
     },
     AWS: {
-        BUCKET_NAME: 'orderify-test-images',
-        API_GATEWAY_KEY: '',
         KEY: '',
         KEY_ID: '',
         REGION: '',
+    },
+    STORAGE: {
+        BUCKET_NAME: 'orderify-test-images',
     },
     SEQUELIZE: {
         SYNC_SCHEMAS: '1',

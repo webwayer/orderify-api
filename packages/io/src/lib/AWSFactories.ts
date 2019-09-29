@@ -14,3 +14,11 @@ export function S3Factory(CONFIG: IAWSConfig) {
         signatureVersion: 'v4',
     })
 }
+
+export function LambdaFactory(CONFIG: IAWSConfig) {
+    return new AWS.Lambda({
+        accessKeyId: CONFIG.KEY_ID,
+        secretAccessKey: CONFIG.KEY,
+        region: CONFIG.REGION,
+    })
+}
