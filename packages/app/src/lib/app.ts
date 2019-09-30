@@ -1,4 +1,4 @@
-import express, { Router } from 'express'
+import express from 'express'
 import request from 'request-promise'
 import graphqlHTTP from 'express-graphql'
 import {
@@ -6,7 +6,11 @@ import {
     GraphQLObjectType,
 } from 'graphql'
 
-import { SequelizeFactory, S3Factory, LambdaFactory } from '@orderify/io'
+import {
+    SequelizeFactory,
+    S3Factory,
+    LambdaFactory,
+} from '@orderify/io'
 import {
     FacebookGraph,
     FacebookOauth,
@@ -15,15 +19,28 @@ import {
     facebookAuthRouterFactory,
     photoLibraryGrapjQLMutationFactory,
 } from '@orderify/facebook_integration'
-import { MetadataFactory } from '@orderify/metadata_storage'
+import {
+    MetadataFactory,
+} from '@orderify/metadata_storage'
 import {
     AlbumFactory,
     ImageFactory,
     ImageStorage,
     ImageLibraryReadGraphQLFactory,
 } from '@orderify/image_library'
-import { UserFactory, UserProfileReadGraphQLFactory, AccessTokenFactory, authGuardRouterFactory, Auth, JWT } from '@orderify/user_profile'
-import { CampaignFactory, ComparisonFactory, CampaignInterfaceFactory } from '@orderify/compare_campaigns'
+import {
+    UserFactory,
+    UserProfileReadGraphQLFactory,
+    AccessTokenFactory,
+    authGuardRouterFactory,
+    Auth,
+    JWT,
+} from '@orderify/user_profile'
+import {
+    CampaignFactory,
+    ComparisonFactory,
+    CampaignInterfaceFactory,
+} from '@orderify/compare_campaigns'
 
 import { IAppConfig } from './config'
 
@@ -32,15 +49,24 @@ export async function appFactory(CONFIG: IAppConfig) {
     const s3 = S3Factory(CONFIG.AWS)
     const lambda = LambdaFactory(CONFIG.AWS)
 
-    const OAUTH_REDIRECT_URL = `${CONFIG.API.PROTOCOL}://${CONFIG.API.HOST}:${CONFIG.API.PORT}/${CONFIG.FACEBOOK.OAUTH_REDIRECT_PATH}`
-    const facebookOauth = new FacebookOauth(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
-    const facebookGraph = new FacebookGraph(request)
+    const User = UserFactory(sequelize)
+    const AccessToken = AccessTokenFactory(sequelize)
+    const jwt = new JWT(CONFIG.TOKENS)
+    const auth = new Auth(AccessToken, jwt)
+    const authenticatedRouter = authGuardRouterFactory(auth)
+    const userProfileReadGraphQL = UserProfileReadGraphQLFactory(User)
 
     const Metadata = MetadataFactory(sequelize)
 
     const Album = AlbumFactory(sequelize)
     const Image = ImageFactory(sequelize)
     const imageStorage = new ImageStorage(s3, lambda, CONFIG.STORAGE)
+    const imageLibraryReadGraphQL = ImageLibraryReadGraphQLFactory(Album, Image, imageStorage)
+
+    const OAUTH_REDIRECT_URL = `${CONFIG.API.PROTOCOL}://${CONFIG.API.HOST}:${CONFIG.API.PORT}/${CONFIG.FACEBOOK.OAUTH_REDIRECT_PATH}`
+    const facebookOauth = new FacebookOauth(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
+    const facebookGraph = new FacebookGraph(request)
+    const userFacebook = new UserProfileOnFacebook(User, auth, Metadata, facebookGraph)
     const photoLibraryOnFacebook = new PhotoLibraryOnFacebook(
         Album,
         Image,
@@ -48,14 +74,7 @@ export async function appFactory(CONFIG: IAppConfig) {
         imageStorage,
         facebookGraph,
     )
-
-    const User = UserFactory(sequelize)
-    const AccessToken = AccessTokenFactory(sequelize)
-    const jwt = new JWT(CONFIG.TOKENS)
-    const auth = new Auth(AccessToken, jwt)
-    const userFacebook = new UserProfileOnFacebook(User, auth, Metadata, facebookGraph)
-
-    const authenticatedRouter = authGuardRouterFactory(auth)
+    const photoLibraryGrapjQLMutation = photoLibraryGrapjQLMutationFactory(photoLibraryOnFacebook, Metadata)
     const facebookLoginRouter = facebookAuthRouterFactory(
         CONFIG.FACEBOOK,
         userFacebook,
@@ -65,13 +84,9 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const Campaign = CampaignFactory(sequelize)
     const Comparison = ComparisonFactory(sequelize)
-
     const campaignInterface = CampaignInterfaceFactory(Comparison, Campaign)
-    const userProfileReadGraphQL = UserProfileReadGraphQLFactory(User)
-    const imageLibraryReadGraphQL = ImageLibraryReadGraphQLFactory(Album, Image, imageStorage)
-    const photoLibraryGrapjQLMutation = photoLibraryGrapjQLMutationFactory(photoLibraryOnFacebook, Metadata)
 
-    const router = Router()
+    const app = express()
 
     const QueryRootType = new GraphQLObjectType({
         name: 'Query',
@@ -95,17 +110,13 @@ export async function appFactory(CONFIG: IAppConfig) {
         mutation: MutationRootType,
     })
 
-    router.use(facebookLoginRouter)
-    router.use(authenticatedRouter)
+    app.use(facebookLoginRouter)
+    app.use(authenticatedRouter)
 
-    router.use('/', graphqlHTTP({
+    app.use('/', graphqlHTTP({
         schema: AppSchema,
         graphiql: true,
     }))
-
-    const app = express()
-
-    app.use(router)
 
     app.use((err, req, res, next) => {
         // tslint:disable-next-line: no-console
