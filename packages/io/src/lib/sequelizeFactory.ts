@@ -16,5 +16,6 @@ export function SequelizeFactory(CONFIG: IDatabaseConfig) {
         dialect: 'postgres',
         host: CONFIG.HOST,
         port: parseInt(CONFIG.PORT, 10),
+        logging: false,
     })
 }

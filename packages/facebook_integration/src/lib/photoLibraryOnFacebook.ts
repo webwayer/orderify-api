@@ -100,12 +100,34 @@ export class PhotoLibraryOnFacebook {
             }).toJSON()
         })
 
-        await Promise.all([
-            this.Album.bulkCreate(albumsBuilded.map(album => album.album)),
-            this.Image.bulkCreate(photosBuilded.map(photo => photo.image)),
-            this.Metadata.bulkCreate([...albumsMetadataBuilded, ...photosMetadataBuilded]),
-            Promise.all(photosBuilded.map(photo => this.imageStorage.uploadFromUrl(photo.image.id, photo.file.source))),
-        ])
+        const chunkedArrayOfUrls = this.chunk(photosBuilded.map(
+            photo => ({ id: photo.image.id, url: photo.file.source }),
+        ), 25)
+
+        await this.logPromiseTime('total', Promise.all([
+            this.logPromiseTime('albums', this.Album.bulkCreate(albumsBuilded.map(album => album.album))),
+            this.logPromiseTime('images', this.Image.bulkCreate(photosBuilded.map(photo => photo.image))),
+            this.logPromiseTime('metadata', this.Metadata.bulkCreate([...albumsMetadataBuilded, ...photosMetadataBuilded])),
+            this.logPromiseTime('all chunks', Promise.all(chunkedArrayOfUrls.map((urls, i) => this.logPromiseTime(`chunk #${i}`, this.imageStorage.uploadFromUrl(urls))))),
+        ]))
+    }
+
+    private async logPromiseTime<T>(name: string, promise: Promise<T>) {
+        const start = new Date().getTime()
+
+        return promise.then(result => {
+            // tslint:disable-next-line: no-console
+            console.log(name, `${new Date().getTime() - start}ms`)
+
+            return result
+        })
+    }
+
+    private chunk<T>(array: T[], n: number) {
+        return Array(
+            Math.ceil(array.length / n))
+            .fill(null)
+            .map((_, i) => array.slice(i * n, i * n + n)) as T[][]
     }
 
     private async getFBalbums(access_token: string) {
@@ -124,7 +146,7 @@ export class PhotoLibraryOnFacebook {
 
     private async getFBphotoLibrary(access_token: string) {
         const albums = await this.getFBalbums(access_token)
-        const albumsToSave = albums.filter(album => album.type === 'profile')
+        const albumsToSave = albums//.filter(album => album.type === 'profile' || album.type === 'cover')
         const photos = await Promise.all(albumsToSave.map(album => this.getFBphotos(access_token, album.id)))
 
         return photos.flat().map(photo => {
@@ -154,11 +176,11 @@ export class PhotoLibraryOnFacebook {
         ])
 
         return photoMeta.map(photoMetadata => {
-            const albumMetadata = albumMeta.find(meta => meta.data.id === photoMetadata.data.album.id)
+            const albumMetadata = albumMeta.find(meta => meta.data.album.id === photoMetadata.data.photo.album.id)
 
             return {
-                album: albumMetadata.data as IFBAlbum,
-                photo: photoMetadata.data as IFBPhoto,
+                album: albumMetadata.data.album as IFBAlbum,
+                photo: photoMetadata.data.photo as IFBPhoto,
                 photoMetadata,
                 albumMetadata,
             }

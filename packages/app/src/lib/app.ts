@@ -126,6 +126,16 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     if (CONFIG.SEQUELIZE.SYNC_SCHEMAS) {
         await sequelize.sync({ force: !!CONFIG.SEQUELIZE.DROP_ON_SYNC })
+
+        if (CONFIG.SEQUELIZE.DROP_ON_SYNC) {
+            await Campaign.bulkCreate([...new Array(20).fill(null).map((_, index) => ({
+                id: (index + 1).toString(),
+                photo1Id: 'photo1Id',
+                photo2Id: 'photo2Id',
+                comparisonsCount: 10,
+                userId: 'userId',
+            }))])
+        }
     }
 
     return app

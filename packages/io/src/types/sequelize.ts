@@ -1,3 +1,5 @@
+import { Sequelize } from 'sequelize'
+
 export interface ISSStaticRead<I, ITimestamps, IID = ISSDefaultId> {
     findByPk(pk: string): Promise<ISSFullInstance<I & IID & ITimestamps>>
     findAll(options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>):
@@ -31,4 +33,5 @@ interface ISSInstanceMethods<I> {
 
 interface ISSFindOptions<I> {
     where?: Partial<I>
+    order?: string[] | ReturnType<typeof Sequelize.literal>
 }

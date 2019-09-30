@@ -7,15 +7,15 @@ export class ImageStorage {
         private CONFIG: { BUCKET_NAME: string },
     ) { }
 
-    public async uploadFromUrl(id: string, url: string) {
+    public async uploadFromUrl(urls: Array<{ id: string, url: string }>) {
         return this.lambda.invoke({
             FunctionName: 'url_to_s3',
-            Payload: JSON.stringify({
-                Key: id.toString(),
+            Payload: JSON.stringify(urls.map(({ url, id }) => ({
+                Key: id,
                 Url: url,
                 Bucket: this.CONFIG.BUCKET_NAME,
                 ContentType: 'image/jpeg',
-            }),
+            }))),
         }).promise()
     }
 

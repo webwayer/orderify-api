@@ -27,6 +27,11 @@ export function CampaignFactory(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        status: {
+            type: DataTypes.STRING(32),
+            allowNull: false,
+            defaultValue: 'active',
+        },
     }, {
         paranoid: true,
     }) as unknown as ICampaignStatic
@@ -40,4 +45,5 @@ interface ICampaignProps {
     photo1Id: string
     photo2Id: string
     comparisonsCount: number
+    status?: 'active'
 }

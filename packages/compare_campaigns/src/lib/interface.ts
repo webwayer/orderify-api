@@ -5,6 +5,7 @@ import {
     GraphQLNonNull,
     GraphQLInt,
 } from 'graphql'
+import { Sequelize } from 'sequelize'
 
 import { IComparisonStatic } from './Comparison'
 import { ICampaignStatic } from './Campaign'
@@ -36,7 +37,7 @@ export function CampaignInterfaceFactory(
 
     return {
         mutation: {
-            Campaign: {
+            startCampaign: {
                 type: CampaignType,
                 args: {
                     photo1Id: {
@@ -46,16 +47,46 @@ export function CampaignInterfaceFactory(
                         type: new GraphQLNonNull(GraphQLString),
                     },
                 },
-                async resolve(_, args, req) {
+                async resolve(_, { photo1Id, photo2Id }, req) {
                     return Campaign.create({
                         userId: req.userId,
                         comparisonsCount: 10,
-                        ...args,
+                        photo1Id,
+                        photo2Id,
+                    })
+                },
+            },
+            submitComparison: {
+                type: ComparisonType,
+                args: {
+                    campaignId: {
+                        type: new GraphQLNonNull(GraphQLString),
+                    },
+                    photoWinnerId: {
+                        type: new GraphQLNonNull(GraphQLString),
+                    },
+                },
+                async resolve(_, { campaignId, photoWinnerId }, req) {
+                    return Comparison.create({
+                        userId: req.userId,
+                        campaignId,
+                        photoWinnerId,
                     })
                 },
             },
         },
         query: {
+            randomActiveCampaign: {
+                type: CampaignType,
+                async resolve(_, where, req) {
+                    return Campaign.findOne({
+                        where: {
+                            status: 'active',
+                        },
+                        order: Sequelize.literal('random()'),
+                    })
+                },
+            },
             Campaigns: {
                 type: new GraphQLList(CampaignType),
                 args: {
