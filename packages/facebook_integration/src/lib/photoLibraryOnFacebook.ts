@@ -1,6 +1,7 @@
 import { FacebookGraph } from './FacebookGraph'
 import { IMetadataStatic } from '@orderify/metadata_storage'
 import { ImageStorage, IAlbumStaticWrite, IImageStaticWrite } from '@orderify/image_library'
+import { uniq, prop, differenceWith, eqBy, path, map } from 'ramda'
 
 interface IFBAlbum {
     id: string
@@ -43,39 +44,26 @@ export class PhotoLibraryOnFacebook {
             this.getFBphotoLibraryLocal(userId),
         ])
 
-        const notSyncedPhotos = remoteLibrary.filter(remoteEntry => {
-            return !localLibrary.find(localEntry => remoteEntry.photo.id === localEntry.photo.id)
-        })
+        const remotePhotosToSync = differenceWith(eqBy(path(['photo', 'id'])), remoteLibrary, localLibrary)
+        const remoteAlbumsToSyncUnormalized = differenceWith(eqBy(path(['album', 'id'])), remoteLibrary, localLibrary)
+        const remoteAlbumsToSync = uniq(map(prop('album'), remoteAlbumsToSyncUnormalized))
 
-        const albumsOfNotSyncedPhotos = [...new Set(notSyncedPhotos.map(entry => entry.album))]
-        const albumsOfSyncedPhotos = [...new Set(localLibrary.map(entry => entry.album))]
+        const albumsBuilded = remoteAlbumsToSync.map(album => ({
+            albumFB: album,
+            album: this.Album.build({
+                userId,
+                name: album.name,
+            }).toJSON()
+        }))
 
-        const notSyncedAlbums = albumsOfNotSyncedPhotos.filter(remoteAlbum => {
-            return !albumsOfSyncedPhotos.find(localAlbum => localAlbum.id === remoteAlbum.id)
-        })
-
-        const albumsBuilded = notSyncedAlbums.map(album => {
-            return {
-                albumFB: album,
-                album: this.Album.build({
-                    userId,
-                    name: album.name,
-                }).toJSON(),
-            }
-        })
-
-        const photosBuilded = notSyncedPhotos.map(entry => {
-            const file = entry.photo.images.find(img => img.width + img.height < 2000)
-
-            return {
-                photoFB: entry.photo,
-                file,
-                image: this.Image.build({
-                    userId,
-                    albumId: albumsBuilded.find(albumBuilded => albumBuilded.albumFB.id === entry.album.id).album.id,
-                }).toJSON(),
-            }
-        })
+        const photosBuilded = remotePhotosToSync.map(remoteLibEntry => ({
+            photoFB: remoteLibEntry.photo,
+            file: remoteLibEntry.photo.images.find(img => img.width + img.height < 2000),
+            image: this.Image.build({
+                userId,
+                albumId: albumsBuilded.find(albumBuilded => albumBuilded.albumFB.id === remoteLibEntry.album.id).album.id,
+            }).toJSON(),
+        }))
 
         const albumsMetadataBuilded = albumsBuilded.map(albumBuilded => {
             return this.Metadata.build({
@@ -108,7 +96,7 @@ export class PhotoLibraryOnFacebook {
             this.Album.bulkCreate(albumsBuilded.map(album => album.album)),
             this.Image.bulkCreate(photosBuilded.map(photo => photo.image)),
             this.Metadata.bulkCreate([...albumsMetadataBuilded, ...photosMetadataBuilded]),
-            Promise.all(chunkedArrayOfUrls.map((urls, i) => this.imageStorage.uploadFromUrl(urls))),
+            Promise.all(chunkedArrayOfUrls.map(urls => this.imageStorage.uploadFromUrl(urls))),
         ])
     }
 
@@ -128,7 +116,7 @@ export class PhotoLibraryOnFacebook {
 
     private async getFBphotoLibrary(access_token: string) {
         const albums = await this.getFBalbums(access_token)
-        const albumsToSave = albums // .filter(album => album.type === 'profile' || album.type === 'cover')
+        const albumsToSave = albums.filter(album => album.type === 'profile' || album.type === 'cover')
         const photos = await Promise.all(albumsToSave.map(album => this.getFBphotos(access_token, album.id)))
 
         return photos.flat().map(photo => {
