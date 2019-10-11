@@ -19,7 +19,7 @@ export function compareCampaignsSericeFactory(sequelize: Sequelize, imageLibrary
     const Comparison = ComparisonFactory(sequelize)
     const compareCampaignsApi = new CompareCampaignsApi(Campaign, Comparison, walletApi, imageLibraryApi)
 
-    const compareCampaignsInterface = CompareCampaignsGraphqlFactory(compareCampaignsApi)
+    const compareCampaignsInterface = CompareCampaignsGraphqlFactory(compareCampaignsApi, walletApi)
 
     return { Wallet, walletApi, Comparison, Campaign, compareCampaignsApi, compareCampaignsInterface }
 }

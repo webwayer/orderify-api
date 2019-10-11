@@ -7,9 +7,11 @@ import {
 } from 'graphql'
 
 import { CompareCampaignsApi } from './CompareCampaignsApi'
+import { WalletApi } from './WalletApi'
 
 export function CompareCampaignsGraphqlFactory(
     compareCampaignsApi: CompareCampaignsApi,
+    walletApi: WalletApi,
 ) {
     const CampaignType = new GraphQLObjectType({
         name: 'Campaign',
@@ -68,6 +70,12 @@ export function CompareCampaignsGraphqlFactory(
                 type: CampaignType,
                 async resolve(_, where, { userId }) {
                     return compareCampaignsApi.randomActiveCampaign(userId)
+                },
+            },
+            walletBalance: {
+                type: GraphQLInt,
+                async resolve(_, where, { userId }) {
+                    return walletApi.balance(userId)
                 },
             },
             // Campaigns: {

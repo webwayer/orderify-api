@@ -18,12 +18,25 @@ const argsFn = compose(
 ) as unknown as (args: IArgs) => string
 const fieldsFn = compose(curlyBrackets, join(',')) as (fields: string[]) => string
 
-export const mutation = (name: string, args: IArgs, fields: string[]) =>
-    mutationFn(join('', [name, ifElse(identity, argsFn, always(''))(args), fieldsFn(fields)]))
+export const mutation = ({ name, fields, args }: IGraphQlAction) =>
+    mutationFn(join('', [
+        name,
+        ifElse(identity, argsFn, always(''))(args),
+        ifElse(identity, fieldsFn, always(''))(fields),
+    ]))
 
-export const query = (name: string, fields: string[], args?: IArgs) =>
-    queryFn(join('', [name, ifElse(identity, argsFn, always(''))(args), fieldsFn(fields)]))
+export const query = ({ name, fields, args }: IGraphQlAction) =>
+    queryFn(join('', [
+        name,
+        ifElse(identity, argsFn, always(''))(args),
+        ifElse(identity, fieldsFn, always(''))(fields),
+    ]))
 
+interface IGraphQlAction {
+    name: string,
+    args?: IArgs,
+    fields?: string[],
+}
 interface IArgs {
     [key: string]: string | number
 }

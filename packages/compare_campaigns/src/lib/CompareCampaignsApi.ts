@@ -35,9 +35,6 @@ export class CompareCampaignsApi {
             where: {
                 status: 'active',
                 type: 'filler',
-                userId: {
-                    [Op.not]: userId,
-                },
                 [Op.not]: {
                     comparators: {
                         [Op.contains]: [userId],
@@ -65,7 +62,6 @@ export class CompareCampaignsApi {
 
             return this.Campaign.create({
                 userId,
-                comparisonsCount: 10,
                 photo1Id,
                 photo2Id,
             })

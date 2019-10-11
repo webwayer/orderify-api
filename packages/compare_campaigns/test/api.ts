@@ -25,7 +25,6 @@ const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DAT
 const {
     compareCampaignsInterface,
     Campaign,
-    Comparison,
     Wallet,
     walletApi,
 } = compareCampaignsSericeFactory(sequelize, new StubImageLibraryApi())
@@ -34,6 +33,27 @@ const schema = graphqlFactory(compareCampaignsInterface.query, compareCampaignsI
 describe('Compare Campaigns', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
+    })
+
+    describe('walletBalance', () => {
+        it('success', async () => {
+            await Wallet.create({
+                userId: 'user1',
+                balance: 13,
+            })
+
+            const result = await graphql({
+                schema,
+                source: query({
+                    name: 'walletBalance',
+                }),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert.equal(result.data.walletBalance, 13)
+        })
     })
 
     describe('randomActiveCampaign', () => {
@@ -49,10 +69,10 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query(
-                    'randomActiveCampaign',
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: query({
+                    name: 'randomActiveCampaign',
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -79,10 +99,10 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query(
-                    'randomActiveCampaign',
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: query({
+                    name: 'randomActiveCampaign',
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -109,10 +129,10 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query(
-                    'randomActiveCampaign',
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: query({
+                    name: 'randomActiveCampaign',
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -133,10 +153,10 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query(
-                    'randomActiveCampaign',
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: query({
+                    name: 'randomActiveCampaign',
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -158,10 +178,10 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query(
-                    'randomActiveCampaign',
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: query({
+                    name: 'randomActiveCampaign',
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -183,10 +203,10 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query(
-                    'randomActiveCampaign',
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: query({
+                    name: 'randomActiveCampaign',
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -207,10 +227,10 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query(
-                    'randomActiveCampaign',
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: query({
+                    name: 'randomActiveCampaign',
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -229,11 +249,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'startCampaign',
-                    { photo1Id: 'photo1', photo2Id: 'photo2' },
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: mutation({
+                    name: 'startCampaign',
+                    args: { photo1Id: 'photo1', photo2Id: 'photo2' },
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -245,11 +265,11 @@ describe('Compare Campaigns', () => {
         it('fail - not enough funds', async () => {
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'startCampaign',
-                    { photo1Id: 'photo1', photo2Id: 'photo2' },
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: mutation({
+                    name: 'startCampaign',
+                    args: { photo1Id: 'photo1', photo2Id: 'photo2' },
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -266,11 +286,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'startCampaign',
-                    { photo1Id: 'photo1', photo2Id: 'photo2' },
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: mutation({
+                    name: 'startCampaign',
+                    args: { photo1Id: 'photo1', photo2Id: 'photo2' },
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
@@ -287,11 +307,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'startCampaign',
-                    { photo1Id: '_photo1', photo2Id: '_photo2' },
-                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
-                ),
+                source: mutation({
+                    name: 'startCampaign',
+                    args: { photo1Id: '_photo1', photo2Id: '_photo2' },
+                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
@@ -313,11 +333,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
@@ -337,11 +357,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
@@ -363,11 +383,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
@@ -377,11 +397,11 @@ describe('Compare Campaigns', () => {
 
             const result2 = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user3',
                 },
@@ -393,11 +413,11 @@ describe('Compare Campaigns', () => {
         it('fail - no campaign', async () => {
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
@@ -417,11 +437,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -441,11 +461,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo3' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo3' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user1',
                 },
@@ -466,11 +486,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
@@ -491,11 +511,11 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation(
-                    'submitComparison',
-                    { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    ['id', 'userId', 'campaignId', 'photoWinnerId'],
-                ),
+                source: mutation({
+                    name: 'submitComparison',
+                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                }),
                 contextValue: {
                     userId: 'user2',
                 },
