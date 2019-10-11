@@ -74,17 +74,12 @@ export class CompareCampaignsApi {
 
     public async submitComparison(userId: string, campaignId: string, photoWinnerId: string) {
         const campaign = await this.Campaign.findByPk(campaignId)
-        const comparisons = await this.Comparison.findAll({
-            where: {
-                campaignId,
-            },
-        })
 
         const isCampaignExists = !!campaign
         const isCampaignActive = isCampaignExists && campaign.status === 'active'
         const isCreator = isCampaignExists && userId === campaign.userId
-        const isAlreadyVoted = !!comparisons.find(c => c.userId === userId)
-        const isLastComparison = isCampaignActive && comparisons.length === campaign.comparisonsCount - 1
+        const isAlreadyVoted = !!campaign.comparators.find(id => id === userId)
+        const isLastComparison = isCampaignActive && campaign.comparators.length === campaign.comparisonsCount - 1
         const isPhotoInCampaign = isCampaignExists &&
             (campaign.photo1Id === photoWinnerId || campaign.photo2Id === photoWinnerId)
 

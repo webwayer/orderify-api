@@ -357,7 +357,8 @@ describe('Compare Campaigns', () => {
                 userId: 'user1',
                 photo1Id: 'photo1',
                 photo2Id: 'photo2',
-                comparisonsCount: 1,
+                comparators: ['1'],
+                comparisonsCount: 2,
             })
 
             const result = await graphql({
@@ -485,13 +486,7 @@ describe('Compare Campaigns', () => {
                 photo1Id: 'photo1',
                 photo2Id: 'photo2',
                 comparisonsCount: 10,
-            })
-
-            await Comparison.create({
-                id: 'comparison',
-                userId: 'user2',
-                photoWinnerId: 'photo1',
-                campaignId: 'campaign1',
+                comparators: ['user2'],
             })
 
             const result = await graphql({
