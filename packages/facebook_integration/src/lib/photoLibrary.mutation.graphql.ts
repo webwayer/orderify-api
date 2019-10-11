@@ -1,4 +1,4 @@
-import { PhotoLibraryOnFacebook } from './photoLibraryOnFacebook'
+import { PhotoLibraryOnFacebook } from './PhotoLibraryOnFacebook'
 import { IMetadataStaticRead } from '@orderify/metadata_storage'
 import { GraphQLNonNull, GraphQLBoolean, GraphQLObjectType } from 'graphql'
 
