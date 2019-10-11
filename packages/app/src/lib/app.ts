@@ -1,6 +1,7 @@
 import express from 'express'
 import request from 'request-promise'
 import graphqlHTTP from 'express-graphql'
+import { graphqlFactory } from './graphql'
 import {
     GraphQLSchema,
     GraphQLObjectType,
@@ -88,33 +89,20 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const app = express()
 
-    const QueryRootType = new GraphQLObjectType({
-        name: 'Query',
-        fields: () => ({
-            ...userProfileReadGraphQL,
-            ...imageLibraryReadGraphQL,
-            ...campaignInterface.query,
-        }),
-    })
-
-    const MutationRootType = new GraphQLObjectType({
-        name: 'Mutation',
-        fields: () => ({
-            ...campaignInterface.mutation,
-            ...photoLibraryGrapjQLMutation,
-        }),
-    })
-
-    const AppSchema = new GraphQLSchema({
-        query: QueryRootType,
-        mutation: MutationRootType,
+    const graphqlSchema = graphqlFactory({
+        ...userProfileReadGraphQL,
+        ...imageLibraryReadGraphQL,
+        ...campaignInterface.query,
+    }, {
+        ...campaignInterface.mutation,
+        ...photoLibraryGrapjQLMutation,
     })
 
     app.use(facebookLoginRouter)
     app.use(authenticatedRouter)
 
     app.use('/', graphqlHTTP({
-        schema: AppSchema,
+        schema: graphqlSchema,
         graphiql: true,
     }))
 

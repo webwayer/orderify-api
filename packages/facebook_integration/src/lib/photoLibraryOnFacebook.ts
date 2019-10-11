@@ -53,7 +53,7 @@ export class PhotoLibraryOnFacebook {
             album: this.Album.build({
                 userId,
                 name: album.name,
-            }).toJSON()
+            }).toJSON(),
         }))
 
         const photosBuilded = remotePhotosToSync.map(remoteLibEntry => ({
@@ -61,7 +61,8 @@ export class PhotoLibraryOnFacebook {
             file: remoteLibEntry.photo.images.find(img => img.width + img.height < 2000),
             image: this.Image.build({
                 userId,
-                albumId: albumsBuilded.find(albumBuilded => albumBuilded.albumFB.id === remoteLibEntry.album.id).album.id,
+                albumId: albumsBuilded.
+                    find(albumBuilded => albumBuilded.albumFB.id === remoteLibEntry.album.id).album.id,
             }).toJSON(),
         }))
 

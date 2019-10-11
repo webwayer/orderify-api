@@ -9,30 +9,32 @@ import { Sequelize } from 'sequelize'
 
 import { IComparisonStatic } from './Comparison'
 import { ICampaignStatic } from './Campaign'
+import { CompareCampaignsApi } from './CompareCampaignsApi'
 
-export function CampaignInterfaceFactory(
+export function CompareCampaignsGraphqlFactory(
     Comparison: IComparisonStatic,
     Campaign: ICampaignStatic,
+    compareCampaignsApi: CompareCampaignsApi,
 ) {
     const CampaignType = new GraphQLObjectType({
         name: 'Campaign',
-        fields: () => ({
+        fields: {
             id: { type: new GraphQLNonNull(GraphQLString) },
             userId: { type: new GraphQLNonNull(GraphQLString) },
             photo1Id: { type: new GraphQLNonNull(GraphQLString) },
             photo2Id: { type: new GraphQLNonNull(GraphQLString) },
             comparisonsCount: { type: new GraphQLNonNull(GraphQLInt) },
-        }),
+        },
     })
 
     const ComparisonType = new GraphQLObjectType({
         name: 'Comparison',
-        fields: () => ({
+        fields: {
             id: { type: new GraphQLNonNull(GraphQLString) },
             userId: { type: new GraphQLNonNull(GraphQLString) },
             campaignId: { type: new GraphQLNonNull(GraphQLString) },
             photoWinnerId: { type: new GraphQLNonNull(GraphQLString) },
-        }),
+        },
     })
 
     return {
@@ -47,13 +49,8 @@ export function CampaignInterfaceFactory(
                         type: new GraphQLNonNull(GraphQLString),
                     },
                 },
-                async resolve(_, { photo1Id, photo2Id }, req) {
-                    return Campaign.create({
-                        userId: req.userId,
-                        comparisonsCount: 10,
-                        photo1Id,
-                        photo2Id,
-                    })
+                async resolve(_, { photo1Id, photo2Id }: any, req) {
+                    return compareCampaignsApi.startCampaign(req.userId, photo1Id, photo2Id)
                 },
             },
             submitComparison: {
@@ -66,7 +63,7 @@ export function CampaignInterfaceFactory(
                         type: new GraphQLNonNull(GraphQLString),
                     },
                 },
-                async resolve(_, { campaignId, photoWinnerId }, req) {
+                async resolve(_, { campaignId, photoWinnerId }: any, req) {
                     return Comparison.create({
                         userId: req.userId,
                         campaignId,
