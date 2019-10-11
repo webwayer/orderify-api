@@ -1,4 +1,6 @@
 export * from './lib/Campaign'
 export * from './lib/Comparison'
+export * from './lib/Wallet'
+export * from './lib/WalletApi'
 export * from './lib/CompareCampaignsInterface.graphql'
 export * from './lib/CompareCampaignsApi'

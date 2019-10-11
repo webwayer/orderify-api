@@ -45,5 +45,5 @@ interface ICampaignProps {
     photo1Id: string
     photo2Id: string
     comparisonsCount: number
-    status?: 'active'
+    status?: 'active' | 'finished'
 }

@@ -49,8 +49,8 @@ export function CompareCampaignsGraphqlFactory(
                         type: new GraphQLNonNull(GraphQLString),
                     },
                 },
-                async resolve(_, { photo1Id, photo2Id }: any, req) {
-                    return compareCampaignsApi.startCampaign(req.userId, photo1Id, photo2Id)
+                async resolve(_, { photo1Id, photo2Id }, { userId }) {
+                    return compareCampaignsApi.startCampaign(userId, photo1Id, photo2Id)
                 },
             },
             submitComparison: {
@@ -63,12 +63,8 @@ export function CompareCampaignsGraphqlFactory(
                         type: new GraphQLNonNull(GraphQLString),
                     },
                 },
-                async resolve(_, { campaignId, photoWinnerId }: any, req) {
-                    return Comparison.create({
-                        userId: req.userId,
-                        campaignId,
-                        photoWinnerId,
-                    })
+                async resolve(_, { campaignId, photoWinnerId }, { userId }) {
+                    return compareCampaignsApi.submitComparison(userId, campaignId, photoWinnerId)
                 },
             },
         },
