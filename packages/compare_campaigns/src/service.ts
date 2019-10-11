@@ -10,7 +10,7 @@ import {
 } from './'
 import { IImageLibraryApi } from '@orderify/image_library'
 
-export default function (sequelize: Sequelize, imageLibraryApi: IImageLibraryApi) {
+export function compareCampaignsSericeFactory(sequelize: Sequelize, imageLibraryApi: IImageLibraryApi) {
     const Campaign = CampaignFactory(sequelize)
     const Comparison = ComparisonFactory(sequelize)
     const Wallet = WalletFactory(sequelize)

@@ -3,11 +3,6 @@ import request from 'request-promise'
 import graphqlHTTP from 'express-graphql'
 import { graphqlFactory } from './graphql'
 import {
-    GraphQLSchema,
-    GraphQLObjectType,
-} from 'graphql'
-
-import {
     SequelizeFactory,
     S3Factory,
     LambdaFactory,
@@ -28,6 +23,7 @@ import {
     ImageFactory,
     ImageStorage,
     ImageLibraryReadGraphQLFactory,
+    ImageLibraryApi,
 } from '@orderify/image_library'
 import {
     UserFactory,
@@ -37,11 +33,7 @@ import {
     Auth,
     JWT,
 } from '@orderify/user_profile'
-import {
-    CampaignFactory,
-    ComparisonFactory,
-    CampaignInterfaceFactory,
-} from '@orderify/compare_campaigns'
+import { compareCampaignsSericeFactory } from '@orderify/compare_campaigns'
 
 import { IAppConfig } from './config'
 
@@ -63,6 +55,7 @@ export async function appFactory(CONFIG: IAppConfig) {
     const Image = ImageFactory(sequelize)
     const imageStorage = new ImageStorage(s3, lambda, CONFIG.STORAGE)
     const imageLibraryReadGraphQL = ImageLibraryReadGraphQLFactory(Album, Image, imageStorage)
+    const imageLibratyApi = new ImageLibraryApi(Image)
 
     const OAUTH_REDIRECT_URL = `${CONFIG.API.PROTOCOL}://${CONFIG.API.HOST}:${CONFIG.API.PORT}/${CONFIG.FACEBOOK.OAUTH_REDIRECT_PATH}`
     const facebookOauth = new FacebookOauth(request, { ...CONFIG.FACEBOOK, OAUTH_REDIRECT_URL })
@@ -83,18 +76,16 @@ export async function appFactory(CONFIG: IAppConfig) {
         auth,
     )
 
-    const Campaign = CampaignFactory(sequelize)
-    const Comparison = ComparisonFactory(sequelize)
-    const campaignInterface = CampaignInterfaceFactory(Comparison, Campaign)
+    const { compareCampaignsInterface } = compareCampaignsSericeFactory(sequelize, imageLibratyApi)
 
     const app = express()
 
     const graphqlSchema = graphqlFactory({
         ...userProfileReadGraphQL,
         ...imageLibraryReadGraphQL,
-        ...campaignInterface.query,
+        ...compareCampaignsInterface.query,
     }, {
-        ...campaignInterface.mutation,
+        ...compareCampaignsInterface.mutation,
         ...photoLibraryGrapjQLMutation,
     })
 
@@ -114,16 +105,6 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     if (CONFIG.SEQUELIZE.SYNC_SCHEMAS) {
         await sequelize.sync({ force: !!CONFIG.SEQUELIZE.DROP_ON_SYNC })
-
-        if (CONFIG.SEQUELIZE.DROP_ON_SYNC) {
-            await Campaign.bulkCreate([...new Array(20).fill(null).map((_, index) => ({
-                id: (index + 1).toString(),
-                photo1Id: 'photo1Id',
-                photo2Id: 'photo2Id',
-                comparisonsCount: 10,
-                userId: 'userId',
-            }))])
-        }
     }
 
     return app

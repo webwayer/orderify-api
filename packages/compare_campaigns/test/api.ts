@@ -1,4 +1,4 @@
-import serviceFactory from '../src/service'
+import { compareCampaignsSericeFactory} from '../src/service'
 import { DEFAULT_CONFIG, graphqlFactory } from '@orderify/app'
 import { SequelizeFactory } from '@orderify/io'
 import { graphql } from 'graphql'
@@ -28,7 +28,7 @@ const {
     Comparison,
     Wallet,
     walletApi,
-} = serviceFactory(sequelize, new StubImageLibraryApi())
+} = compareCampaignsSericeFactory(sequelize, new StubImageLibraryApi())
 const schema = graphqlFactory(compareCampaignsInterface.query, compareCampaignsInterface.mutation)
 
 describe('Compare Campaigns', () => {
