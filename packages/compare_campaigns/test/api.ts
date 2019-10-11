@@ -1,8 +1,8 @@
-import { compareCampaignsSericeFactory} from '../src/service'
-import { DEFAULT_CONFIG, graphqlFactory } from '@orderify/app'
+import { compareCampaignsSericeFactory } from '../src/service'
+import { DEFAULT_CONFIG, updateConfig, graphqlFactory } from '@orderify/app'
 import { SequelizeFactory } from '@orderify/io'
 import { graphql } from 'graphql'
-import { mutation } from './graphqlQuery'
+import { mutation, query } from './graphqlQuery'
 import { IImageLibraryApi } from '@orderify/image_library'
 import assert from 'assert'
 
@@ -21,7 +21,7 @@ class StubImageLibraryApi implements IImageLibraryApi {
     }
 }
 
-const sequelize = SequelizeFactory(DEFAULT_CONFIG.DATABASE)
+const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
 const {
     compareCampaignsInterface,
     Campaign,
@@ -34,6 +34,190 @@ const schema = graphqlFactory(compareCampaignsInterface.query, compareCampaignsI
 describe('Compare Campaigns', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
+    })
+
+    describe('randomActiveCampaign', () => {
+        it('success', async () => {
+            await Campaign.bulkCreate(
+                Array(10).fill(null).map((_, i) => ({
+                    id: i.toString(),
+                    userId: `user${i}`,
+                    photo1Id: `photo1${i}`,
+                    photo2Id: `photo2${i}`,
+                })),
+            )
+
+            const result = await graphql({
+                schema,
+                source: query(
+                    'randomActiveCampaign',
+                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
+                ),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert(result.data.randomActiveCampaign)
+        })
+
+        it('success - return normal first', async () => {
+            await Campaign.bulkCreate(
+                [{
+                    id: 'campaign1',
+                    userId: `user2`,
+                    photo1Id: `photo1`,
+                    photo2Id: `photo2`,
+                }, {
+                    id: 'campaign2',
+                    userId: `user2`,
+                    photo1Id: `photo1`,
+                    photo2Id: `photo2`,
+                    type: 'filler',
+                }],
+            )
+
+            const result = await graphql({
+                schema,
+                source: query(
+                    'randomActiveCampaign',
+                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
+                ),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert.equal(result.data.randomActiveCampaign.id, 'campaign1')
+        })
+
+        it('success - return filler otherwise', async () => {
+            await Campaign.bulkCreate(
+                [{
+                    id: 'campaign1',
+                    userId: `user1`,
+                    photo1Id: `photo1`,
+                    photo2Id: `photo2`,
+                }, {
+                    id: 'campaign2',
+                    userId: `user2`,
+                    photo1Id: `photo1`,
+                    photo2Id: `photo2`,
+                    type: 'filler',
+                }],
+            )
+
+            const result = await graphql({
+                schema,
+                source: query(
+                    'randomActiveCampaign',
+                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
+                ),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert.equal(result.data.randomActiveCampaign.id, 'campaign2')
+        })
+
+        it('success - return only not mine', async () => {
+            await Campaign.bulkCreate(
+                Array(2).fill(null).map((_, i) => ({
+                    id: i.toString(),
+                    userId: `user${i + 1}`,
+                    photo1Id: `photo1${i + 1}`,
+                    photo2Id: `photo2${i + 1}`,
+                })),
+            )
+
+            const result = await graphql({
+                schema,
+                source: query(
+                    'randomActiveCampaign',
+                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
+                ),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert.equal(result.data.randomActiveCampaign.userId, 'user2')
+        })
+
+        it('fail - not return if voted', async () => {
+            await Campaign.bulkCreate(
+                Array(10).fill(null).map((_, i) => ({
+                    id: i.toString(),
+                    userId: `user${i}`,
+                    photo1Id: `photo1${i}`,
+                    photo2Id: `photo2${i}`,
+                    comparators: ['user1'],
+                })),
+            )
+
+            const result = await graphql({
+                schema,
+                source: query(
+                    'randomActiveCampaign',
+                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
+                ),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert(!result.data.randomActiveCampaign)
+        })
+
+        it('fail - not return finished', async () => {
+            await Campaign.bulkCreate(
+                Array(10).fill(null).map((_, i) => ({
+                    id: i.toString(),
+                    userId: `user${i}`,
+                    photo1Id: `photo1${i}`,
+                    photo2Id: `photo2${i}`,
+                    status: 'finished',
+                })),
+            )
+
+            const result = await graphql({
+                schema,
+                source: query(
+                    'randomActiveCampaign',
+                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
+                ),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert(!result.data.randomActiveCampaign)
+        })
+
+        it('fail - not return mine', async () => {
+            await Campaign.bulkCreate(
+                Array(1).fill(null).map((_, i) => ({
+                    id: i.toString(),
+                    userId: `user${i + 1}`,
+                    photo1Id: `photo1${i + 1}`,
+                    photo2Id: `photo2${i + 1}`,
+                })),
+            )
+
+            const result = await graphql({
+                schema,
+                source: query(
+                    'randomActiveCampaign',
+                    ['id', 'userId', 'photo1Id', 'photo2Id', 'comparisonsCount'],
+                ),
+                contextValue: {
+                    userId: 'user1',
+                },
+            })
+
+            assert(!result.data.randomActiveCampaign)
+        })
     })
 
     describe('startCampaign', () => {

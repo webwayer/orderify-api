@@ -5,15 +5,10 @@ import {
     GraphQLNonNull,
     GraphQLInt,
 } from 'graphql'
-import { Sequelize } from 'sequelize'
 
-import { IComparisonStatic } from './Comparison'
-import { ICampaignStatic } from './Campaign'
 import { CompareCampaignsApi } from './CompareCampaignsApi'
 
 export function CompareCampaignsGraphqlFactory(
-    Comparison: IComparisonStatic,
-    Campaign: ICampaignStatic,
     compareCampaignsApi: CompareCampaignsApi,
 ) {
     const CampaignType = new GraphQLObjectType({
@@ -71,49 +66,44 @@ export function CompareCampaignsGraphqlFactory(
         query: {
             randomActiveCampaign: {
                 type: CampaignType,
-                async resolve(_, where, req) {
-                    return Campaign.findOne({
-                        where: {
-                            status: 'active',
-                        },
-                        order: Sequelize.literal('random()'),
-                    })
+                async resolve(_, where, { userId }) {
+                    return compareCampaignsApi.randomActiveCampaign(userId)
                 },
             },
-            Campaigns: {
-                type: new GraphQLList(CampaignType),
-                args: {
-                    id: {
-                        type: GraphQLString,
-                    },
-                    userId: {
-                        type: new GraphQLNonNull(GraphQLString),
-                    },
-                },
-                async resolve(_, where, req) {
-                    // tslint:disable-next-line: curly
-                    if (where.userId === 'me') where.userId = req.userId
+            // Campaigns: {
+            //     type: new GraphQLList(CampaignType),
+            //     args: {
+            //         id: {
+            //             type: GraphQLString,
+            //         },
+            //         userId: {
+            //             type: new GraphQLNonNull(GraphQLString),
+            //         },
+            //     },
+            //     async resolve(_, where, req) {
+            //         // tslint:disable-next-line: curly
+            //         if (where.userId === 'me') where.userId = req.userId
 
-                    return Campaign.findAll({ where })
-                },
-            },
-            Comparisons: {
-                type: new GraphQLList(ComparisonType),
-                args: {
-                    id: {
-                        type: GraphQLString,
-                    },
-                    userId: {
-                        type: new GraphQLNonNull(GraphQLString),
-                    },
-                },
-                async resolve(_, where, req) {
-                    // tslint:disable-next-line: curly
-                    if (where.userId === 'me') where.userId = req.userId
+            //         return Campaign.findAll({ where })
+            //     },
+            // },
+            // Comparisons: {
+            //     type: new GraphQLList(ComparisonType),
+            //     args: {
+            //         id: {
+            //             type: GraphQLString,
+            //         },
+            //         userId: {
+            //             type: new GraphQLNonNull(GraphQLString),
+            //         },
+            //     },
+            //     async resolve(_, where, req) {
+            //         // tslint:disable-next-line: curly
+            //         if (where.userId === 'me') where.userId = req.userId
 
-                    return Comparison.findAll({ where })
-                },
-            },
+            //         return Comparison.findAll({ where })
+            //     },
+            // },
         },
     }
 }

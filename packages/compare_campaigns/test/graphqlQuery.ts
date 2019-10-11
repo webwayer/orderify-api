@@ -1,4 +1,4 @@
-import { compose, join, toPairs, map, ifElse, identity, is, curry } from 'ramda'
+import { compose, join, toPairs, map, ifElse, identity, is, curry, always } from 'ramda'
 
 const appendS = curry((s2: string, s: string) => s + s2)
 const prependS = curry((s2: string, s: string) => s2 + s)
@@ -7,6 +7,7 @@ const roundBrackets = compose(prependS('('), appendS(')'))
 const curlyBrackets = compose(prependS('{'), appendS('}'))
 const quotes = compose(prependS('"'), appendS('"'))
 
+const queryFn = compose(prependS('query'), curlyBrackets)
 const mutationFn = compose(prependS('mutation'), curlyBrackets)
 const argsFn = compose(
     roundBrackets,
@@ -18,7 +19,10 @@ const argsFn = compose(
 const fieldsFn = compose(curlyBrackets, join(',')) as (fields: string[]) => string
 
 export const mutation = (name: string, args: IArgs, fields: string[]) =>
-    mutationFn(join('', [name, argsFn(args), fieldsFn(fields)]))
+    mutationFn(join('', [name, ifElse(identity, argsFn, always(''))(args), fieldsFn(fields)]))
+
+export const query = (name: string, fields: string[], args?: IArgs) =>
+    queryFn(join('', [name, ifElse(identity, argsFn, always(''))(args), fieldsFn(fields)]))
 
 interface IArgs {
     [key: string]: string | number

@@ -26,11 +26,22 @@ export function CampaignFactory(
         comparisonsCount: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue: 10,
+        },
+        comparators: {
+            type: DataTypes.ARRAY(DataTypes.STRING(32)),
+            allowNull: false,
+            defaultValue: [],
         },
         status: {
             type: DataTypes.STRING(32),
             allowNull: false,
             defaultValue: 'active',
+        },
+        type: {
+            type: DataTypes.STRING(32),
+            allowNull: false,
+            defaultValue: 'normal',
         },
     }, {
         paranoid: true,
@@ -44,6 +55,8 @@ interface ICampaignProps {
     userId: string
     photo1Id: string
     photo2Id: string
-    comparisonsCount: number
+    comparisonsCount?: number
     status?: 'active' | 'finished'
+    type?: 'normal' | 'filler'
+    comparators?: string[]
 }

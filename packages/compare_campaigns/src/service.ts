@@ -12,14 +12,14 @@ import {
 import { IImageLibraryApi } from '@orderify/image_library'
 
 export function compareCampaignsSericeFactory(sequelize: Sequelize, imageLibraryApi: IImageLibraryApi) {
+    const Wallet = WalletFactory(sequelize)
+    const walletApi = new WalletApi(Wallet)
+
     const Campaign = CampaignFactory(sequelize)
     const Comparison = ComparisonFactory(sequelize)
-    const Wallet = WalletFactory(sequelize)
-
-    const walletApi = new WalletApi(Wallet)
     const compareCampaignsApi = new CompareCampaignsApi(Campaign, Comparison, walletApi, imageLibraryApi)
 
-    const compareCampaignsInterface = CompareCampaignsGraphqlFactory(Comparison, Campaign, compareCampaignsApi)
+    const compareCampaignsInterface = CompareCampaignsGraphqlFactory(compareCampaignsApi)
 
     return { Wallet, walletApi, Comparison, Campaign, compareCampaignsApi, compareCampaignsInterface }
 }
