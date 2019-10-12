@@ -21,6 +21,9 @@ class StubImageLibraryApi implements IImageLibraryApi {
     }
 }
 
+const campaignDefaultFields = ['id', 'userId', 'photo1Id', 'photo2Id', 'status']
+const comparisonDefaultFields = ['id', 'userId', 'campaignId', 'photoWinnerId']
+
 const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
 const {
     compareCampaignsInterface,
@@ -71,7 +74,7 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: query({
                     name: 'randomActiveCampaign',
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -101,7 +104,7 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: query({
                     name: 'randomActiveCampaign',
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -131,7 +134,7 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: query({
                     name: 'randomActiveCampaign',
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -155,7 +158,7 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: query({
                     name: 'randomActiveCampaign',
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -180,7 +183,7 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: query({
                     name: 'randomActiveCampaign',
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -205,7 +208,7 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: query({
                     name: 'randomActiveCampaign',
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -229,7 +232,7 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: query({
                     name: 'randomActiveCampaign',
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -252,7 +255,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'startCampaign',
                     args: { photo1Id: 'photo1', photo2Id: 'photo2' },
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -268,7 +271,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'startCampaign',
                     args: { photo1Id: 'photo1', photo2Id: 'photo2' },
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -289,7 +292,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'startCampaign',
                     args: { photo1Id: 'photo1', photo2Id: 'photo2' },
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',
@@ -310,7 +313,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'startCampaign',
                     args: { photo1Id: '_photo1', photo2Id: '_photo2' },
-                    fields: ['id', 'userId', 'photo1Id', 'photo2Id'],
+                    fields: campaignDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',
@@ -336,7 +339,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',
@@ -360,7 +363,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',
@@ -386,7 +389,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',
@@ -400,7 +403,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user3',
@@ -416,7 +419,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',
@@ -440,7 +443,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -464,7 +467,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo3' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user1',
@@ -489,7 +492,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',
@@ -514,7 +517,7 @@ describe('Compare Campaigns', () => {
                 source: mutation({
                     name: 'submitComparison',
                     args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
-                    fields: ['id', 'userId', 'campaignId', 'photoWinnerId'],
+                    fields: comparisonDefaultFields,
                 }),
                 contextValue: {
                     userId: 'user2',

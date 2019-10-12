@@ -14,6 +14,39 @@ export class CompareCampaignsApi {
         private imageLibraryApi: IImageLibraryApi,
     ) { }
 
+    public async activeCampaigns(userId: string) {
+        return (await this.Campaign.findAll({
+            where: {
+                status: 'active',
+                userId,
+            },
+        })).map(c => c.toJSON())
+    }
+
+    public async finishedCampaigns(userId: string) {
+        const campaigns = (await this.Campaign.findAll({
+            where: {
+                status: 'finished',
+                userId,
+            },
+        })).map(c => c.toJSON())
+
+        const comparisons = await this.Comparison.findAll({
+            where: {
+                id: {
+                    [Op.in]: campaigns.map(c => c.id),
+                },
+            },
+        })
+
+        const campaingsWithResults = campaigns.map(cam => ({
+            ...cam,
+            results: comparisons.filter(com => cam.id === com.campaignId).map(com => com.photoWinnerId),
+        }))
+
+        return campaingsWithResults
+    }
+
     public async randomActiveCampaign(userId: string) {
         const normalCampaign = await this.Campaign.findOne({
             where: {

@@ -35,7 +35,8 @@
                 "named": "never",
                 "asyncArrow": "always"
             }
-        ]
+        ],
+        "no-return-await": false
     },
     "rulesDirectory": []
 }

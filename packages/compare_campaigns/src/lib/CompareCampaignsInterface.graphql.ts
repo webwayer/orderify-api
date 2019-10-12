@@ -9,31 +9,43 @@ import {
 import { CompareCampaignsApi } from './CompareCampaignsApi'
 import { WalletApi } from './WalletApi'
 
+const defaultCampaignFields = {
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+    photo1Id: { type: new GraphQLNonNull(GraphQLString) },
+    photo2Id: { type: new GraphQLNonNull(GraphQLString) },
+    status: { type: new GraphQLNonNull(GraphQLString) },
+}
+
+const CampaignType = new GraphQLObjectType({
+    name: 'Campaign',
+    fields: {
+        ...defaultCampaignFields,
+    },
+})
+
+const CampaignWithResultsType = new GraphQLObjectType({
+    name: 'CampaignWithResults',
+    fields: {
+        ...defaultCampaignFields,
+        results: { type: new GraphQLList(GraphQLString) },
+    },
+})
+
+const ComparisonType = new GraphQLObjectType({
+    name: 'Comparison',
+    fields: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        userId: { type: new GraphQLNonNull(GraphQLString) },
+        campaignId: { type: new GraphQLNonNull(GraphQLString) },
+        photoWinnerId: { type: new GraphQLNonNull(GraphQLString) },
+    },
+})
+
 export function CompareCampaignsGraphqlFactory(
     compareCampaignsApi: CompareCampaignsApi,
     walletApi: WalletApi,
 ) {
-    const CampaignType = new GraphQLObjectType({
-        name: 'Campaign',
-        fields: {
-            id: { type: new GraphQLNonNull(GraphQLString) },
-            userId: { type: new GraphQLNonNull(GraphQLString) },
-            photo1Id: { type: new GraphQLNonNull(GraphQLString) },
-            photo2Id: { type: new GraphQLNonNull(GraphQLString) },
-            comparisonsCount: { type: new GraphQLNonNull(GraphQLInt) },
-        },
-    })
-
-    const ComparisonType = new GraphQLObjectType({
-        name: 'Comparison',
-        fields: {
-            id: { type: new GraphQLNonNull(GraphQLString) },
-            userId: { type: new GraphQLNonNull(GraphQLString) },
-            campaignId: { type: new GraphQLNonNull(GraphQLString) },
-            photoWinnerId: { type: new GraphQLNonNull(GraphQLString) },
-        },
-    })
-
     return {
         mutation: {
             startCampaign: {
@@ -73,45 +85,23 @@ export function CompareCampaignsGraphqlFactory(
                 },
             },
             walletBalance: {
-                type: GraphQLInt,
+                type: new GraphQLNonNull(GraphQLInt),
                 async resolve(_, where, { userId }) {
                     return walletApi.balance(userId)
                 },
             },
-            // Campaigns: {
-            //     type: new GraphQLList(CampaignType),
-            //     args: {
-            //         id: {
-            //             type: GraphQLString,
-            //         },
-            //         userId: {
-            //             type: new GraphQLNonNull(GraphQLString),
-            //         },
-            //     },
-            //     async resolve(_, where, req) {
-            //         // tslint:disable-next-line: curly
-            //         if (where.userId === 'me') where.userId = req.userId
-
-            //         return Campaign.findAll({ where })
-            //     },
-            // },
-            // Comparisons: {
-            //     type: new GraphQLList(ComparisonType),
-            //     args: {
-            //         id: {
-            //             type: GraphQLString,
-            //         },
-            //         userId: {
-            //             type: new GraphQLNonNull(GraphQLString),
-            //         },
-            //     },
-            //     async resolve(_, where, req) {
-            //         // tslint:disable-next-line: curly
-            //         if (where.userId === 'me') where.userId = req.userId
-
-            //         return Comparison.findAll({ where })
-            //     },
-            // },
+            activeCampaigns: {
+                type: new GraphQLList(CampaignType),
+                async resolve(_, where, { userId }) {
+                    return compareCampaignsApi.activeCampaigns(userId)
+                },
+            },
+            finishedCampaigns: {
+                type: new GraphQLList(CampaignWithResultsType),
+                async resolve(_, where, { userId }) {
+                    return compareCampaignsApi.finishedCampaigns(userId)
+                },
+            },
         },
     }
 }

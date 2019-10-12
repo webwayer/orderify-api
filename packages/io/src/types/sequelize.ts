@@ -39,6 +39,7 @@ interface ISSFindOptions<I> {
         [K in keyof I]?: I[K] | {
             [Op.not]?: I[K]
             [Op.contains]?: I[K],
+            [Op.in]?: Array<I[K]>,
         }
     } & {
         [Op.not]?: {

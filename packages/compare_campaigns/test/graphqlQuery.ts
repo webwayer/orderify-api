@@ -15,8 +15,8 @@ const argsFn = compose(
     map(join(':')),
     toPairs,
     map(ifElse(is(String), quotes, identity)),
-) as unknown as (args: IArgs) => string
-const fieldsFn = compose(curlyBrackets, join(',')) as (fields: string[]) => string
+) as unknown as (args: IGraphQlAction['args']) => string
+const fieldsFn = compose(curlyBrackets, join(',')) as (fields: IGraphQlAction['fields']) => string
 
 export const mutation = ({ name, fields, args }: IGraphQlAction) =>
     mutationFn(join('', [
@@ -34,9 +34,6 @@ export const query = ({ name, fields, args }: IGraphQlAction) =>
 
 interface IGraphQlAction {
     name: string,
-    args?: IArgs,
+    args?: { [key: string]: string | number },
     fields?: string[],
-}
-interface IArgs {
-    [key: string]: string | number
 }
