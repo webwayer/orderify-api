@@ -1,10 +1,9 @@
+import assert from 'assert'
 import { compareCampaignsSericeFactory } from '../src/service'
-import { DEFAULT_CONFIG, updateConfig, graphqlFactory } from '@orderify/app'
+import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory, mutation, query  } from '@orderify/app'
 import { SequelizeFactory } from '@orderify/io'
 import { graphql } from 'graphql'
-import { mutation, query } from './graphqlQuery'
 import { IImageLibraryApi } from '@orderify/image_library'
-import assert from 'assert'
 
 class StubImageLibraryApi implements IImageLibraryApi {
     public async findImageById(id: string) {
@@ -31,7 +30,7 @@ const {
     Wallet,
     walletApi,
 } = compareCampaignsSericeFactory(sequelize, new StubImageLibraryApi())
-const schema = graphqlFactory(compareCampaignsInterface.query, compareCampaignsInterface.mutation)
+const schema = graphqlSchemaFactory(compareCampaignsInterface.query, compareCampaignsInterface.mutation)
 
 describe('Compare Campaigns', () => {
     beforeEach(async () => {

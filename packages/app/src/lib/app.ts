@@ -1,7 +1,7 @@
 import express from 'express'
 import request from 'request-promise'
 import graphqlHTTP from 'express-graphql'
-import { graphqlFactory } from './graphql'
+import { graphqlSchemaFactory } from './graphqlSchema'
 import {
     SequelizeFactory,
     S3Factory,
@@ -80,7 +80,7 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const app = express()
 
-    const graphqlSchema = graphqlFactory({
+    const graphqlSchema = graphqlSchemaFactory({
         ...userProfileReadGraphQL,
         ...imageLibraryReadGraphQL,
         ...compareCampaignsInterface.query,
