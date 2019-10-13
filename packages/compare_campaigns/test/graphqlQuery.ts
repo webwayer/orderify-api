@@ -7,9 +7,6 @@ const roundBrackets = compose(prependS('('), appendS(')'))
 const curlyBrackets = compose(prependS('{'), appendS('}'))
 const quotes = compose(prependS('"'), appendS('"'))
 
-const queryFn = compose(prependS('query'), curlyBrackets)
-const mutationFn = compose(prependS('mutation'), curlyBrackets)
-
 const argNormalize = compose(when(propIs(String, 'enum'), prop('enum')), when(is(String), quotes))
 const argsFn = ifElse(is(Object), compose(
     roundBrackets,
@@ -21,19 +18,15 @@ const argsFn = ifElse(is(Object), compose(
 
 const fieldsFn = ifElse(is(Array), compose(curlyBrackets, join(',')), always(''))
 
-export const mutation = ({ name, fields, args }: IGraphQlAction) =>
-    mutationFn(join('', [
+const actionFn = ({ name, fields, args }: IGraphQlAction) =>
+    join('', [
         name,
         argsFn(args),
         fieldsFn(fields),
-    ]))
+    ])
 
-export const query = ({ name, fields, args }: IGraphQlAction) =>
-    queryFn(join('', [
-        name,
-        argsFn(args),
-        fieldsFn(fields),
-    ]))
+export const mutation = compose(prependS('mutation'), curlyBrackets, actionFn)
+export const query = compose(prependS('query'), curlyBrackets, actionFn)
 
 interface IGraphQlAction {
     name: string,
