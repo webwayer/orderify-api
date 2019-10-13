@@ -1,6 +1,6 @@
 import { IWalletStatic } from './_/Wallet'
 
-export class WalletOperationsApi {
+export class WalletOperations {
     constructor(private Wallet: IWalletStatic) { }
 
     public async deposit(userId: string, amount: number) {
@@ -29,7 +29,7 @@ export class WalletOperationsApi {
         })
 
         if (!wallet || wallet.balance < amount) {
-            throw new Error('not enough points')
+            throw new Error('not enough funds')
         }
 
         await this.Wallet.update({
@@ -53,4 +53,4 @@ export class WalletOperationsApi {
 }
 
 type PublicPart<T> = { [K in keyof T]: T[K] }
-export type IWalletOperationsApi = PublicPart<WalletOperationsApi>
+export type IwalletOperations = PublicPart<WalletOperations>

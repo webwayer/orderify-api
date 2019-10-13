@@ -3,17 +3,17 @@ import {
     GraphQLInt,
 } from 'graphql'
 
-import { WalletOperationsApi } from './_/WalletOperationsApi'
+import { WalletOperations } from './_/WalletOperations'
 
 export function walletOperationsGraphqlFactory(
-    walletOperationsApi: WalletOperationsApi,
+    walletOperations: WalletOperations,
 ) {
     return {
         query: {
             walletBalance: {
                 type: new GraphQLNonNull(GraphQLInt),
                 async resolve(_, where, { userId }) {
-                    return walletOperationsApi.balance(userId)
+                    return walletOperations.balance(userId)
                 },
             },
         },

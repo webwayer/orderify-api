@@ -34,7 +34,7 @@ import {
     JWT,
 } from '@orderify/user_profile'
 import { compareCampaignsServiceFactory } from '@orderify/compare_campaigns'
-import { walletOperationsServiceFactory, WalletOperationsApi } from '@orderify/wallet_operations'
+import { walletOperationsServiceFactory } from '@orderify/wallet_operations'
 
 import { IAppConfig } from './config'
 
@@ -77,8 +77,8 @@ export async function appFactory(CONFIG: IAppConfig) {
         auth,
     )
 
-    const { walletOperationsApi, walletOperationsGraphql } = walletOperationsServiceFactory(sequelize)
-    const { compareCampaignsGraphql } = compareCampaignsServiceFactory(sequelize, imageLibratyApi, walletOperationsApi)
+    const { walletOperations, walletOperationsGraphql } = walletOperationsServiceFactory(sequelize)
+    const { compareCampaignsGraphql } = compareCampaignsServiceFactory(sequelize, imageLibratyApi, walletOperations)
 
     const app = express()
 

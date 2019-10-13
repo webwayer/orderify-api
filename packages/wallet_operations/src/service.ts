@@ -2,14 +2,14 @@ import { Sequelize } from 'sequelize'
 
 import {
     WalletFactory,
-    WalletOperationsApi,
+    WalletOperations,
     walletOperationsGraphqlFactory,
 } from './'
 
 export function walletOperationsServiceFactory(sequelize: Sequelize) {
     const Wallet = WalletFactory(sequelize)
-    const walletOperationsApi = new WalletOperationsApi(Wallet)
-    const walletOperationsGraphql = walletOperationsGraphqlFactory(walletOperationsApi)
+    const walletOperations = new WalletOperations(Wallet)
+    const walletOperationsGraphql = walletOperationsGraphqlFactory(walletOperations)
 
-    return { Wallet, walletOperationsApi, walletOperationsGraphql }
+    return { Wallet, walletOperations, walletOperationsGraphql }
 }

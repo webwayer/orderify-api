@@ -1,13 +1,12 @@
 import assert from 'assert'
 import { walletOperationsServiceFactory } from '../service'
-import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory, mutation, query } from '@orderify/app'
+import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory, query } from '@orderify/app'
 import { SequelizeFactory } from '@orderify/io'
 import { graphql } from 'graphql'
 
 const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
 const {
     Wallet,
-    walletOperationsApi,
     walletOperationsGraphql,
 } = walletOperationsServiceFactory(sequelize)
 const schema = graphqlSchemaFactory({

@@ -1,4 +1,4 @@
 export * from './lib/_/_/Wallet'
-export * from './lib/_/WalletOperationsApi'
-export * from './lib/walletOperationsInterface.graphql'
+export * from './lib/_/WalletOperations'
+export * from './lib/walletOperations.graphql'
 export * from './service'
