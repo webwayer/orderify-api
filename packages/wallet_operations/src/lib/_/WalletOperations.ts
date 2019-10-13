@@ -1,7 +1,7 @@
-import { IWalletStatic } from './_/Wallet'
+import { IWallet } from './_/Wallet'
 
 export class WalletOperations {
-    constructor(private Wallet: IWalletStatic) { }
+    constructor(private Wallet: IWallet) { }
 
     public async deposit(userId: string, amount: number) {
         const wallet = (await this.Wallet.findOne({

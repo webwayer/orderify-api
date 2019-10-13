@@ -1,11 +1,11 @@
-import { ISSStaticRead, ISSStaticWrite, ISSTimestampsParanoid } from '@orderify/io'
+import { simpleSequelizeModelFactory } from '@orderify/io'
 import { DataTypes, Sequelize } from 'sequelize'
 import shortUUID from 'short-uuid'
 
 export function WalletFactory(
     sequelize: Sequelize,
 ) {
-    return sequelize.define('Wallet', {
+    return simpleSequelizeModelFactory<IWalletProps>(sequelize.define('Wallet', {
         id: {
             type: DataTypes.STRING(32),
             primaryKey: true,
@@ -22,12 +22,10 @@ export function WalletFactory(
         },
     }, {
         paranoid: true,
-    }) as unknown as IWalletStatic
+    }))
 }
 
-export type IWalletStaticRead = ISSStaticRead<IWalletProps, ISSTimestampsParanoid>
-export type IWalletStaticWrite = ISSStaticWrite<IWalletProps, ISSTimestampsParanoid>
-export type IWalletStatic = IWalletStaticRead & IWalletStaticWrite
+export type IWallet = ReturnType<typeof WalletFactory>
 interface IWalletProps {
     userId: string
     balance?: number

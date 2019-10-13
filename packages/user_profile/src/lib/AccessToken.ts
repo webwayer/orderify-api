@@ -1,11 +1,11 @@
-import { ISSStaticRead, ISSStaticWrite, ISSTimestamps } from '@orderify/io'
+import { simpleSequelizeModelFactory } from '@orderify/io'
 import { Sequelize, DataTypes } from 'sequelize'
 import shortUUID from 'short-uuid'
 
 export function AccessTokenFactory(
     sequelize: Sequelize,
 ) {
-    const AccessToken = sequelize.define('AccessToken', {
+    return simpleSequelizeModelFactory<IAccessTokenProps>(sequelize.define('AccessToken', {
         id: {
             type: DataTypes.STRING(32),
             primaryKey: true,
@@ -15,14 +15,10 @@ export function AccessTokenFactory(
             type: DataTypes.STRING(32),
             allowNull: false,
         },
-    })
-
-    return AccessToken as unknown as IAccessTokenStatic
+    }))
 }
 
-export type IAccessTokenStaticRead = ISSStaticRead<IAccessTokenProps, ISSTimestamps>
-export type IAccessTokenStaticWrite = ISSStaticWrite<IAccessTokenProps, ISSTimestamps>
-export type IAccessTokenStatic = IAccessTokenStaticRead & IAccessTokenStaticWrite
+export type IAccessToken = ReturnType<typeof AccessTokenFactory>
 interface IAccessTokenProps {
     userId: string
 }

@@ -1,10 +1,10 @@
 import { PhotoLibraryOnFacebook } from './PhotoLibraryOnFacebook'
-import { IMetadataStaticRead } from '@orderify/metadata_storage'
+import { IMetadata } from '@orderify/metadata_storage'
 import { GraphQLNonNull, GraphQLBoolean, GraphQLObjectType } from 'graphql'
 
 export function photoLibraryGrapjQLMutationFactory(
     photoLibraryOnFacebook: PhotoLibraryOnFacebook,
-    metadata: IMetadataStaticRead,
+    metadata: IMetadata,
 ) {
     return {
         sync: {

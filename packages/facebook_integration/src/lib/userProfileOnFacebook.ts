@@ -1,6 +1,6 @@
 import { FacebookGraph } from './FacebookGraph'
-import { IMetadataStatic } from '../../../metadata_storage/src'
-import { IUserStatic, Auth } from '@orderify/user_profile'
+import { IMetadata } from '../../../metadata_storage/src'
+import { IUser, Auth } from '@orderify/user_profile'
 
 interface IFacebookAccessData {
     access_token: string
@@ -12,9 +12,9 @@ interface IFacebookAccessData {
 
 export class UserProfileOnFacebook {
     constructor(
-        private User: IUserStatic,
+        private User: IUser,
         private auth: Auth,
-        private Metadata: IMetadataStatic,
+        private Metadata: IMetadata,
         private facebookGraph: FacebookGraph,
     ) { }
 

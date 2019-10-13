@@ -1,6 +1,6 @@
 import { FacebookGraph } from './FacebookGraph'
-import { IMetadataStatic } from '@orderify/metadata_storage'
-import { ImageStorage, IAlbumStaticWrite, IImageStaticWrite } from '@orderify/image_library'
+import { IMetadata } from '@orderify/metadata_storage'
+import { ImageStorage, IAlbum, IImage } from '@orderify/image_library'
 import { uniq, prop, differenceWith, eqBy, path, map } from 'ramda'
 
 interface IFBAlbum {
@@ -31,9 +31,9 @@ interface IFBPhoto {
 
 export class PhotoLibraryOnFacebook {
     constructor(
-        private Album: IAlbumStaticWrite,
-        private Image: IImageStaticWrite,
-        private Metadata: IMetadataStatic,
+        private Album: IAlbum,
+        private Image: IImage,
+        private Metadata: IMetadata,
         private imageStorage: ImageStorage,
         private facebookGraph: FacebookGraph,
     ) { }
@@ -53,7 +53,7 @@ export class PhotoLibraryOnFacebook {
             album: this.Album.build({
                 userId,
                 name: album.name,
-            }).toJSON(),
+            }),
         }))
 
         const photosBuilded = remotePhotosToSync.map(remoteLibEntry => ({
@@ -63,7 +63,7 @@ export class PhotoLibraryOnFacebook {
                 userId,
                 albumId: albumsBuilded.
                     find(albumBuilded => albumBuilded.albumFB.id === remoteLibEntry.album.id).album.id,
-            }).toJSON(),
+            }),
         }))
 
         const albumsMetadataBuilded = albumsBuilded.map(albumBuilded => {
@@ -75,7 +75,7 @@ export class PhotoLibraryOnFacebook {
                 data: {
                     album: albumBuilded.albumFB,
                 },
-            }).toJSON()
+            })
         })
         const photosMetadataBuilded = photosBuilded.map(photoBuilded => {
             return this.Metadata.build({
@@ -86,7 +86,7 @@ export class PhotoLibraryOnFacebook {
                 data: {
                     photo: photoBuilded.photoFB,
                 },
-            }).toJSON()
+            })
         })
 
         const chunkedArrayOfUrls = chunks(photosBuilded.map(

@@ -1,41 +1,37 @@
-import { Sequelize, Op } from 'sequelize'
+import { Sequelize, Op, Model, ModelCtor } from 'sequelize'
 
-export interface ISSStaticRead<I, ITimestamps, IID = ISSDefaultId> {
-    findByPk(pk: string): Promise<ISSFullInstance<I & IID & ITimestamps> | undefined>
-    findAll(options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>):
-        Promise<Array<ISSFullInstance<I & IID & ITimestamps>>>
-    findOne(options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>):
-        Promise<ISSFullInstance<I & IID & ITimestamps> | undefined>
-}
-export interface ISSStaticWrite<I, ITimestamps, IID = ISSDefaultId> {
-    build(instance: I): ISSFullInstance<I & IID & ITimestamps>
-    create(instance: I & Partial<IID>): Promise<ISSFullInstance<I & IID & ITimestamps>>
-    update(
-        instance: Partial<I>,
-        options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>,
-    ): Promise<void>
-    bulkCreate(instances: Array<I & Partial<IID>>): Promise<Array<ISSFullInstance<I & IID & ITimestamps>>>
+interface IDefaultReadonly {
+    id: string,
+    updatedAt: Date,
+    createdAt: Date,
 }
 
-export interface ISSDefaultId {
-    id: string
-}
-export interface ISSTimestamps {
-    updatedAt: Date
-    createdAt: Date
-}
-export interface ISSTimestampsParanoid extends ISSTimestamps {
-    deletedAt: Date
+export function simpleSequelizeModelFactory<I extends object, IReadonly = IDefaultReadonly>(
+    model,
+): IModel<I, IReadonly> {
+    return {
+        findByPk: async pk => (await model.findByPk(pk))?.toJSON(),
+        findOne: async ops => (await model.findOne(ops))?.toJSON(),
+        findAll: async ops => (await model.findAll(ops)).map(i => i.toJSON()),
+        build: i => model.build(i).toJSON(),
+        create: async i => (await model.create(i)).toJSON(),
+        update: async (i, ops) => (await model.update(i, ops)),
+        bulkCreate: async is => (await model.bulkCreate(is)).map(i => i.toJSON()),
+    }
 }
 
-type ISSFullInstance<I> = ISSInstanceMethods<I> & ISSInstanceProps<I>
-type ISSInstanceProps<I> = Required<Readonly<I>>
-interface ISSInstanceMethods<I> {
-    toJSON(): ISSInstanceProps<I>
+interface IModel<I extends object, IReadonly = IDefaultReadonly> {
+    findByPk: (pk: string) => Promise<Readonly<I & IReadonly>>
+    findOne: (ops: ISSFindOptions<I & IReadonly>) => Promise<Readonly<I & IReadonly>>
+    findAll: (ops: ISSFindOptions<I & IReadonly>) => Promise<Array<Readonly<I & IReadonly>>>
+    build: (i: I) => Readonly<I & IReadonly>
+    create: (i: I) => Promise<Readonly<I & IReadonly>>
+    update: (i: Partial<I>, ops: ISSFindOptions<I & IReadonly>) => Promise<void>
+    bulkCreate: (is: I[]) => Promise<Array<Readonly<I & IReadonly>>>
 }
 
 interface ISSFindOptions<I> {
-    where?: {
+    where: {
         [K in keyof I]?: I[K] | {
             [Op.not]?: I[K]
             [Op.contains]?: I[K],

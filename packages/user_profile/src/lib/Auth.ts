@@ -1,9 +1,9 @@
-import { IAccessTokenStatic } from './AccessToken'
+import { IAccessToken } from './AccessToken'
 import { JWT } from './JWT'
 
 export class Auth {
     constructor(
-        private AccessToken: IAccessTokenStatic,
+        private AccessToken: IAccessToken,
         private jwt: JWT,
     ) { }
 

@@ -5,10 +5,10 @@ import {
     GraphQLNonNull,
 } from 'graphql'
 
-import { IUserStaticRead } from './User'
+import { IUser } from './User'
 
 export function UserProfileReadGraphQLFactory(
-    User: IUserStaticRead,
+    User: IUser,
 ) {
     const UserType = new GraphQLObjectType({
         name: 'User',

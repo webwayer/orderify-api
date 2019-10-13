@@ -43,7 +43,7 @@ export const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.e
 
 export const {
     compareCampaignsGraphql,
-    compareCampaignsApi,
+    compareCampaigns,
     Campaign,
 } = compareCampaignsServiceFactory(sequelize, new StubImageLibraryApi(), new StubWalletOperations())
 

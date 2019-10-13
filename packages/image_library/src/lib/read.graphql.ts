@@ -5,13 +5,13 @@ import {
     GraphQLNonNull,
 } from 'graphql'
 
-import { IImageStaticRead } from './Image'
-import { IAlbumStaticRead } from './Album'
+import { IImage } from './Image'
+import { IAlbum } from './Album'
 import { ImageStorage } from './ImageStorage'
 
 export function ImageLibraryReadGraphQLFactory(
-    Album: IAlbumStaticRead,
-    Image: IImageStaticRead,
+    Album: IAlbum,
+    Image: IImage,
     imageStorage: ImageStorage,
 ) {
     const AlbumType = new GraphQLObjectType({

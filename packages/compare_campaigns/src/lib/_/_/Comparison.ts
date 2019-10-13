@@ -1,12 +1,11 @@
-
-import { ISSStaticRead, ISSStaticWrite, ISSTimestampsParanoid } from '@orderify/io'
+import { simpleSequelizeModelFactory } from '@orderify/io'
 import { DataTypes, Sequelize } from 'sequelize'
 import shortUUID from 'short-uuid'
 
 export function ComparisonFactory(
     sequelize: Sequelize,
 ) {
-    return sequelize.define('Comparison', {
+    return simpleSequelizeModelFactory<IComparisonProps>(sequelize.define('Comparison', {
         id: {
             type: DataTypes.STRING(32),
             primaryKey: true,
@@ -30,12 +29,10 @@ export function ComparisonFactory(
         },
     }, {
         paranoid: true,
-    }) as unknown as IComparisonStatic
+    }))
 }
 
-export type IComparisonStaticRead = ISSStaticRead<IComparisonProps, ISSTimestampsParanoid>
-export type IComparisonStaticWrite = ISSStaticWrite<IComparisonProps, ISSTimestampsParanoid>
-export type IComparisonStatic = IComparisonStaticRead & IComparisonStaticWrite
+export type IComparison = ReturnType<typeof ComparisonFactory>
 interface IComparisonProps {
     campaignId: string
     userId: string

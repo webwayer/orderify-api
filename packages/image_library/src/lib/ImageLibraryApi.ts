@@ -1,10 +1,10 @@
-import { IImageStatic } from './Image'
+import { IImage } from './Image'
 
 export class ImageLibraryApi {
-    constructor(private Image: IImageStatic) { }
+    constructor(private Image: IImage) { }
 
     public async findImageById(id: string) {
-        return (await this.Image.findByPk(id)).toJSON()
+        return await this.Image.findByPk(id)
     }
 }
 

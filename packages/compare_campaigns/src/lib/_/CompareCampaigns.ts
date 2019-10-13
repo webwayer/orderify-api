@@ -3,35 +3,35 @@ import { Op, literal } from 'sequelize'
 import { IImageLibraryApi } from '@orderify/image_library'
 import { IWalletOperations } from '@orderify/wallet_operations'
 
-import { ICampaignStatic } from './Campaign'
-import { IComparisonStatic } from './Comparison'
+import { ICampaign } from './_/Campaign'
+import { IComparison } from './_/Comparison'
 
 import { prop, propEq, equals } from 'ramda'
 
-export class CompareCampaignsApi {
+export class CompareCampaigns {
     constructor(
-        private Campaign: ICampaignStatic,
-        private Comparison: IComparisonStatic,
+        private Campaign: ICampaign,
+        private Comparison: IComparison,
         private WalletOperations: IWalletOperations,
         private imageLibraryApi: IImageLibraryApi,
     ) { }
 
     public async activeCampaigns(userId: string) {
-        return (await this.Campaign.findAll({
+        return await this.Campaign.findAll({
             where: {
                 status: 'active',
                 userId,
             },
-        })).map(c => c.toJSON())
+        })
     }
 
     public async finishedCampaigns(userId: string) {
-        const campaigns = (await this.Campaign.findAll({
+        const campaigns = await this.Campaign.findAll({
             where: {
                 status: 'finished',
                 userId,
             },
-        })).map(c => c.toJSON())
+        })
 
         const comparisons = await this.Comparison.findAll({
             where: {

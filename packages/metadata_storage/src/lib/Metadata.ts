@@ -1,11 +1,11 @@
-import { ISSStaticRead, ISSStaticWrite, ISSTimestampsParanoid } from '@orderify/io'
+import { simpleSequelizeModelFactory } from '@orderify/io'
 import { Sequelize, DataTypes } from 'sequelize'
 import shortUUID from 'short-uuid'
 
 export function MetadataFactory(
     sequelize: Sequelize,
 ) {
-    const Metadata = sequelize.define('Metadata', {
+    return simpleSequelizeModelFactory<IMetadataProps>(sequelize.define('Metadata', {
         id: {
             type: DataTypes.STRING(32),
             primaryKey: true,
@@ -33,14 +33,10 @@ export function MetadataFactory(
         },
     }, {
         paranoid: true,
-    })
-
-    return Metadata as unknown as IMetadataStatic
+    }))
 }
 
-export type IMetadataStaticRead = ISSStaticRead<IMetadataProps, ISSTimestampsParanoid>
-export type IMetadataStaticWrite = ISSStaticWrite<IMetadataProps, ISSTimestampsParanoid>
-export type IMetadataStatic = IMetadataStaticRead & IMetadataStaticWrite
+export type IMetadata = ReturnType<typeof MetadataFactory>
 interface IMetadataProps {
     instanceId: string
     instanceType: 'USER' | 'ALBUM' | 'IMAGE'

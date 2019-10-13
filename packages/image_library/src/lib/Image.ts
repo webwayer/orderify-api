@@ -1,11 +1,11 @@
-import { ISSStaticRead, ISSStaticWrite, ISSTimestampsParanoid } from '@orderify/io'
+import { simpleSequelizeModelFactory } from '@orderify/io'
 import { Sequelize, DataTypes } from 'sequelize'
 import shortUUID from 'short-uuid'
 
 export function ImageFactory(
     sequelize: Sequelize,
 ) {
-    const Image = sequelize.define('Image', {
+    return simpleSequelizeModelFactory<IImageProps>(sequelize.define('Image', {
         id: {
             type: DataTypes.STRING(32),
             primaryKey: true,
@@ -21,14 +21,10 @@ export function ImageFactory(
         },
     }, {
         paranoid: true,
-    })
-
-    return Image as unknown as IImageStatic
+    }))
 }
 
-export type IImageStaticRead = ISSStaticRead<IImageProps, ISSTimestampsParanoid>
-export type IImageStaticWrite = ISSStaticWrite<IImageProps, ISSTimestampsParanoid>
-export type IImageStatic = IImageStaticRead & IImageStaticWrite
+export type IImage = ReturnType<typeof ImageFactory>
 interface IImageProps {
     albumId: string
     userId: string
