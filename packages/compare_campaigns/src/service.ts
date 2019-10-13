@@ -8,12 +8,12 @@ import {
 } from './'
 
 import { IImageLibraryApi } from '@orderify/image_library'
-import { IwalletOperations } from '@orderify/wallet_operations'
+import { IWalletOperations } from '@orderify/wallet_operations'
 
 export function compareCampaignsServiceFactory(
     sequelize: Sequelize,
     imageLibraryApi: IImageLibraryApi,
-    WalletOperations: IwalletOperations,
+    WalletOperations: IWalletOperations,
 ) {
     const Campaign = CampaignFactory(sequelize)
     const Comparison = ComparisonFactory(sequelize)

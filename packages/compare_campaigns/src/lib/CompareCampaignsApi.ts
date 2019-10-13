@@ -1,7 +1,7 @@
 import { Op, literal } from 'sequelize'
 
 import { IImageLibraryApi } from '@orderify/image_library'
-import { IwalletOperations } from '@orderify/wallet_operations'
+import { IWalletOperations } from '@orderify/wallet_operations'
 
 import { ICampaignStatic } from './Campaign'
 import { IComparisonStatic } from './Comparison'
@@ -12,7 +12,7 @@ export class CompareCampaignsApi {
     constructor(
         private Campaign: ICampaignStatic,
         private Comparison: IComparisonStatic,
-        private WalletOperations: IwalletOperations,
+        private WalletOperations: IWalletOperations,
         private imageLibraryApi: IImageLibraryApi,
     ) { }
 

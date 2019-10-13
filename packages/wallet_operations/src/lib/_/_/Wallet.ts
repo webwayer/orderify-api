@@ -16,7 +16,7 @@ export function WalletFactory(
             allowNull: false,
         },
         balance: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
         },

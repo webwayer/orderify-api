@@ -5,7 +5,7 @@ import { SequelizeFactory } from '@orderify/io'
 import { graphql } from 'graphql'
 
 import { IImageLibraryApi } from '@orderify/image_library'
-import { IwalletOperations } from '@orderify/wallet_operations'
+import { IWalletOperations } from '@orderify/wallet_operations'
 
 class StubImageLibraryApi implements IImageLibraryApi {
     public async findImageById(id: string) {
@@ -23,7 +23,7 @@ class StubImageLibraryApi implements IImageLibraryApi {
 }
 
 // tslint:disable-next-line: max-classes-per-file
-class StubwalletOperations implements IwalletOperations {
+class StubWalletOperations implements IWalletOperations {
     public async balance(userId: string) {
         return 20
     }
@@ -45,12 +45,9 @@ const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DAT
 const {
     compareCampaignsGraphql,
     Campaign,
-} = compareCampaignsServiceFactory(sequelize, new StubImageLibraryApi(), new StubwalletOperations())
+} = compareCampaignsServiceFactory(sequelize, new StubImageLibraryApi(), new StubWalletOperations())
 
-const schema = graphqlSchemaFactory({
-    query: compareCampaignsGraphql.query,
-    mutation: compareCampaignsGraphql.mutation,
-})
+const schema = graphqlSchemaFactory(compareCampaignsGraphql)
 
 describe('Compare Campaigns', () => {
     beforeEach(async () => {

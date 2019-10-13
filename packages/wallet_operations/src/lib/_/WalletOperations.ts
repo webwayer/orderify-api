@@ -53,4 +53,4 @@ export class WalletOperations {
 }
 
 type PublicPart<T> = { [K in keyof T]: T[K] }
-export type IwalletOperations = PublicPart<WalletOperations>
+export type IWalletOperations = PublicPart<WalletOperations>
