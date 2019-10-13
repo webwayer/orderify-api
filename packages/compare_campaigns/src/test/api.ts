@@ -1,9 +1,11 @@
 import assert from 'assert'
-import { compareCampaignsSericeFactory } from '../src/service'
-import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory, mutation, query  } from '@orderify/app'
+import { compareCampaignsServiceFactory } from '../service'
+import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory, mutation, query } from '@orderify/app'
 import { SequelizeFactory } from '@orderify/io'
 import { graphql } from 'graphql'
+
 import { IImageLibraryApi } from '@orderify/image_library'
+import { IWalletOperationsApi } from '@orderify/wallet_operations'
 
 class StubImageLibraryApi implements IImageLibraryApi {
     public async findImageById(id: string) {
@@ -20,42 +22,39 @@ class StubImageLibraryApi implements IImageLibraryApi {
     }
 }
 
+// tslint:disable-next-line: max-classes-per-file
+class StubWalletOperationsApi implements IWalletOperationsApi {
+    public async balance(userId: string) {
+        return 20
+    }
+
+    public async deposit(userId: string, amount: number) {
+        return
+    }
+
+    public async withdraw(userId: string, amount: number) {
+        return
+    }
+}
+
 const campaignDefaultFields = ['id', 'userId', 'photo1Id', 'photo2Id', 'status']
 const comparisonDefaultFields = ['id', 'userId', 'campaignId', 'selectedPhotoId']
 
 const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
+
 const {
-    compareCampaignsInterface,
+    compareCampaignsGraphql,
     Campaign,
-    Wallet,
-    walletApi,
-} = compareCampaignsSericeFactory(sequelize, new StubImageLibraryApi())
-const schema = graphqlSchemaFactory(compareCampaignsInterface.query, compareCampaignsInterface.mutation)
+} = compareCampaignsServiceFactory(sequelize, new StubImageLibraryApi(), new StubWalletOperationsApi())
+
+const schema = graphqlSchemaFactory({
+    query: compareCampaignsGraphql.query,
+    mutation: compareCampaignsGraphql.mutation,
+})
 
 describe('Compare Campaigns', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
-    })
-
-    describe('walletBalance', () => {
-        it('success', async () => {
-            await Wallet.create({
-                userId: 'user1',
-                balance: 13,
-            })
-
-            const result = await graphql({
-                schema,
-                source: query({
-                    name: 'walletBalance',
-                }),
-                contextValue: {
-                    userId: 'user1',
-                },
-            })
-
-            assert.equal(result.data.walletBalance, 13)
-        })
     })
 
     describe('randomActiveCampaign', () => {
@@ -244,11 +243,6 @@ describe('Compare Campaigns', () => {
 
     describe('startCampaign', () => {
         it('success', async () => {
-            await Wallet.create({
-                userId: 'user1',
-                balance: 20,
-            })
-
             const result = await graphql({
                 schema,
                 source: mutation({
@@ -264,28 +258,7 @@ describe('Compare Campaigns', () => {
             assert(result.data.startCampaign)
         })
 
-        it('fail - not enough funds', async () => {
-            const result = await graphql({
-                schema,
-                source: mutation({
-                    name: 'startCampaign',
-                    args: { photo1Id: 'photo1', photo2Id: 'photo2' },
-                    fields: campaignDefaultFields,
-                }),
-                contextValue: {
-                    userId: 'user1',
-                },
-            })
-
-            assert(!result.data.startCampaign)
-        })
-
         it('fail - not owner of photos', async () => {
-            await Wallet.create({
-                userId: 'user1',
-                balance: 20,
-            })
-
             const result = await graphql({
                 schema,
                 source: mutation({
@@ -302,11 +275,6 @@ describe('Compare Campaigns', () => {
         })
 
         it('fail - no photos', async () => {
-            await Wallet.create({
-                userId: 'user1',
-                balance: 20,
-            })
-
             const result = await graphql({
                 schema,
                 source: mutation({
@@ -350,35 +318,6 @@ describe('Compare Campaigns', () => {
             })
 
             assert(result.data.submitComparison)
-        })
-
-        it('success - balance updated', async () => {
-            await Campaign.create({
-                id: 'campaign1',
-                userId: 'user1',
-                photo1Id: 'photo1',
-                photo2Id: 'photo2',
-                comparisonsCount: 10,
-            })
-
-            const result = await graphql({
-                schema,
-                source: mutation({
-                    name: 'submitComparison',
-                    args: {
-                        campaignId: 'campaign1',
-                        selectedPhotoPosition: { enum: 'left' },
-                        selectedPhotoId: 'photo1',
-                    },
-                    fields: comparisonDefaultFields,
-                }),
-                contextValue: {
-                    userId: 'user2',
-                },
-            })
-
-            assert(result.data.submitComparison)
-            assert.equal(await walletApi.balance('user2'), 1)
         })
 
         it('success - last comparison', async () => {

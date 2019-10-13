@@ -1,10 +1,10 @@
 import { Op, literal } from 'sequelize'
 
 import { IImageLibraryApi } from '@orderify/image_library'
+import { IWalletOperationsApi } from '@orderify/wallet_operations'
 
 import { ICampaignStatic } from './Campaign'
 import { IComparisonStatic } from './Comparison'
-import { WalletApi } from './WalletApi'
 
 import { prop, propEq, equals } from 'ramda'
 
@@ -12,7 +12,7 @@ export class CompareCampaignsApi {
     constructor(
         private Campaign: ICampaignStatic,
         private Comparison: IComparisonStatic,
-        private walletApi: WalletApi,
+        private walletOperationsApi: IWalletOperationsApi,
         private imageLibraryApi: IImageLibraryApi,
     ) { }
 
@@ -106,7 +106,7 @@ export class CompareCampaignsApi {
             throw new Error('user isnt owner of photo2')
         }
 
-        await this.walletApi.withdraw(userId, 20)
+        await this.walletOperationsApi.withdraw(userId, 20)
 
         return this.Campaign.create({
             userId,
@@ -161,7 +161,7 @@ export class CompareCampaignsApi {
             },
         })
 
-        await this.walletApi.deposit(userId, 1)
+        await this.walletOperationsApi.deposit(userId, 1)
 
         return this.Comparison.create({
             userId,

@@ -4,6 +4,7 @@
   "main": "src/index",
   "dependencies": {
     "@orderify/compare_campaigns": "0.0.0",
+    "@orderify/wallet_operations": "0.0.0",
     "@orderify/facebook_integration": "0.0.0",
     "@orderify/image_library": "0.0.0",
     "@orderify/io": "0.0.0",

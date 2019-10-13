@@ -1,6 +1,6 @@
-import { IWalletStatic } from './Wallet'
+import { IWalletStatic } from './_/Wallet'
 
-export class WalletApi {
+export class WalletOperationsApi {
     constructor(private Wallet: IWalletStatic) { }
 
     public async deposit(userId: string, amount: number) {
@@ -48,6 +48,9 @@ export class WalletApi {
             },
         })
 
-        return wallet ? wallet.balance : 0
+        return wallet?.balance || 0
     }
 }
+
+type PublicPart<T> = { [K in keyof T]: T[K] }
+export type IWalletOperationsApi = PublicPart<WalletOperationsApi>

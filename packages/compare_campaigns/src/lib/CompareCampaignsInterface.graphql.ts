@@ -3,12 +3,10 @@ import {
     GraphQLObjectType,
     GraphQLString,
     GraphQLNonNull,
-    GraphQLInt,
     GraphQLEnumType,
 } from 'graphql'
 
 import { CompareCampaignsApi } from './CompareCampaignsApi'
-import { WalletApi } from './WalletApi'
 
 const defaultCampaignFields = {
     id: { type: new GraphQLNonNull(GraphQLString) },
@@ -45,7 +43,6 @@ const ComparisonType = new GraphQLObjectType({
 
 export function CompareCampaignsGraphqlFactory(
     compareCampaignsApi: CompareCampaignsApi,
-    walletApi: WalletApi,
 ) {
     return {
         mutation: {
@@ -97,12 +94,6 @@ export function CompareCampaignsGraphqlFactory(
                 type: CampaignType,
                 async resolve(_, where, { userId }) {
                     return compareCampaignsApi.randomActiveCampaign(userId)
-                },
-            },
-            walletBalance: {
-                type: new GraphQLNonNull(GraphQLInt),
-                async resolve(_, where, { userId }) {
-                    return walletApi.balance(userId)
                 },
             },
             activeCampaigns: {

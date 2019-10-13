@@ -5,21 +5,20 @@ import {
     ComparisonFactory,
     CompareCampaignsGraphqlFactory,
     CompareCampaignsApi,
-    WalletFactory,
-    WalletApi,
 } from './'
 
 import { IImageLibraryApi } from '@orderify/image_library'
+import { IWalletOperationsApi } from '@orderify/wallet_operations'
 
-export function compareCampaignsSericeFactory(sequelize: Sequelize, imageLibraryApi: IImageLibraryApi) {
-    const Wallet = WalletFactory(sequelize)
-    const walletApi = new WalletApi(Wallet)
-
+export function compareCampaignsServiceFactory(
+    sequelize: Sequelize,
+    imageLibraryApi: IImageLibraryApi,
+    walletOperationsApi: IWalletOperationsApi,
+) {
     const Campaign = CampaignFactory(sequelize)
     const Comparison = ComparisonFactory(sequelize)
-    const compareCampaignsApi = new CompareCampaignsApi(Campaign, Comparison, walletApi, imageLibraryApi)
+    const compareCampaignsApi = new CompareCampaignsApi(Campaign, Comparison, walletOperationsApi, imageLibraryApi)
+    const compareCampaignsGraphql = CompareCampaignsGraphqlFactory(compareCampaignsApi)
 
-    const compareCampaignsInterface = CompareCampaignsGraphqlFactory(compareCampaignsApi, walletApi)
-
-    return { Wallet, walletApi, Comparison, Campaign, compareCampaignsApi, compareCampaignsInterface }
+    return { Comparison, Campaign, compareCampaignsApi, compareCampaignsGraphql }
 }

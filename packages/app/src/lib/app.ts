@@ -33,7 +33,8 @@ import {
     Auth,
     JWT,
 } from '@orderify/user_profile'
-import { compareCampaignsSericeFactory } from '@orderify/compare_campaigns'
+import { compareCampaignsServiceFactory } from '@orderify/compare_campaigns'
+import { walletOperationsServiceFactory, WalletOperationsApi } from '@orderify/wallet_operations'
 
 import { IAppConfig } from './config'
 
@@ -76,17 +77,22 @@ export async function appFactory(CONFIG: IAppConfig) {
         auth,
     )
 
-    const { compareCampaignsInterface } = compareCampaignsSericeFactory(sequelize, imageLibratyApi)
+    const { walletOperationsApi, walletOperationsGraphql } = walletOperationsServiceFactory(sequelize)
+    const { compareCampaignsGraphql } = compareCampaignsServiceFactory(sequelize, imageLibratyApi, walletOperationsApi)
 
     const app = express()
 
     const graphqlSchema = graphqlSchemaFactory({
-        ...userProfileReadGraphQL,
-        ...imageLibraryReadGraphQL,
-        ...compareCampaignsInterface.query,
-    }, {
-        ...compareCampaignsInterface.mutation,
-        ...photoLibraryGrapjQLMutation,
+        query: {
+            ...userProfileReadGraphQL,
+            ...imageLibraryReadGraphQL,
+            ...compareCampaignsGraphql.query,
+            ...walletOperationsGraphql.query,
+        },
+        mutation: {
+            ...compareCampaignsGraphql.mutation,
+            ...photoLibraryGrapjQLMutation,
+        },
     })
 
     app.use(facebookLoginRouter)

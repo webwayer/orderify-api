@@ -1,23 +1,17 @@
 import { GraphQLFieldConfigMap, GraphQLObjectType, GraphQLSchema } from 'graphql'
 
-export function graphqlSchemaFactory(
-    query: GraphQLFieldConfigMap<any, any>,
-    mutation: GraphQLFieldConfigMap<any, any>,
-) {
-    const QueryRootType = new GraphQLObjectType({
-        name: 'Query',
-        fields: query,
+export function graphqlSchemaFactory({ query, mutation }: {
+    query?: GraphQLFieldConfigMap<any, any>,
+    mutation?: GraphQLFieldConfigMap<any, any>,
+}) {
+    return new GraphQLSchema({
+        query: query ? new GraphQLObjectType({
+            name: 'Query',
+            fields: query,
+        }) : undefined,
+        mutation: mutation ? new GraphQLObjectType({
+            name: 'Mutation',
+            fields: mutation,
+        }) : undefined,
     })
-
-    const MutationRootType = new GraphQLObjectType({
-        name: 'Mutation',
-        fields: mutation,
-    })
-
-    const AppSchema = new GraphQLSchema({
-        query: QueryRootType,
-        mutation: MutationRootType,
-    })
-
-    return AppSchema
 }

@@ -9,5 +9,4 @@ export class ImageLibraryApi {
 }
 
 type PublicPart<T> = { [K in keyof T]: T[K] }
-
 export type IImageLibraryApi = PublicPart<ImageLibraryApi>
