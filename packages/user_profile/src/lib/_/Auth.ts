@@ -1,5 +1,5 @@
-import { IAccessToken } from './_/_/AccessToken'
-import { JWT } from './_/JWT'
+import { IAccessToken } from './_/AccessToken'
+import { JWT } from './JWT'
 
 export class Auth {
     constructor(

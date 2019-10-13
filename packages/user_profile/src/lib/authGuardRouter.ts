@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Auth } from './Auth'
+import { Auth } from './_/Auth'
 
 export function authGuardRouterFactory(
     auth: Auth,
@@ -29,7 +29,7 @@ export function authGuardRouterFactory(
 
                     next()
                 } else {
-                    throw new Error('accessToken doesnt exist in database')
+                    throw new Error('accessToken doesnt exist')
                 }
             } else {
                 throw new Error('no accessToken provided')

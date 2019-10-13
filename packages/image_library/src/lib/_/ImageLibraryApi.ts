@@ -1,4 +1,4 @@
-import { IImage } from './Image'
+import { IImage } from './_/Image'
 
 export class ImageLibraryApi {
     constructor(private Image: IImage) { }

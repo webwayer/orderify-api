@@ -5,7 +5,7 @@ import {
     GraphQLNonNull,
 } from 'graphql'
 
-import { IUser } from './User'
+import { IUser } from './_/_/User'
 
 export function UserProfileReadGraphQLFactory(
     User: IUser,

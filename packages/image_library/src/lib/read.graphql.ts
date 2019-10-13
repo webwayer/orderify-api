@@ -5,9 +5,9 @@ import {
     GraphQLNonNull,
 } from 'graphql'
 
-import { IImage } from './Image'
-import { IAlbum } from './Album'
-import { ImageStorage } from './ImageStorage'
+import { IImage } from './_/_/Image'
+import { IAlbum } from './_/_/Album'
+import { ImageStorage } from './_/_/ImageStorage'
 
 export function ImageLibraryReadGraphQLFactory(
     Album: IAlbum,

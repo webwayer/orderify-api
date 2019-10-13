@@ -1,4 +1,4 @@
-import { FacebookGraph } from './FacebookGraph'
+import { FacebookGraph } from './_/FacebookGraph'
 import { IMetadata } from '@orderify/metadata_storage'
 import { ImageStorage, IAlbum, IImage } from '@orderify/image_library'
 import { uniq, prop, differenceWith, eqBy, path, map } from 'ramda'

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
-import { FacebookOauth } from './FacebookOauth'
-import { UserProfileOnFacebook } from './UserProfileOnFacebook'
+import { FacebookOauth } from './_/_/FacebookOauth'
+import { UserProfileOnFacebook } from './_/UserProfileOnFacebook'
 import { Auth } from '@orderify/user_profile'
 
 export function facebookAuthRouterFactory(

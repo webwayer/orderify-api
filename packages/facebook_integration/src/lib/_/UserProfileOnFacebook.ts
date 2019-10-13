@@ -1,5 +1,5 @@
-import { FacebookGraph } from './FacebookGraph'
-import { IMetadata } from '../../../metadata_storage/src'
+import { FacebookGraph } from './_/FacebookGraph'
+import { IMetadata } from '@orderify/metadata_storage'
 import { IUser, Auth } from '@orderify/user_profile'
 
 interface IFacebookAccessData {

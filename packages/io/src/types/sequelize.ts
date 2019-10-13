@@ -1,4 +1,4 @@
-import { Sequelize, Op, Model, ModelCtor } from 'sequelize'
+import { Sequelize, Op } from 'sequelize'
 
 interface IDefaultReadonly {
     id: string,
