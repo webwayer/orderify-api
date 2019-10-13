@@ -1,8 +1,8 @@
 import assert from 'assert'
-import { walletOperationsServiceFactory } from '../service'
+import { graphql } from 'graphql'
 import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory, query } from '@orderify/app'
 import { SequelizeFactory } from '@orderify/io'
-import { graphql } from 'graphql'
+import { walletOperationsServiceFactory } from '../service'
 
 const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
 const {
