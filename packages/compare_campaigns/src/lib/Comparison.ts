@@ -20,8 +20,12 @@ export function ComparisonFactory(
             type: DataTypes.STRING(32),
             allowNull: false,
         },
-        photoWinnerId: {
+        selectedPhotoId: {
             type: DataTypes.STRING(32),
+            allowNull: false,
+        },
+        selectedPhotoPosition: {
+            type: DataTypes.ENUM('left', 'right'),
             allowNull: false,
         },
     }, {
@@ -35,5 +39,6 @@ export type IComparisonStatic = IComparisonStaticRead & IComparisonStaticWrite
 interface IComparisonProps {
     campaignId: string
     userId: string
-    photoWinnerId: string
+    selectedPhotoId: string
+    selectedPhotoPosition: 'left' | 'right'
 }

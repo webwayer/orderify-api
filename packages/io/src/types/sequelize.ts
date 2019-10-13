@@ -1,11 +1,11 @@
 import { Sequelize, Op } from 'sequelize'
 
 export interface ISSStaticRead<I, ITimestamps, IID = ISSDefaultId> {
-    findByPk(pk: string): Promise<ISSFullInstance<I & IID & ITimestamps>>
+    findByPk(pk: string): Promise<ISSFullInstance<I & IID & ITimestamps> | undefined>
     findAll(options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>):
         Promise<Array<ISSFullInstance<I & IID & ITimestamps>>>
     findOne(options: ISSFindOptions<ISSInstanceProps<I & IID & ITimestamps>>):
-        Promise<ISSFullInstance<I & IID & ITimestamps>>
+        Promise<ISSFullInstance<I & IID & ITimestamps> | undefined>
 }
 export interface ISSStaticWrite<I, ITimestamps, IID = ISSDefaultId> {
     build(instance: I): ISSFullInstance<I & IID & ITimestamps>

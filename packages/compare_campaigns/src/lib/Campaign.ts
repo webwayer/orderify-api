@@ -34,12 +34,12 @@ export function CampaignFactory(
             defaultValue: [],
         },
         status: {
-            type: DataTypes.STRING(32),
+            type: DataTypes.ENUM('active', 'finished'),
             allowNull: false,
             defaultValue: 'active',
         },
         type: {
-            type: DataTypes.STRING(32),
+            type: DataTypes.ENUM('normal', 'filler'),
             allowNull: false,
             defaultValue: 'normal',
         },

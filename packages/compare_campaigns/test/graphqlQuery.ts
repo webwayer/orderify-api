@@ -1,4 +1,4 @@
-import { compose, join, toPairs, map, ifElse, identity, is, curry, always } from 'ramda'
+import { compose, join, toPairs, map, ifElse, is, curry, always, prop, when, propIs } from 'ramda'
 
 const appendS = curry((s2: string, s: string) => s + s2)
 const prependS = curry((s2: string, s: string) => s2 + s)
@@ -9,31 +9,34 @@ const quotes = compose(prependS('"'), appendS('"'))
 
 const queryFn = compose(prependS('query'), curlyBrackets)
 const mutationFn = compose(prependS('mutation'), curlyBrackets)
-const argsFn = compose(
+
+const argNormalize = compose(when(propIs(String, 'enum'), prop('enum')), when(is(String), quotes))
+const argsFn = ifElse(is(Object), compose(
     roundBrackets,
     join(','),
     map(join(':')),
     toPairs,
-    map(ifElse(is(String), quotes, identity)),
-) as unknown as (args: IGraphQlAction['args']) => string
-const fieldsFn = compose(curlyBrackets, join(',')) as (fields: IGraphQlAction['fields']) => string
+    map(argNormalize),
+), always(''))
+
+const fieldsFn = ifElse(is(Array), compose(curlyBrackets, join(',')), always(''))
 
 export const mutation = ({ name, fields, args }: IGraphQlAction) =>
     mutationFn(join('', [
         name,
-        ifElse(identity, argsFn, always(''))(args),
-        ifElse(identity, fieldsFn, always(''))(fields),
+        argsFn(args),
+        fieldsFn(fields),
     ]))
 
 export const query = ({ name, fields, args }: IGraphQlAction) =>
     queryFn(join('', [
         name,
-        ifElse(identity, argsFn, always(''))(args),
-        ifElse(identity, fieldsFn, always(''))(fields),
+        argsFn(args),
+        fieldsFn(fields),
     ]))
 
 interface IGraphQlAction {
     name: string,
-    args?: { [key: string]: string | number },
+    args?: { [key: string]: string | number | { enum: string } },
     fields?: string[],
 }

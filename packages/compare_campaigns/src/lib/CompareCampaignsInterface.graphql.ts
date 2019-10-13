@@ -4,6 +4,7 @@ import {
     GraphQLString,
     GraphQLNonNull,
     GraphQLInt,
+    GraphQLEnumType,
 } from 'graphql'
 
 import { CompareCampaignsApi } from './CompareCampaignsApi'
@@ -28,7 +29,7 @@ const CampaignWithResultsType = new GraphQLObjectType({
     name: 'CampaignWithResults',
     fields: {
         ...defaultCampaignFields,
-        results: { type: new GraphQLList(GraphQLString) },
+        selectedPhotoIds: { type: new GraphQLList(GraphQLString) },
     },
 })
 
@@ -38,7 +39,7 @@ const ComparisonType = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         userId: { type: new GraphQLNonNull(GraphQLString) },
         campaignId: { type: new GraphQLNonNull(GraphQLString) },
-        photoWinnerId: { type: new GraphQLNonNull(GraphQLString) },
+        selectedPhotoId: { type: new GraphQLNonNull(GraphQLString) },
     },
 })
 
@@ -68,12 +69,26 @@ export function CompareCampaignsGraphqlFactory(
                     campaignId: {
                         type: new GraphQLNonNull(GraphQLString),
                     },
-                    photoWinnerId: {
+                    selectedPhotoId: {
                         type: new GraphQLNonNull(GraphQLString),
                     },
+                    selectedPhotoPosition: {
+                        type: new GraphQLNonNull(new GraphQLEnumType({
+                            name: 'photoPositions',
+                            values: {
+                                left: { value: 'left' },
+                                right: { value: 'right' },
+                            },
+                        })),
+                    },
                 },
-                async resolve(_, { campaignId, photoWinnerId }, { userId }) {
-                    return compareCampaignsApi.submitComparison(userId, campaignId, photoWinnerId)
+                async resolve(_, { campaignId, selectedPhotoId, selectedPhotoPosition }, { userId }) {
+                    return compareCampaignsApi.submitComparison(
+                        userId,
+                        campaignId,
+                        selectedPhotoId,
+                        selectedPhotoPosition,
+                    )
                 },
             },
         },

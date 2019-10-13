@@ -22,7 +22,7 @@ class StubImageLibraryApi implements IImageLibraryApi {
 }
 
 const campaignDefaultFields = ['id', 'userId', 'photo1Id', 'photo2Id', 'status']
-const comparisonDefaultFields = ['id', 'userId', 'campaignId', 'photoWinnerId']
+const comparisonDefaultFields = ['id', 'userId', 'campaignId', 'selectedPhotoId']
 
 const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
 const {
@@ -63,7 +63,7 @@ describe('Compare Campaigns', () => {
         it('success', async () => {
             await Campaign.bulkCreate(
                 Array(10).fill(null).map((_, i) => ({
-                    id: i.toString(),
+                    id: `${i}`,
                     userId: `user${i}`,
                     photo1Id: `photo1${i}`,
                     photo2Id: `photo2${i}`,
@@ -338,7 +338,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -362,7 +366,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -388,7 +396,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -402,7 +414,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -418,7 +434,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -442,7 +462,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -453,7 +477,7 @@ describe('Compare Campaigns', () => {
             assert(!result.data.submitComparison)
         })
 
-        it('fail - wrong photoWinnerId', async () => {
+        it('fail - wrong selectedPhotoId', async () => {
             await Campaign.create({
                 id: 'campaign1',
                 userId: 'user1',
@@ -466,7 +490,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo3' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo3',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -491,7 +519,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {
@@ -516,7 +548,11 @@ describe('Compare Campaigns', () => {
                 schema,
                 source: mutation({
                     name: 'submitComparison',
-                    args: { campaignId: 'campaign1', photoWinnerId: 'photo1' },
+                    args: {
+                        campaignId: 'campaign1',
+                        selectedPhotoPosition: { enum: 'left' },
+                        selectedPhotoId: 'photo1',
+                    },
                     fields: comparisonDefaultFields,
                 }),
                 contextValue: {

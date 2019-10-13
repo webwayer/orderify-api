@@ -6,6 +6,8 @@ import { ICampaignStatic } from './Campaign'
 import { IComparisonStatic } from './Comparison'
 import { WalletApi } from './WalletApi'
 
+import { prop, propEq, equals } from 'ramda'
+
 export class CompareCampaignsApi {
     constructor(
         private Campaign: ICampaignStatic,
@@ -34,14 +36,14 @@ export class CompareCampaignsApi {
         const comparisons = await this.Comparison.findAll({
             where: {
                 id: {
-                    [Op.in]: campaigns.map(c => c.id),
+                    [Op.in]: campaigns.map(prop('id')),
                 },
             },
         })
 
         const campaingsWithResults = campaigns.map(cam => ({
             ...cam,
-            results: comparisons.filter(com => cam.id === com.campaignId).map(com => com.photoWinnerId),
+            selectedPhotoIds: comparisons.filter(propEq('campaignId', cam.id)).map(prop('selectedPhotoId')),
         }))
 
         return campaingsWithResults
@@ -84,60 +86,88 @@ export class CompareCampaignsApi {
         const photo1 = await this.imageLibraryApi.findImageById(photo1Id)
         const photo2 = await this.imageLibraryApi.findImageById(photo2Id)
 
-        const isPhotosIdentical = photo1Id === photo2Id
-        const isPhoto1Exists = !!photo1
-        const isPhoto2Exists = !!photo2
-        const isPhoto1Owner = isPhoto1Exists && photo1.userId === userId
-        const isPhoto2Owner = isPhoto2Exists && photo2.userId === userId
-
-        if (!isPhotosIdentical && isPhoto1Owner && isPhoto2Owner) {
-            await this.walletApi.withdraw(userId, 20)
-
-            return this.Campaign.create({
-                userId,
-                photo1Id,
-                photo2Id,
-            })
+        if (photo1Id === photo2Id) {
+            throw new Error('photos ids are identical')
         }
+
+        if (!photo1) {
+            throw new Error('photo1 doesnt exist')
+        }
+
+        if (!photo2) {
+            throw new Error('photo2 doesnt exist')
+        }
+
+        if (photo1.userId !== userId) {
+            throw new Error('user isnt owner of photo1')
+        }
+
+        if (photo2.userId !== userId) {
+            throw new Error('user isnt owner of photo2')
+        }
+
+        await this.walletApi.withdraw(userId, 20)
+
+        return this.Campaign.create({
+            userId,
+            photo1Id,
+            photo2Id,
+        })
     }
 
-    public async submitComparison(userId: string, campaignId: string, photoWinnerId: string) {
+    public async submitComparison(
+        userId: string,
+        campaignId: string,
+        selectedPhotoId: string,
+        selectedPhotoPosition: 'left' | 'right',
+    ) {
         const campaign = await this.Campaign.findByPk(campaignId)
 
-        const isCampaignExists = !!campaign
-        const isCampaignActive = isCampaignExists && campaign.status === 'active'
-        const isCreator = isCampaignExists && userId === campaign.userId
-        const isAlreadyVoted = !!campaign.comparators.find(id => id === userId)
-        const isLastComparison = isCampaignActive && campaign.comparators.length === campaign.comparisonsCount - 1
-        const isPhotoInCampaign = isCampaignExists &&
-            (campaign.photo1Id === photoWinnerId || campaign.photo2Id === photoWinnerId)
+        if (!campaign) {
+            throw new Error('no campaign')
+        }
 
-        if (isCampaignExists && isCampaignActive && isPhotoInCampaign && !isCreator && !isAlreadyVoted) {
-            await this.walletApi.deposit(userId, 1)
+        if ((campaign.photo1Id !== selectedPhotoId && campaign.photo2Id !== selectedPhotoId)) {
+            throw new Error('selectedPhotoId isnt in campaign')
+        }
 
-            if (isLastComparison) {
-                await this.Campaign.update({
-                    status: 'finished',
-                }, {
-                    where: {
-                        id: campaignId,
-                    },
-                })
-            }
+        if (campaign.status !== 'active') {
+            throw new Error('campaign isnt active')
+        }
 
+        if (campaign.userId === userId) {
+            throw new Error('user who votes cant be creator of campaign')
+        }
+
+        if (campaign.comparators.find(equals(userId))) {
+            throw new Error('user already voted')
+        }
+
+        if (campaign.comparators.length === campaign.comparisonsCount - 1) {
             await this.Campaign.update({
-                comparators: [userId, ...campaign.comparators],
+                status: 'finished',
             }, {
                 where: {
                     id: campaignId,
                 },
             })
-
-            return this.Comparison.create({
-                userId,
-                campaignId,
-                photoWinnerId,
-            })
         }
+
+        await this.Campaign.update({
+            comparators: [userId, ...campaign.comparators],
+        }, {
+            where: {
+                id: campaignId,
+            },
+        })
+
+        await this.walletApi.deposit(userId, 1)
+
+        return this.Comparison.create({
+            userId,
+            campaignId,
+            selectedPhotoId,
+            selectedPhotoPosition,
+        })
     }
 }
