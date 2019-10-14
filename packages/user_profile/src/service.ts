@@ -16,7 +16,7 @@ export function userProfileServiceFactory(
     const User = UserFactory(sequelize)
     const AccessToken = AccessTokenFactory(sequelize)
     const jwt = new JWT(CONFIG.TOKENS)
-    const auth = new Auth(AccessToken, jwt)
+    const auth = new Auth(User, AccessToken, jwt)
     const authenticatedRouter = authGuardRouterFactory(auth)
     const userProfileReadGraphQL = UserProfileReadGraphQLFactory(User)
 

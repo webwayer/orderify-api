@@ -36,7 +36,16 @@
                 "asyncArrow": "always"
             }
         ],
-        "no-return-await": false
+        "no-return-await": false,
+        "max-line-length": [
+            true,
+            {
+                "limit": 180,
+                "ignore-pattern": "^import {(.*?)}",
+                "check-strings": true,
+                "check-regex": true
+            }
+        ]
     },
     "rulesDirectory": []
 }

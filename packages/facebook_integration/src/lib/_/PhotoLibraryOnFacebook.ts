@@ -1,6 +1,6 @@
 import { FacebookGraph } from './_/FacebookGraph'
-import { IMetadata } from '@orderify/metadata_storage'
-import { ImageStorage, IAlbum, IImage } from '@orderify/image_library'
+import { MetadataStorage } from '@orderify/metadata_storage'
+import { ImageStorage, IImageLibrary } from '@orderify/image_library'
 import { uniq, prop, differenceWith, eqBy, path, map } from 'ramda'
 
 interface IFBAlbum {
@@ -31,10 +31,9 @@ interface IFBPhoto {
 
 export class PhotoLibraryOnFacebook {
     constructor(
-        private Album: IAlbum,
-        private Image: IImage,
-        private Metadata: IMetadata,
+        private imageLibrary: IImageLibrary,
         private imageStorage: ImageStorage,
+        private metadataStorage: MetadataStorage,
         private facebookGraph: FacebookGraph,
     ) { }
 
@@ -50,7 +49,7 @@ export class PhotoLibraryOnFacebook {
 
         const albumsBuilded = remoteAlbumsToSync.map(album => ({
             albumFB: album,
-            album: this.Album.build({
+            album: this.imageLibrary.buildAlbum({
                 userId,
                 name: album.name,
             }),
@@ -59,7 +58,7 @@ export class PhotoLibraryOnFacebook {
         const photosBuilded = remotePhotosToSync.map(remoteLibEntry => ({
             photoFB: remoteLibEntry.photo,
             file: remoteLibEntry.photo.images.find(img => img.width + img.height < 2000),
-            image: this.Image.build({
+            image: this.imageLibrary.buildImage({
                 userId,
                 albumId: albumsBuilded.
                     find(albumBuilded => albumBuilded.albumFB.id === remoteLibEntry.album.id).album.id,
@@ -67,7 +66,7 @@ export class PhotoLibraryOnFacebook {
         }))
 
         const albumsMetadataBuilded = albumsBuilded.map(albumBuilded => {
-            return this.Metadata.build({
+            return this.metadataStorage.build({
                 instanceId: albumBuilded.album.id,
                 instanceType: 'ALBUM',
                 source: 'FACEBOOK.ALBUM',
@@ -78,7 +77,7 @@ export class PhotoLibraryOnFacebook {
             })
         })
         const photosMetadataBuilded = photosBuilded.map(photoBuilded => {
-            return this.Metadata.build({
+            return this.metadataStorage.build({
                 instanceId: photoBuilded.image.id,
                 instanceType: 'IMAGE',
                 source: 'FACEBOOK.PHOTO',
@@ -94,9 +93,9 @@ export class PhotoLibraryOnFacebook {
         ), 30)
 
         await Promise.all([
-            this.Album.bulkCreate(albumsBuilded.map(album => album.album)),
-            this.Image.bulkCreate(photosBuilded.map(photo => photo.image)),
-            this.Metadata.bulkCreate([...albumsMetadataBuilded, ...photosMetadataBuilded]),
+            this.imageLibrary.bulkCreateAlbums(albumsBuilded.map(album => album.album)),
+            this.imageLibrary.bulkCreateImages(photosBuilded.map(photo => photo.image)),
+            this.metadataStorage.bulkCreate([...albumsMetadataBuilded, ...photosMetadataBuilded]),
             Promise.all(chunkedArrayOfUrls.map(urls => this.imageStorage.uploadFromUrl(urls))),
         ])
     }
@@ -130,20 +129,8 @@ export class PhotoLibraryOnFacebook {
 
     private async getFBphotoLibraryLocal(userId: string) {
         const [photoMeta, albumMeta] = await Promise.all([
-            await this.Metadata.findAll({
-                where: {
-                    instanceType: 'IMAGE',
-                    source: 'FACEBOOK.PHOTO',
-                    userId,
-                },
-            }),
-            await this.Metadata.findAll({
-                where: {
-                    instanceType: 'ALBUM',
-                    source: 'FACEBOOK.ALBUM',
-                    userId,
-                },
-            }),
+            await this.metadataStorage.findByUserId(userId, 'IMAGE', 'FACEBOOK.PHOTO'),
+            await this.metadataStorage.findByUserId(userId, 'ALBUM', 'FACEBOOK.ALBUM'),
         ])
 
         return photoMeta.map(photoMetadata => {

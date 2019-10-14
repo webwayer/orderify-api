@@ -37,7 +37,7 @@ export function MetadataFactory(
 }
 
 export type IMetadata = ReturnType<typeof MetadataFactory>
-interface IMetadataProps {
+export interface IMetadataProps {
     instanceId: string
     instanceType: 'USER' | 'ALBUM' | 'IMAGE'
     source: 'FACEBOOK.USER' | 'FACEBOOK.PHOTO' | 'FACEBOOK.ALBUM'

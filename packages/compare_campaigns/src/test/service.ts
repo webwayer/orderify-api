@@ -1,12 +1,12 @@
 import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory } from '@orderify/app'
 import { SequelizeFactory } from '@orderify/io'
 
-import { IImageLibraryApi } from '@orderify/image_library'
+import { IImageLibrary } from '@orderify/image_library'
 import { IWalletOperations } from '@orderify/wallet_operations'
 
 import { compareCampaignsServiceFactory } from '../service'
 
-class StubImageLibraryApi implements IImageLibraryApi {
+class StubImageLibraryApi implements IImageLibrary {
     public async findImageById(id: string) {
         if (!id.startsWith('_')) {
             return {
@@ -15,9 +15,32 @@ class StubImageLibraryApi implements IImageLibraryApi {
                 albumId: 'album1',
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                deletedAt: null,
             }
         }
+    }
+
+    public async bulkCreateAlbums(objs) {
+        return objs
+    }
+
+    public async bulkCreateImages(objs) {
+        return objs
+    }
+
+    public buildAlbum(obj) {
+        return obj
+    }
+
+    public buildImage(obj) {
+        return obj
+    }
+
+    public async findAlbumsByUserId(userId: string) {
+        return []
+    }
+
+    public async findImagesByUserId(userId: string) {
+        return []
     }
 }
 

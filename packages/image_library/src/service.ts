@@ -4,8 +4,8 @@ import {
     AlbumFactory,
     ImageFactory,
     ImageStorage,
-    ImageLibraryApi,
-    ImageLibraryReadGraphQLFactory,
+    ImageLibrary,
+    ImageLibraryGraphqlFactory,
 } from './'
 
 export function imageLibraryServiceFactory(
@@ -17,8 +17,8 @@ export function imageLibraryServiceFactory(
     const Album = AlbumFactory(sequelize)
     const Image = ImageFactory(sequelize)
     const imageStorage = new ImageStorage(s3, lambda, CONFIG.STORAGE)
-    const imageLibraryReadGraphQL = ImageLibraryReadGraphQLFactory(Album, Image, imageStorage)
-    const imageLibratyApi = new ImageLibraryApi(Image)
+    const imageLibraty = new ImageLibrary(Image, Album)
+    const imageLibraryGraphql = ImageLibraryGraphqlFactory(imageLibraty, imageStorage)
 
-    return { Album, Image, imageStorage, imageLibratyApi, imageLibraryReadGraphQL }
+    return { Album, Image, imageStorage, imageLibraty, imageLibraryGraphql }
 }

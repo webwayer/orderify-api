@@ -24,10 +24,10 @@ interface IModel<I extends object, IReadonly = IDefaultReadonly> {
     findByPk: (pk: string) => Promise<Readonly<I & IReadonly>>
     findOne: (ops: ISSFindOptions<I & IReadonly>) => Promise<Readonly<I & IReadonly>>
     findAll: (ops: ISSFindOptions<I & IReadonly>) => Promise<Array<Readonly<I & IReadonly>>>
-    build: (i: I) => Readonly<I & IReadonly>
-    create: (i: I) => Promise<Readonly<I & IReadonly>>
+    build: (i: I & Partial<IReadonly>) => Readonly<I & IReadonly>
+    create: (i: I & Partial<IReadonly>) => Promise<Readonly<I & IReadonly>>
     update: (i: Partial<I>, ops: ISSFindOptions<I & IReadonly>) => Promise<void>
-    bulkCreate: (is: I[]) => Promise<Array<Readonly<I & IReadonly>>>
+    bulkCreate: (is: Array<I & Partial<IReadonly>>) => Promise<Array<Readonly<I & IReadonly>>>
 }
 
 interface ISSFindOptions<I> {

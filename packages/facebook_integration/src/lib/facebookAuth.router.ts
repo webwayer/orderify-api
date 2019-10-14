@@ -2,13 +2,11 @@ import { Router } from 'express'
 
 import { FacebookOauth } from './_/_/FacebookOauth'
 import { UserProfileOnFacebook } from './_/UserProfileOnFacebook'
-import { Auth } from '@orderify/user_profile'
 
 export function facebookAuthRouterFactory(
     CONFIG: { OAUTH_REDIRECT_PATH: string },
     userProfileOnFacebook: UserProfileOnFacebook,
     facebookOauth: FacebookOauth,
-    auth: Auth,
 ) {
     const router = Router()
 

@@ -23,42 +23,33 @@ export async function appFactory(CONFIG: IAppConfig) {
     const s3 = S3Factory(CONFIG.AWS)
     const lambda = LambdaFactory(CONFIG.AWS)
 
-    const { User, auth, userProfileReadGraphQL, authenticatedRouter } = userProfileServiceFactory(sequelize, CONFIG)
+    const { metadataStorage } = metadataStorageServiceFactory(sequelize)
+    const { auth, userProfileReadGraphQL, authenticatedRouter } = userProfileServiceFactory(sequelize, CONFIG)
+    const { imageStorage, imageLibraty, imageLibraryGraphql } = imageLibraryServiceFactory(sequelize, s3, lambda, CONFIG)
     const { walletOperations, walletOperationsGraphql } = walletOperationsServiceFactory(sequelize)
-    const {
-        Album,
-        Image,
-        imageStorage,
-        imageLibraryReadGraphQL,
-        imageLibratyApi,
-    } = imageLibraryServiceFactory(sequelize, s3, lambda, CONFIG)
-    const { Metadata } = metadataStorageServiceFactory(sequelize)
-    const {
-        facebookLoginRouter,
-        photoLibraryGrapjQLMutation,
-    } = facebookIntegrationServiceFactory(request, User, Album, Image, Metadata, auth, imageStorage, CONFIG)
-    const { compareCampaignsGraphql } = compareCampaignsServiceFactory(sequelize, imageLibratyApi, walletOperations)
+    const { facebookLoginRouter, photoLibraryOnFacebookGraphql } = facebookIntegrationServiceFactory(request, imageLibraty, imageStorage, metadataStorage, auth, CONFIG)
+    const { compareCampaignsGraphql } = compareCampaignsServiceFactory(sequelize, imageLibraty, walletOperations)
 
     const app = express()
 
     app.use(facebookLoginRouter)
     app.use(authenticatedRouter)
 
-    const graphqlSchema = graphqlSchemaFactory({
+    const schema = graphqlSchemaFactory({
         query: {
             ...userProfileReadGraphQL,
-            ...imageLibraryReadGraphQL,
+            ...imageLibraryGraphql.query,
             ...compareCampaignsGraphql.query,
             ...walletOperationsGraphql.query,
         },
         mutation: {
             ...compareCampaignsGraphql.mutation,
-            ...photoLibraryGrapjQLMutation,
+            ...photoLibraryOnFacebookGraphql.mutation,
         },
     })
 
     app.use('/', graphqlHTTP({
-        schema: graphqlSchema,
+        schema,
         graphiql: true,
     }))
 

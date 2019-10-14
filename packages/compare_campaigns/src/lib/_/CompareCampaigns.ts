@@ -1,6 +1,6 @@
 import { Op, literal } from 'sequelize'
 
-import { IImageLibraryApi } from '@orderify/image_library'
+import { IImageLibrary } from '@orderify/image_library'
 import { IWalletOperations } from '@orderify/wallet_operations'
 
 import { ICampaign } from './_/Campaign'
@@ -13,7 +13,7 @@ export class CompareCampaigns {
         private Campaign: ICampaign,
         private Comparison: IComparison,
         private WalletOperations: IWalletOperations,
-        private imageLibraryApi: IImageLibraryApi,
+        private imageLibrary: IImageLibrary,
     ) { }
 
     public async activeCampaigns(userId: string) {
@@ -83,8 +83,8 @@ export class CompareCampaigns {
     }
 
     public async startCampaign(userId: string, photo1Id: string, photo2Id: string) {
-        const photo1 = await this.imageLibraryApi.findImageById(photo1Id)
-        const photo2 = await this.imageLibraryApi.findImageById(photo2Id)
+        const photo1 = await this.imageLibrary.findImageById(photo1Id)
+        const photo2 = await this.imageLibrary.findImageById(photo2Id)
 
         if (photo1Id === photo2Id) {
             throw new Error('photos ids are identical')
