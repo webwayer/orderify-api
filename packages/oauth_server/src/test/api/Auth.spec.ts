@@ -31,7 +31,7 @@ describe('Auth', () => {
         it('fail - expired', async () => {
             const accessToken = await AccessToken.create({
                 userId: 'user1',
-                expiresAt: new Date(new Date().getTime() - 2000)
+                expiresAt: new Date(new Date().getTime() - 2000),
             })
 
             await assert.rejects(auth.verify(accessToken.id))
