@@ -6,7 +6,7 @@ import {
     photoLibraryOnFacebookGraphqlFactory,
     facebookAuthRouterFactory,
     FACEBOOK_INTEGRATION_CONFIG,
-} from './'
+} from '.'
 import { RequestPromiseAPI } from 'request-promise'
 import { Auth } from '@orderify/user_profile'
 import { ImageStorage, IImageLibrary } from '@orderify/image_library'

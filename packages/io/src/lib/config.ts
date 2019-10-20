@@ -11,6 +11,11 @@ export const IO_CONFIG = {
         KEY_ID: '',
         REGION: '',
     },
+    API: {
+        HOST: 'localhost',
+        PORT: '80',
+        PROTOCOL: 'http',
+    },
 }
 
 export function updateConfig<T>(defaultConfig: T, PROCESS_ENV: { [key: string]: string }): T {

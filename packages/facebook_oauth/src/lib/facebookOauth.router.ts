@@ -5,6 +5,7 @@ import { UserProfileOnFacebook } from './_/UserProfileOnFacebook'
 import { PKCE, Auth, JWTAccessToken } from '@orderify/oauth_server'
 
 export function facebookAuthRouterFactory(
+    CONFIG: { HOST: string, PORT: string, PROTOCOL: string },
     userProfileOnFacebook: UserProfileOnFacebook,
     facebookOauth: FacebookOauth,
     auth: Auth,
@@ -21,7 +22,7 @@ export function facebookAuthRouterFactory(
         }
 
         const facebookLoginUrl = facebookOauth.generateStartOauthUrl({
-            redirect_uri: req.originalUrl + '/callback',
+            redirect_uri: `${CONFIG.PROTOCOL}://${CONFIG.HOST}:${CONFIG.PORT}${req.originalUrl.split('?')[0]}/callback`,
             scope: 'email,user_photos',
             response_type: 'code,granted_scopes',
             state: code_challenge,
@@ -35,7 +36,10 @@ export function facebookAuthRouterFactory(
             const { code, granted_scopes, denied_scopes, state, error_reason, error, error_description } = req.query
 
             if (code) {
-                const { access_token, expires_in, token_type } = await facebookOauth.exchangeCodeForAcessToken(code, req.originalUrl)
+                const { access_token, expires_in, token_type } = await facebookOauth.exchangeCodeForAcessToken(
+                    code,
+                    `${CONFIG.PROTOCOL}://${CONFIG.HOST}:${CONFIG.PORT}${req.originalUrl.split('?')[0]}`,
+                )
 
                 if (access_token) {
                     const accessData = {
