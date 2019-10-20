@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Auth } from '../../../oauth_server/src/lib/_/Auth'
+import { Auth } from '../oauth_server/src/lib/_/Auth'
 
 export function authGuardRouterFactory(
     auth: Auth,

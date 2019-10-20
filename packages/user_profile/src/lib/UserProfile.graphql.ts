@@ -4,10 +4,10 @@ import {
     GraphQLNonNull,
 } from 'graphql'
 
-import { IUser } from './_/_/User'
+import { UserProfile } from './_/UserProfile'
 
 export function UserProfileGraphQLFactory(
-    User: IUser,
+    userProfile: UserProfile,
 ) {
     const UserType = new GraphQLObjectType({
         name: 'User',
@@ -23,7 +23,7 @@ export function UserProfileGraphQLFactory(
             me: {
                 type: UserType,
                 async resolve(_, where, { userId }) {
-                    return User.findByPk(userId)
+                    return userProfile.findById(userId)
                 },
             },
         },

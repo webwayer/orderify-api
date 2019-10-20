@@ -10,7 +10,7 @@
   "exclude": [
     "coverage/**",
     "node_modules/**",
-    "**/*.spec.ts"
+    "**/test/**"
   ],
   "sourceMap": true,
   "reporter": [

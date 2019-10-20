@@ -2,23 +2,16 @@ import { Sequelize } from 'sequelize'
 
 import {
     UserFactory,
-    AccessTokenFactory,
-    JWT,
-    Auth,
-    authGuardRouterFactory,
+    UserProfile,
     UserProfileGraphQLFactory,
 } from './'
 
 export function userProfileServiceFactory(
     sequelize: Sequelize,
-    CONFIG: any,
 ) {
     const User = UserFactory(sequelize)
-    const AccessToken = AccessTokenFactory(sequelize)
-    const jwt = new JWT(CONFIG.TOKENS)
-    const auth = new Auth(User, AccessToken, jwt)
-    const authenticatedRouter = authGuardRouterFactory(auth)
-    const userProfileGraphql = UserProfileGraphQLFactory(User)
+    const userProfile = new UserProfile(User)
+    const userProfileGraphql = UserProfileGraphQLFactory(userProfile)
 
-    return { User, AccessToken, jwt, auth, authenticatedRouter, userProfileGraphql }
+    return { User, userProfile, userProfileGraphql }
 }
