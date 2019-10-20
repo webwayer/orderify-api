@@ -8,6 +8,7 @@
     "dependencies": {
         "@orderify/io": "0.0.0",
         "@types/mocha": "^5.2.7",
+        "dotenv": "^8.2.0",
         "jsonwebtoken": "^8.5.1",
         "mocha": "^6.2.2",
         "sequelize": "^5.19.1",

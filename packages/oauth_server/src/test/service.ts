@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import { SequelizeFactory, updateConfig, IO_CONFIG } from '@orderify/io'
 
 import { oauthServerServiceFactory, OAUTH_SERVER_CONFIG } from '..'
