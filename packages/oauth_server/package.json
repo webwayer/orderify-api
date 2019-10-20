@@ -1,0 +1,16 @@
+{
+    "name": "@orderify/oauth_server",
+    "version": "0.0.0",
+    "main": "src/index",
+    "scripts": {
+        "test": "TS_NODE_TRANSPILE_ONLY=true mocha -r ts-node/register src/test/**/*.spec.ts"
+    },
+    "dependencies": {
+        "@orderify/io": "0.0.0",
+        "@types/mocha": "^5.2.7",
+        "jsonwebtoken": "^8.5.1",
+        "mocha": "^6.2.2",
+        "sequelize": "^5.19.1",
+        "short-uuid": "^3.1.1"
+    }
+}
