@@ -15,9 +15,10 @@ export function simpleSequelizeModelFactory<I extends object, IReadonly = IDefau
         findAll: async ops => (await model.findAll(ops)).map(i => i.toJSON()),
         build: i => model.build(i).toJSON(),
         create: async i => (await model.create(i)).toJSON(),
-        update: async (i, ops) => await model.update(i, ops),
         bulkCreate: async is => (await model.bulkCreate(is)).map(i => i.toJSON()),
-        destroyById: async id => await model.destroy({ where: { id } }),
+        update: async (i, ops) => (await model.update(i, { ...ops, returning: true }))[1].map(ins => ins.toJSON()),
+        updateOne: async (i, ops) => (await model.update(i, { ...ops, limit: 1, returning: true }))[1][0]?.toJSON(),
+        destroyById: async id => !!await model.destroy({ where: { id } }),
     }
 }
 
@@ -27,9 +28,10 @@ interface IModel<I extends object, IReadonly = IDefaultReadonly> {
     findAll: (ops: ISSFindOptions<I & IReadonly>) => Promise<Array<Readonly<I & IReadonly>>>
     build: (i: I & Partial<IReadonly>) => Readonly<I & IReadonly>
     create: (i: I & Partial<IReadonly>) => Promise<Readonly<I & IReadonly>>
-    update: (i: Partial<I>, ops: ISSFindOptions<I & IReadonly>) => Promise<void>
+    update: (i: Partial<I>, ops: ISSFindOptions<I & IReadonly>) => Promise<Array<Readonly<I & IReadonly>>>
+    updateOne: (i: Partial<I>, ops: ISSFindOptions<I & IReadonly>) => Promise<Readonly<I & IReadonly>>
     bulkCreate: (is: Array<I & Partial<IReadonly>>) => Promise<Array<Readonly<I & IReadonly>>>
-    destroyById: (pk: string) => Promise<void>
+    destroyById: (pk: string) => Promise<boolean>
 }
 
 interface ISSFindOptions<I> {

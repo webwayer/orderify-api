@@ -7,7 +7,7 @@ import {
     schema,
     Campaign,
     comparisonDefaultFields,
-} from './service'
+} from '../service'
 
 describe('Compare Campaigns', () => {
     beforeEach(async () => {

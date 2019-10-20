@@ -6,7 +6,7 @@ import {
     sequelize,
     schema,
     campaignDefaultFields,
-} from './service'
+} from '../service'
 
 describe('Compare Campaigns', () => {
     beforeEach(async () => {

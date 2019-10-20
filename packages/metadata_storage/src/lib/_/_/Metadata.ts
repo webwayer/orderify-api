@@ -23,6 +23,10 @@ export function MetadataFactory(
             type: DataTypes.STRING(32),
             allowNull: false,
         },
+        sourceType: {
+            type: DataTypes.STRING(32),
+            allowNull: false,
+        },
         userId: {
             type: DataTypes.STRING(32),
             allowNull: false,
@@ -40,7 +44,8 @@ export type IMetadata = ReturnType<typeof MetadataFactory>
 export interface IMetadataProps {
     instanceId: string
     instanceType: 'USER' | 'ALBUM' | 'IMAGE'
-    source: 'FACEBOOK.USER' | 'FACEBOOK.PHOTO' | 'FACEBOOK.ALBUM'
+    source: 'FACEBOOK'
+    sourceType: 'USER' | 'PHOTO' | 'ALBUM'
     userId: string
     data: any
 }
