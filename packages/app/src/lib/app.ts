@@ -24,7 +24,7 @@ export async function appFactory(CONFIG: IAppConfig) {
     const lambda = LambdaFactory(CONFIG.AWS)
 
     const { metadataStorage } = metadataStorageServiceFactory(sequelize)
-    const { auth, userProfileReadGraphQL, authenticatedRouter } = userProfileServiceFactory(sequelize, CONFIG)
+    const { auth, userProfileGraphql, authenticatedRouter } = userProfileServiceFactory(sequelize, CONFIG)
     const { imageStorage, imageLibraty, imageLibraryGraphql } = imageLibraryServiceFactory(sequelize, s3, lambda, CONFIG)
     const { walletOperations, walletOperationsGraphql } = walletOperationsServiceFactory(sequelize)
     const { facebookLoginRouter, photoLibraryOnFacebookGraphql } = facebookIntegrationServiceFactory(request, imageLibraty, imageStorage, metadataStorage, auth, CONFIG)
@@ -37,7 +37,7 @@ export async function appFactory(CONFIG: IAppConfig) {
 
     const schema = graphqlSchemaFactory({
         query: {
-            ...userProfileReadGraphQL,
+            ...userProfileGraphql.query,
             ...imageLibraryGraphql.query,
             ...compareCampaignsGraphql.query,
             ...walletOperationsGraphql.query,

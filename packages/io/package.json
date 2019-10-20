@@ -4,8 +4,10 @@
   "main": "src/index.ts",
   "dependencies": {
     "aws-sdk": "^2.538.0",
+    "graphql": "^14.5.8",
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
+    "ramda": "^0.26.1",
     "sequelize": "^5.19.0"
   }
 }

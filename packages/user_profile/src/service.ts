@@ -6,7 +6,7 @@ import {
     JWT,
     Auth,
     authGuardRouterFactory,
-    UserProfileReadGraphQLFactory,
+    UserProfileGraphQLFactory,
 } from './'
 
 export function userProfileServiceFactory(
@@ -18,7 +18,7 @@ export function userProfileServiceFactory(
     const jwt = new JWT(CONFIG.TOKENS)
     const auth = new Auth(User, AccessToken, jwt)
     const authenticatedRouter = authGuardRouterFactory(auth)
-    const userProfileReadGraphQL = UserProfileReadGraphQLFactory(User)
+    const userProfileGraphql = UserProfileGraphQLFactory(User)
 
-    return { User, AccessToken, jwt, auth, authenticatedRouter, userProfileReadGraphQL }
+    return { User, AccessToken, jwt, auth, authenticatedRouter, userProfileGraphql }
 }

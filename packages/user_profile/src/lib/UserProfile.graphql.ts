@@ -1,5 +1,4 @@
 import {
-    GraphQLList,
     GraphQLObjectType,
     GraphQLString,
     GraphQLNonNull,
@@ -7,31 +6,25 @@ import {
 
 import { IUser } from './_/_/User'
 
-export function UserProfileReadGraphQLFactory(
+export function UserProfileGraphQLFactory(
     User: IUser,
 ) {
     const UserType = new GraphQLObjectType({
         name: 'User',
-        fields: () => ({
+        fields: {
             id: { type: new GraphQLNonNull(GraphQLString) },
             email: { type: new GraphQLNonNull(GraphQLString) },
             name: { type: new GraphQLNonNull(GraphQLString) },
-        }),
+        },
     })
 
     return {
-        users: {
-            type: new GraphQLList(UserType),
-            args: {
-                id: {
-                    type: new GraphQLNonNull(GraphQLString),
+        query: {
+            me: {
+                type: UserType,
+                async resolve(_, where, { userId }) {
+                    return User.findByPk(userId)
                 },
-            },
-            async resolve(_, where, req) {
-                // tslint:disable-next-line: curly
-                if (where.id === 'me') where.id = req.userId
-
-                return User.findAll({ where })
             },
         },
     }

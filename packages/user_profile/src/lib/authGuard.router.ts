@@ -1,18 +1,10 @@
 import { Router } from 'express'
-import { Auth } from './_/Auth'
+import { Auth } from '../../../oauth_server/src/lib/_/Auth'
 
 export function authGuardRouterFactory(
     auth: Auth,
 ) {
     const router = Router()
-
-    router.get('/favicon.ico', (req, res) => {
-        res.status(404).end()
-    })
-    // some graphqli thing i think
-    router.get('/unfetch.umd.js.map', (req, res) => {
-        res.status(404).end()
-    })
 
     router.use(async (req, res, next) => {
         try {
@@ -25,7 +17,7 @@ export function authGuardRouterFactory(
 
                 if (accessToken) {
                     // tslint:disable-next-line: no-string-literal
-                    req['userId'] = accessToken.userId
+                    req['userId'] = accessToken.uid
 
                     next()
                 } else {
