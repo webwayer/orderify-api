@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize'
 
+import { IJobs } from '@orderify/io'
+
 import {
     AlbumFactory,
     ImageFactory,
@@ -9,14 +11,13 @@ import {
 } from './'
 
 export function imageLibraryServiceFactory(
-    sequelize: Sequelize,
-    s3: AWS.S3,
-    lambda: AWS.Lambda,
     CONFIG: any,
+    sequelize: Sequelize,
+    jobs: IJobs,
 ) {
     const Album = AlbumFactory(sequelize)
     const Image = ImageFactory(sequelize)
-    const imageStorage = new ImageStorage(s3, lambda, CONFIG.STORAGE)
+    const imageStorage = new ImageStorage(CONFIG.STORAGE, jobs)
     const imageLibraty = new ImageLibrary(Image, Album)
     const imageLibraryGraphql = ImageLibraryGraphqlFactory(imageLibraty, imageStorage)
 

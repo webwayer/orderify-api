@@ -54,3 +54,6 @@ export class UserProfileOnFacebook {
         return user
     }
 }
+
+type PublicPart<T> = { [K in keyof T]: T[K] }
+export type IUserProfileOnFacebook = PublicPart<UserProfileOnFacebook>

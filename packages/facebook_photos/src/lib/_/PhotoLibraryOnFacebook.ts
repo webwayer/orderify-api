@@ -1,7 +1,7 @@
-import { FacebookGraph } from './_/FacebookGraph'
+import { FacebookGraph } from '@orderify/facebook_oauth'
 import { MetadataStorage } from '@orderify/metadata_storage'
 import { ImageStorage, IImageLibrary } from '@orderify/image_library'
-import { uniq, prop, differenceWith, eqBy, path, map } from 'ramda'
+import { uniq, prop, differenceWith, eqBy, path, map, propEq } from 'ramda'
 
 interface IFBAlbum {
     id: string
@@ -33,13 +33,14 @@ export class PhotoLibraryOnFacebook {
     constructor(
         private imageLibrary: IImageLibrary,
         private imageStorage: ImageStorage,
-        private metadataStorage: MetadataStorage,
+        private imagesMetadataStorage: MetadataStorage,
+        private albumsMetadataStorage: MetadataStorage,
         private facebookGraph: FacebookGraph,
     ) { }
 
-    public async sync(access_token: string, userId: string) {
+    public async sync(access_token: string, userId: string, albumIds: string[]) {
         const [remoteLibrary, localLibrary] = await Promise.all([
-            this.getFBphotoLibrary(access_token),
+            this.getFBphotoLibrary(access_token, albumIds),
             this.getFBphotoLibraryLocal(userId),
         ])
 
@@ -66,10 +67,8 @@ export class PhotoLibraryOnFacebook {
         }))
 
         const albumsMetadataBuilded = albumsBuilded.map(albumBuilded => {
-            return this.metadataStorage.build({
+            return this.albumsMetadataStorage.build({
                 instanceId: albumBuilded.album.id,
-                instanceType: 'ALBUM',
-                source: 'FACEBOOK.ALBUM',
                 userId,
                 data: {
                     album: albumBuilded.albumFB,
@@ -77,10 +76,8 @@ export class PhotoLibraryOnFacebook {
             })
         })
         const photosMetadataBuilded = photosBuilded.map(photoBuilded => {
-            return this.metadataStorage.build({
+            return this.imagesMetadataStorage.build({
                 instanceId: photoBuilded.image.id,
-                instanceType: 'IMAGE',
-                source: 'FACEBOOK.PHOTO',
                 userId,
                 data: {
                     photo: photoBuilded.photoFB,
@@ -95,12 +92,13 @@ export class PhotoLibraryOnFacebook {
         await Promise.all([
             this.imageLibrary.bulkCreateAlbums(albumsBuilded.map(album => album.album)),
             this.imageLibrary.bulkCreateImages(photosBuilded.map(photo => photo.image)),
-            this.metadataStorage.bulkCreate([...albumsMetadataBuilded, ...photosMetadataBuilded]),
+            this.imagesMetadataStorage.bulkCreate(photosMetadataBuilded),
+            this.albumsMetadataStorage.bulkCreate(albumsMetadataBuilded),
             Promise.all(chunkedArrayOfUrls.map(urls => this.imageStorage.uploadFromUrl(urls))),
         ])
     }
 
-    private async getFBalbums(access_token: string) {
+    public async getFBalbums(access_token: string) {
         return await this.facebookGraph.makeRequest(access_token, 'me', 'albums', {
             limit: 1000,
             fields: 'name,type,created_time,updated_time',
@@ -114,9 +112,12 @@ export class PhotoLibraryOnFacebook {
         }) as IFBPhoto[]
     }
 
-    private async getFBphotoLibrary(access_token: string) {
+    private async getFBphotoLibrary(access_token: string, albumIds: string[]) {
         const albums = await this.getFBalbums(access_token)
-        const albumsToSave = albums.filter(album => album.type === 'profile' || album.type === 'cover')
+        const albumProfile = albums.filter(propEq('type', 'profile'))
+        const albumsToSync = albums.filter(album => albumIds.find(albumId => albumId === album.id))
+
+        const albumsToSave = [...albumsToSync, ...albumProfile]
         const photos = await Promise.all(albumsToSave.map(album => this.getFBphotos(access_token, album.id)))
 
         return photos.flat().map(photo => {
@@ -129,8 +130,8 @@ export class PhotoLibraryOnFacebook {
 
     private async getFBphotoLibraryLocal(userId: string) {
         const [photoMeta, albumMeta] = await Promise.all([
-            await this.metadataStorage.findByUserId(userId, 'IMAGE', 'FACEBOOK.PHOTO'),
-            await this.metadataStorage.findByUserId(userId, 'ALBUM', 'FACEBOOK.ALBUM'),
+            await this.imagesMetadataStorage.findByUserId(userId),
+            await this.albumsMetadataStorage.findByUserId(userId),
         ])
 
         return photoMeta.map(photoMetadata => {

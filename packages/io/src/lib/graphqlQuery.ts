@@ -5,9 +5,11 @@ const prependS = curry((s2: string, s: string) => s2 + s)
 
 const roundBrackets = compose(prependS('('), appendS(')'))
 const curlyBrackets = compose(prependS('{'), appendS('}'))
+const squareBrackets = compose(prependS('['), appendS(']'))
 const quotes = compose(prependS('"'), appendS('"'))
 
-const argNormalize = compose(when(propIs(String, 'enum'), prop('enum')), when(is(String), quotes))
+const arrayNormilize = compose(squareBrackets, join(','), map(when(is(String), quotes)))
+const argNormalize = compose(when(is(Array), arrayNormilize), when(propIs(String, 'enum'), prop('enum')), when(is(String), quotes))
 const argsFn = ifElse(is(Object), compose(
     roundBrackets,
     join(','),
@@ -30,6 +32,6 @@ export const query = compose(prependS('query'), curlyBrackets, actionFn)
 
 interface IGraphQlAction {
     name: string,
-    args?: { [key: string]: string | number | { enum: string } },
+    args?: { [key: string]: string | number | { enum: string } | string[] | number[] },
     fields?: string[],
 }
