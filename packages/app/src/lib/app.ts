@@ -9,7 +9,7 @@ import {
     LambdaFactory,
 } from '@orderify/io'
 
-import { facebookIntegrationServiceFactory } from '@orderify/facebook_integration'
+import { facebookIntegrationServiceFactory } from '@orderify/facebook_photos'
 import { metadataStorageServiceFactory } from '@orderify/metadata_storage'
 import { imageLibraryServiceFactory } from '@orderify/image_library'
 import { userProfileServiceFactory } from '@orderify/user_profile'

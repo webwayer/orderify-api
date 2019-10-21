@@ -1,4 +1,4 @@
-import { FacebookGraph } from './_/FacebookGraph'
+import { FacebookGraph } from './FacebookGraph'
 import { MetadataStorage } from '@orderify/metadata_storage'
 import { UserProfile } from '@orderify/user_profile'
 

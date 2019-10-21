@@ -1,4 +1,4 @@
-export * from './lib/_/_/FacebookGraph'
+export * from './lib/_/FacebookGraph'
 export * from './lib/_/_/FacebookOauth'
 export * from './lib/_/UserProfileOnFacebook'
 export * from './lib/facebookOauth.router'

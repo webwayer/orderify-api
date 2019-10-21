@@ -6,6 +6,7 @@ import {
     Auth,
     PKCE,
     JWTAccessToken,
+    authGuardRouterFactory,
     OAUTH_SERVER_CONFIG,
 } from './'
 
@@ -20,5 +21,7 @@ export function oauthServerServiceFactory(
     const pkce = new PKCE(CONFIG.PKCECODE, PKCECode)
     const jwtAccessToken = new JWTAccessToken(CONFIG.JWT)
 
-    return { AccessToken, PKCECode, auth, pkce, jwtAccessToken }
+    const authGuardRouter = authGuardRouterFactory(auth, jwtAccessToken)
+
+    return { AccessToken, PKCECode, auth, pkce, jwtAccessToken, authGuardRouter }
 }
