@@ -69,7 +69,7 @@ To make an authorized request set `Authorizaton` header to `Bearer {jwt_token}`
 
 ## `GET {api}/auth/logout`
 
-To log out make a request to `GET {api}/auth/logout` with `Authorizaton` header of course
+To log out **make a request to `GET {api}/auth/logout`** with `Authorizaton` header of course
 
 ## Graphql requests
 
