@@ -31,7 +31,7 @@ export function authGuardRouterFactory(
         next()
     })
 
-    router.get('/logout', async (req, res, next) => {
+    router.get('/auth/logout', async (req, res, next) => {
         try {
             // tslint:disable-next-line: no-string-literal
             if (!req['tokenId']) {

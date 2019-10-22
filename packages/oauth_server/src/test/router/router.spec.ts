@@ -11,10 +11,10 @@ describe('logout', () => {
         const accessToken = await auth.logIn('user')
         const jwt = await jwtAccessToken.create(accessToken)
 
-        await request(app).get('/logout').set('Authorization', `Bearer ${jwt}`).expect(200)
+        await request(app).get('/auth/logout').set('Authorization', `Bearer ${jwt}`).expect(200)
     })
 
     it('fail - no accessToken', async () => {
-        await request(app).get('/logout').expect(500)
+        await request(app).get('/auth/logout').expect(500)
     })
 })

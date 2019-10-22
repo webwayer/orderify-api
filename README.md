@@ -10,7 +10,7 @@ const code_verifier = randomBytes(256)
 const code_challenge = sha256(code_verifier).toString('hex')
 ```
 
-After that forward user to the  `GET {api}/auth/facebook` with
+**Forward user to the  `GET {api}/auth/facebook` with:**
 ```js
 const queryParams = {
     code_challenge,
@@ -24,8 +24,8 @@ const queryParams = {
 Server will redirect him to `Facebook`  
 After user enter credentials and grant access he will be redirected to `redirect_uri` with some sweets for you
 
-```xml
-{redirect_uri}#code=123ABC456XYZ&state=optional_string_that_comes_back_to_you_in_the_next_step_unchanged
+```js
+{redirect_uri}#code=ABC123456XYZ&state=optional_string_that_comes_back_to_you_in_the_next_step_unchanged
 ```
 
 Here we're seeing `code` and `state` params as part of `#` hash of the url
@@ -34,11 +34,43 @@ Here we're seeing `code` and `state` params as part of `#` hash of the url
 
 Okay, now to get actuall `accessToken` you have to exchange code for it
 
-Make a request to  `GET {api}/auth/facebook/exchangeCode` with
-
+**Make a request to  `GET {api}/auth/facebook/exchangeCode` with:**
 ```js
 const queryParams = {
-    code,
+    code, // ABC123456XYZ
     code_verifier, // we generated it at the first step, rememeber?
 }
 ```
+
+you will receive:
+
+```js
+{
+    token: 'jwt_token'
+}
+```
+
+## JWT token
+
+when you decode `jwt_token` it's intenal structure going to be like:
+```ts
+interface IJWTAccessToken {
+    jti: string // unique ID of this token
+    uid: string // ID of the user
+    exp: number // unix-timestamp when token become expired
+    iat: number // unix-timestamp when token was issued
+    tkn: 'accessToken' // type of this token, always `accessToken` for this kind of tokens
+}
+```
+
+## Authorized requests
+
+To make an authorized request set `Authorizaton` header to `Bearer {jwt_token}`
+
+## `GET {api}/auth/logout`
+
+To log out make a request to `GET {api}/auth/logout` with `Authorizaton` header of course
+
+## Graphql requests
+
+TODO
