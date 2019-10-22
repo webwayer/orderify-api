@@ -5,7 +5,8 @@ import { UserProfileOnFacebook } from './_/UserProfileOnFacebook'
 import { PKCE, Auth, JWTAccessToken } from '@orderify/oauth_server'
 
 export function facebookAuthRouterFactory(
-    CONFIG: { HOST: string, PORT: string, PROTOCOL: string },
+    CONFIG_API: { HOST: string, PORT: string, PROTOCOL: string },
+    CONFIG_WEB: { redirect_uris: string },
     userProfileOnFacebook: UserProfileOnFacebook,
     facebookOauth: FacebookOauth,
     auth: Auth,
@@ -14,21 +15,41 @@ export function facebookAuthRouterFactory(
 ) {
     const router = Router()
 
-    router.get('/', (req, res) => {
-        const { code_challenge } = req.query
+    router.get('/', (req, res, next) => {
+        try {
+            const { code_challenge, code_challenge_method, redirect_uri, state } = req.query
 
-        if (!code_challenge) {
-            throw new Error('code_challenge shouldnt be empty but sha256 of code_verifier')
+            if (code_challenge?.length !== 64) {
+                throw new Error('code_challenge shouldnt be empty but sha256 of code_verifier (64 chars)')
+            }
+
+            if (code_challenge_method !== 'S256') {
+                throw new Error('code_challenge_method shouldnt be empty but `S256`')
+            }
+
+            if (!CONFIG_WEB.redirect_uris.split(',').includes(redirect_uri)) {
+                throw new Error('unregistered or empty redirect_uri')
+            }
+
+            if (state && state.length > 256) {
+                throw new Error('state length is limited to 256 chars')
+            }
+
+            const facebookLoginUrl = facebookOauth.generateStartOauthUrl({
+                redirect_uri: `${CONFIG_API.PROTOCOL}://${CONFIG_API.HOST}:${CONFIG_API.PORT}${req.originalUrl.split('?')[0]}/callback`,
+                scope: 'email,user_photos',
+                response_type: 'code,granted_scopes',
+                state: Buffer.from(JSON.stringify({
+                    code_challenge,
+                    redirect_uri,
+                    state,
+                }), 'utf8').toString('base64'),
+            })
+
+            res.redirect(facebookLoginUrl)
+        } catch (err) {
+            next(err)
         }
-
-        const facebookLoginUrl = facebookOauth.generateStartOauthUrl({
-            redirect_uri: `${CONFIG.PROTOCOL}://${CONFIG.HOST}:${CONFIG.PORT}${req.originalUrl.split('?')[0]}/callback`,
-            scope: 'email,user_photos',
-            response_type: 'code,granted_scopes',
-            state: code_challenge,
-        })
-
-        res.redirect(facebookLoginUrl)
     })
 
     router.get(`/callback`, async (req, res, next) => {
@@ -38,8 +59,10 @@ export function facebookAuthRouterFactory(
             if (code) {
                 const { access_token, expires_in, token_type } = await facebookOauth.exchangeCodeForAcessToken(
                     code,
-                    `${CONFIG.PROTOCOL}://${CONFIG.HOST}:${CONFIG.PORT}${req.originalUrl.split('?')[0]}`,
+                    `${CONFIG_API.PROTOCOL}://${CONFIG_API.HOST}:${CONFIG_API.PORT}${req.originalUrl.split('?')[0]}`,
                 )
+
+                const decodedState = JSON.parse(Buffer.from(state, 'base64').toString('utf8'))
 
                 if (access_token) {
                     const accessData = {
@@ -51,9 +74,9 @@ export function facebookAuthRouterFactory(
                     }
 
                     const user = await userProfileOnFacebook.createOrUpdate(accessData)
-                    const pkceCode = await pkce.start(user.id, state)
+                    const pkceCode = await pkce.start(user.id, decodedState.code_challenge)
 
-                    res.redirect(`/#code=${pkceCode}`)
+                    res.redirect(`${decodedState.redirect_uri}#code=${pkceCode}&state=${decodedState.state}`)
                 }
             }
         } catch (err) {

@@ -11,7 +11,11 @@ describe('redirect', () => {
     })
 
     it('success', async () => {
-        const result = await request(app).get('/auth/facebook').query({ code_challenge }).redirects(0).expect(302)
+        const result = await request(app).get('/auth/facebook').query({
+            code_challenge,
+            code_challenge_method: 'S256',
+            redirect_uri: 'http://localhost/',
+        }).redirects(0).expect(302)
 
         assert(result.header.location)
     })
@@ -69,7 +73,8 @@ describe('callback', () => {
             code: 'facebook_code',
             granted_scopes: 'user_photos,email,public_profile',
             denied_scopes: '',
-            state: 'b1794757a33814aabb551136200573b1aa29bd5f67e7ef8324cbb6850c082cec',
+            // tslint:disable-next-line: max-line-length
+            state: 'eyJjb2RlX2NoYWxsZW5nZSI6ImIxNzk0NzU3YTMzODE0YWFiYjU1MTEzNjIwMDU3M2IxYWEyOWJkNWY2N2U3ZWY4MzI0Y2JiNjg1MGMwODJjZWMiLCJyZWRpcmVjdF91cmkiOiJodHRwOi8vbG9jYWxob3N0LyJ9',
         }).redirects(0).expect(302)
 
         assert(result.header.location)

@@ -19,16 +19,17 @@ export const { auth, pkce, jwtAccessToken } = oauthServerServiceFactory(OAUTH_SE
 export const { usersMetadataStorage } = metadataStorageServiceFactory(sequelize)
 export const { userProfile } = userProfileServiceFactory(sequelize)
 
-export const { facebookOauthRouter } = facebookOauthServiceFactory({
-    API: IO_CONFIG.API,
-    FACEBOOK: {
+export const { facebookOauthRouter } = facebookOauthServiceFactory(
+    IO_CONFIG.API,
+    IO_CONFIG.WEB,
+    {
         CLIENT_ID: 'test_client_id',
         CLIENT_SECRET: 'test_client_secret',
     },
-}, request, usersMetadataStorage, userProfile, auth, pkce, jwtAccessToken)
+    request, usersMetadataStorage, userProfile, auth, pkce, jwtAccessToken)
 
 export const app = express()
 app.use('/auth/facebook', facebookOauthRouter)
 app.use((err, req, res, next) => {
-    res.sendStatus(500)
+    res.status(500).send(err)
 })

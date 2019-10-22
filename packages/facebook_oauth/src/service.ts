@@ -14,7 +14,9 @@ import {
 } from '.'
 
 export function facebookOauthServiceFactory(
-    CONFIG: typeof FACEBOOK_OAUTH_CONFIG & { API: typeof IO_CONFIG['API'] },
+    API_CONFIG: typeof IO_CONFIG.API,
+    WEB_CONFIG: typeof IO_CONFIG.WEB,
+    FACEBOOK_CONFIG: typeof FACEBOOK_OAUTH_CONFIG,
     request: RequestPromiseAPI,
     metadataStorage: MetadataStorage,
     userProfile: UserProfile,
@@ -22,13 +24,14 @@ export function facebookOauthServiceFactory(
     pkce: PKCE,
     jwtAccessToken: JWTAccessToken,
 ) {
-    const facebookOauth = new FacebookOauth(request, CONFIG.FACEBOOK)
+    const facebookOauth = new FacebookOauth(request, FACEBOOK_CONFIG)
     const facebookGraph = new FacebookGraph(request)
 
     const userProfileOnFacebook = new UserProfileOnFacebook(userProfile, facebookGraph, metadataStorage)
 
     const facebookOauthRouter = facebookAuthRouterFactory(
-        CONFIG.API,
+        API_CONFIG,
+        WEB_CONFIG,
         userProfileOnFacebook,
         facebookOauth,
         auth,
