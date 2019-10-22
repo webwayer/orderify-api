@@ -16,6 +16,9 @@ export const IO_CONFIG = {
         PORT: '80',
         PROTOCOL: 'http',
     },
+    WEB: {
+        redirect_uris: 'http://localhost/',
+    },
 }
 
 export function updateConfig<T>(defaultConfig: T, PROCESS_ENV: { [key: string]: string }): T {
