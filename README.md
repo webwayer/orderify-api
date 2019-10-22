@@ -16,12 +16,29 @@ const queryParams = {
     code_challenge,
     code_challenge_method: 'S256', // we're using sha256
     redirect_uri: 'http://localhost/', // one of the accepted redirect uris
-    state?: 'optional string that comes back to you in the next step unchanged',
+    state?: 'optional_string_that_comes_back_to_you_in_the_next_step_unchanged',
+    // you're free to use `state` param as you want
 }
 ```
 
-Server will redirect him to `Facebook`, after user entered credentials and granted access he will be redirected to `redirect_uri` with some sweets for you
+Server will redirect him to `Facebook`  
+After user enter credentials and grant access he will be redirected to `redirect_uri` with some sweets for you
+
+```xml
+{redirect_uri}#code=123ABC456XYZ&state=optional_string_that_comes_back_to_you_in_the_next_step_unchanged
+```
+
+Here we're seeing `code` and `state` params as part of `#` hash of the url
+
+## `GET {api}/auth/facebook/exchangeCode`
+
+Okay, now to get actuall `accessToken` you have to exchange code for it
+
+Make a request to  `GET {api}/auth/facebook/exchangeCode` with
 
 ```js
-const url = `${redirect_uri}#code=123&state=optional string that comes back to you in the next step unchanged`
+const queryParams = {
+    code,
+    code_verifier, // we generated it at the first step, rememeber?
+}
 ```
