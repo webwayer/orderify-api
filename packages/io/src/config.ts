@@ -1,7 +1,4 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
-export const DEFAULT_CONFIG = {
+export const IO_CONFIG = {
     DATABASE: {
         DATABASE_NAME: 'orderify',
         USER: '',
@@ -13,22 +10,6 @@ export const DEFAULT_CONFIG = {
         KEY: '',
         KEY_ID: '',
         REGION: '',
-    },
-    STORAGE: {
-        BUCKET_NAME: 'orderify-test-images',
-    },
-    SEQUELIZE: {
-        SYNC_SCHEMAS: '1',
-        DROP_ON_SYNC: '',
-    },
-    FACEBOOK: {
-        CLIENT_ID: '',
-        CLIENT_SECRET: '',
-        OAUTH_REDIRECT_PATH: 'login/facebook/callback',
-    },
-    TOKENS: {
-        SECRET: 'secret cat',
-        EXPIRES: '7d',
     },
     API: {
         HOST: 'localhost',
@@ -51,5 +32,3 @@ export function updateConfig<T>(defaultConfig: T, PROCESS_ENV: { [key: string]: 
 
     return config
 }
-
-export type IAppConfig = typeof DEFAULT_CONFIG

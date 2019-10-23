@@ -32,10 +32,11 @@ export class ImageLibrary {
         })
     }
 
-    public async findImagesByUserId(userId: string) {
+    public async findImagesByUserIdAndAlbumId(userId: string, albumId: string) {
         return this.Image.findAll({
             where: {
                 userId,
+                albumId,
             },
         })
     }

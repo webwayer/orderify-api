@@ -1,7 +1,7 @@
 import request from 'request-promise'
 import express from 'express'
 
-import { facebookOauthServiceFactory } from '..'
+import { facebookOauthServiceFactory, FACEBOOK_OAUTH_CONFIG } from '..'
 
 import { SequelizeFactory, IO_CONFIG, updateConfig } from '@orderify/io'
 
@@ -21,7 +21,7 @@ export const { userProfile } = userProfileServiceFactory(sequelize)
 
 export const { facebookOauthRouter } = facebookOauthServiceFactory(
     IO_CONFIG.API,
-    IO_CONFIG.WEB,
+    FACEBOOK_OAUTH_CONFIG.OAUTH,
     {
         CLIENT_ID: 'test_client_id',
         CLIENT_SECRET: 'test_client_secret',

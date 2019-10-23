@@ -14,37 +14,32 @@ export function ImageLibraryGraphqlFactory(
 ) {
     const AlbumType = new GraphQLObjectType({
         name: 'Album',
-        fields: () => ({
+        fields: {
             id: { type: new GraphQLNonNull(GraphQLString) },
             userId: { type: new GraphQLNonNull(GraphQLString) },
             name: { type: GraphQLString },
-        }),
+        },
     })
 
     const ImageType = new GraphQLObjectType({
         name: 'Image',
-        fields: () => ({
+        fields: {
             id: { type: new GraphQLNonNull(GraphQLString) },
             userId: { type: new GraphQLNonNull(GraphQLString) },
             albumId: { type: new GraphQLNonNull(GraphQLString) },
             link: {
                 type: new GraphQLNonNull(GraphQLString),
                 resolve: source => {
-                    return imageStorage.getPresignedImageUrl(source.id)
+                    return imageStorage.fileUrl(source.id)
                 },
             },
-        }),
+        },
     })
 
     return {
         query: {
             albums: {
                 type: new GraphQLList(AlbumType),
-                args: {
-                    userId: {
-                        type: new GraphQLNonNull(GraphQLString),
-                    },
-                },
                 async resolve(_, where, { userId }) {
                     return imageLibrary.findAlbumsByUserId(userId)
                 },
@@ -52,12 +47,12 @@ export function ImageLibraryGraphqlFactory(
             images: {
                 type: new GraphQLList(ImageType),
                 args: {
-                    userId: {
+                    albumId: {
                         type: new GraphQLNonNull(GraphQLString),
                     },
                 },
-                async resolve(_, where, { userId }) {
-                    return imageLibrary.findImagesByUserId(userId)
+                async resolve(_, { albumId }, { userId }) {
+                    return imageLibrary.findImagesByUserIdAndAlbumId(userId, albumId)
                 },
             },
         },

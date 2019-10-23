@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { graphql } from 'graphql'
-import { mutation } from '@orderify/app'
+import { graphqlMutation } from '@orderify/io'
 
 import {
     sequelize,
@@ -17,7 +17,7 @@ describe('Compare Campaigns', () => {
         it('success', async () => {
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'startCampaign',
                     args: { photo1Id: 'photo1', photo2Id: 'photo2' },
                     fields: campaignDefaultFields,
@@ -33,7 +33,7 @@ describe('Compare Campaigns', () => {
         it('fail - not owner of photos', async () => {
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'startCampaign',
                     args: { photo1Id: 'photo1', photo2Id: 'photo2' },
                     fields: campaignDefaultFields,
@@ -49,7 +49,7 @@ describe('Compare Campaigns', () => {
         it('fail - no photos', async () => {
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'startCampaign',
                     args: { photo1Id: '_photo1', photo2Id: '_photo2' },
                     fields: campaignDefaultFields,

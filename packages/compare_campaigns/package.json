@@ -6,7 +6,6 @@
         "test": "TS_NODE_TRANSPILE_ONLY=true mocha -r ts-node/register src/test/**/*.spec.ts --timeout 10000"
     },
     "dependencies": {
-        "@orderify/app": "0.0.0",
         "@orderify/io": "0.0.0",
         "@orderify/image_library": "0.0.0",
         "@orderify/wallet_operations": "0.0.0",

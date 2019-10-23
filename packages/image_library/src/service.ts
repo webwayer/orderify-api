@@ -8,16 +8,17 @@ import {
     ImageStorage,
     ImageLibrary,
     ImageLibraryGraphqlFactory,
+    IMAGE_LIBRARY_CONFIG,
 } from './'
 
 export function imageLibraryServiceFactory(
-    CONFIG: any,
+    CONFIG_STORAGE: typeof IMAGE_LIBRARY_CONFIG.STORAGE,
     sequelize: Sequelize,
     jobs: IJobs,
 ) {
     const Album = AlbumFactory(sequelize)
     const Image = ImageFactory(sequelize)
-    const imageStorage = new ImageStorage(CONFIG.STORAGE, jobs)
+    const imageStorage = new ImageStorage(CONFIG_STORAGE, jobs)
     const imageLibraty = new ImageLibrary(Image, Album)
     const imageLibraryGraphql = ImageLibraryGraphqlFactory(imageLibraty, imageStorage)
 

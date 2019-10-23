@@ -1,10 +1,9 @@
 import assert from 'assert'
 import { graphql } from 'graphql'
-import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory, query } from '@orderify/app'
-import { SequelizeFactory } from '@orderify/io'
+import { IO_CONFIG, SequelizeFactory, updateConfig, graphqlSchemaFactory, graphqlQuery } from '@orderify/io'
 import { walletOperationsServiceFactory } from '../service'
 
-const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
+const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).DATABASE)
 const {
     Wallet,
     walletOperations,
@@ -26,7 +25,7 @@ describe('Wallet Operations', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'walletBalance',
                 }),
                 contextValue: {
@@ -47,7 +46,7 @@ describe('Wallet Operations', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'walletBalance',
                 }),
                 contextValue: {
@@ -68,7 +67,7 @@ describe('Wallet Operations', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'walletBalance',
                 }),
                 contextValue: {

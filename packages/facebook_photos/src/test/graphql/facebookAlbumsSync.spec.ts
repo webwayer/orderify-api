@@ -1,7 +1,7 @@
 import assert from 'assert'
 import nock from 'nock'
 import { graphql } from 'graphql'
-import { mutation, query } from '@orderify/io'
+import { graphqlMutation, graphqlQuery } from '@orderify/io'
 
 import {
     sequelize,
@@ -22,7 +22,7 @@ describe('Facebook photos', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'facebookAlbums',
                     fields: ['id', 'name', 'type', 'created_time', 'updated_time'],
                 }),
@@ -54,7 +54,7 @@ describe('Facebook photos', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'facebookAlbumsSync',
                     args: { albumIds: ['1741869492762915'] },
                     fields: ['result'],

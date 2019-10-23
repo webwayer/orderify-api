@@ -1,5 +1,4 @@
-import { DEFAULT_CONFIG, updateConfig, graphqlSchemaFactory } from '@orderify/app'
-import { SequelizeFactory } from '@orderify/io'
+import { SequelizeFactory, IO_CONFIG, updateConfig, graphqlSchemaFactory } from '@orderify/io'
 
 import { IImageLibrary } from '@orderify/image_library'
 import { IWalletOperations } from '@orderify/wallet_operations'
@@ -7,6 +6,16 @@ import { IWalletOperations } from '@orderify/wallet_operations'
 import { compareCampaignsServiceFactory } from '../service'
 
 class StubImageLibraryApi implements IImageLibrary {
+    public async findImagesByUserIdAndAlbumId(userId: string, albumId: string) {
+        return [{
+            id: 'image1',
+            userId,
+            albumId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }]
+    }
+
     public async findImageById(id: string) {
         if (!id.startsWith('_')) {
             return {
@@ -62,7 +71,7 @@ class StubWalletOperations implements IWalletOperations {
 export const campaignDefaultFields = ['id', 'userId', 'photo1Id', 'photo2Id', 'status']
 export const comparisonDefaultFields = ['id', 'userId', 'campaignId', 'selectedPhotoId']
 
-export const sequelize = SequelizeFactory(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
+export const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).DATABASE)
 
 export const {
     compareCampaignsGraphql,

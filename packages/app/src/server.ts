@@ -1,14 +1,17 @@
-import { DEFAULT_CONFIG, updateConfig } from './lib/config'
-import { appFactory } from './lib/app'
+import { updateConfig, SequelizeFactory, Jobs, LambdaFactory } from '@orderify/io'
+import { appFactory } from './lib/appFactory'
+import { DEFAULT_APP_CONFIG } from './config'
 
-const config = updateConfig(DEFAULT_CONFIG, process.env)
+const CONFIG = updateConfig(DEFAULT_APP_CONFIG, process.env)
+const sequelize = SequelizeFactory(CONFIG.DATABASE)
+const jobs = new Jobs(LambdaFactory(CONFIG.AWS))
 
-appFactory(config).then(app => {
-    app.listen(config.API.PORT, err => {
-        if (err) {
-            throw err
-        }
-        // tslint:disable-next-line: no-console
-        console.log('ready')
-    })
+const app = appFactory(CONFIG, sequelize, jobs)
+
+app.listen(CONFIG.API.PORT, err => {
+    if (err) {
+        throw err
+    }
+    // tslint:disable-next-line: no-console
+    console.log('ready')
 })

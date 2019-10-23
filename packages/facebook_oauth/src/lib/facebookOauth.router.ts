@@ -1,12 +1,14 @@
 import { Router } from 'express'
 
+import { IO_CONFIG } from '@orderify/io'
+import { FACEBOOK_OAUTH_CONFIG } from '../config'
 import { FacebookOauth } from './_/_/FacebookOauth'
 import { UserProfileOnFacebook } from './_/UserProfileOnFacebook'
 import { PKCE, Auth, JWTAccessToken } from '@orderify/oauth_server'
 
 export function facebookAuthRouterFactory(
-    CONFIG_API: { HOST: string, PORT: string, PROTOCOL: string },
-    CONFIG_WEB: { redirect_uris: string },
+    CONFIG_API: typeof IO_CONFIG.API,
+    CONFIG_OAUTH: typeof FACEBOOK_OAUTH_CONFIG.OAUTH,
     userProfileOnFacebook: UserProfileOnFacebook,
     facebookOauth: FacebookOauth,
     auth: Auth,
@@ -27,7 +29,7 @@ export function facebookAuthRouterFactory(
                 throw new Error('code_challenge_method shouldnt be empty but `S256`')
             }
 
-            if (!CONFIG_WEB.redirect_uris.split(',').includes(redirect_uri)) {
+            if (!CONFIG_OAUTH.REDIRECT_URIS.split(',').includes(redirect_uri)) {
                 throw new Error('unregistered or empty redirect_uri')
             }
 

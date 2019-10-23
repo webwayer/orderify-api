@@ -12,9 +12,7 @@ export const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).D
 
 export const { usersMetadataStorage, imagesMetadataStorage, albumsMetadataStorage } = metadataStorageServiceFactory(sequelize)
 export const { imageLibraty, imageStorage } = imageLibraryServiceFactory({
-    STORAGE: {
-        BUCKET_NAME: 'bucket',
-    },
+    BUCKET_NAME: 'bucket',
 }, sequelize, {
     async url_to_s3() { return },
 })

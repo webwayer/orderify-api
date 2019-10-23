@@ -14,4 +14,8 @@ export class ImageStorage {
             ContentType: 'image/jpeg',
         })))
     }
+
+    public fileUrl(id) {
+        return `https://${this.CONFIG.BUCKET_NAME}.s3.amazonaws.com/${id}`
+    }
 }

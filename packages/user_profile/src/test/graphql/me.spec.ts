@@ -1,7 +1,7 @@
 import assert from 'assert'
 
 import { graphql } from 'graphql'
-import { query } from '@orderify/io'
+import { graphqlQuery } from '@orderify/io'
 
 import { sequelize, User, schema } from '../service'
 
@@ -19,7 +19,7 @@ describe('me', () => {
 
         const result = await graphql({
             schema,
-            source: query({
+            source: graphqlQuery({
                 name: 'me',
                 fields: ['id', 'name', 'email'],
             }),

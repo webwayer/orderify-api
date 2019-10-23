@@ -15,10 +15,10 @@ import {
 
 export function facebookOauthServiceFactory(
     API_CONFIG: typeof IO_CONFIG.API,
-    WEB_CONFIG: typeof IO_CONFIG.WEB,
-    FACEBOOK_CONFIG: typeof FACEBOOK_OAUTH_CONFIG,
+    OAUTH_CONFIG: typeof FACEBOOK_OAUTH_CONFIG.OAUTH,
+    FACEBOOK_CONFIG: typeof FACEBOOK_OAUTH_CONFIG.FACEBOOK,
     request: RequestPromiseAPI,
-    metadataStorage: MetadataStorage,
+    userMetadataStorage: MetadataStorage,
     userProfile: UserProfile,
     auth: Auth,
     pkce: PKCE,
@@ -27,11 +27,11 @@ export function facebookOauthServiceFactory(
     const facebookOauth = new FacebookOauth(request, FACEBOOK_CONFIG)
     const facebookGraph = new FacebookGraph(request)
 
-    const userProfileOnFacebook = new UserProfileOnFacebook(userProfile, facebookGraph, metadataStorage)
+    const userProfileOnFacebook = new UserProfileOnFacebook(userProfile, facebookGraph, userMetadataStorage)
 
     const facebookOauthRouter = facebookAuthRouterFactory(
         API_CONFIG,
-        WEB_CONFIG,
+        OAUTH_CONFIG,
         userProfileOnFacebook,
         facebookOauth,
         auth,

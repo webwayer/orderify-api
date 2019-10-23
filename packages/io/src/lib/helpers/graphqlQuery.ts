@@ -27,8 +27,8 @@ const actionFn = ({ name, fields, args }: IGraphQlAction) =>
         fieldsFn(fields),
     ])
 
-export const mutation = compose(prependS('mutation'), curlyBrackets, actionFn)
-export const query = compose(prependS('query'), curlyBrackets, actionFn)
+export const graphqlMutation = compose(prependS('mutation'), curlyBrackets, actionFn)
+export const graphqlQuery = compose(prependS('query'), curlyBrackets, actionFn)
 
 interface IGraphQlAction {
     name: string,

@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { graphql } from 'graphql'
-import { mutation } from '@orderify/app'
+import { graphqlMutation } from '@orderify/io'
 
 import {
     sequelize,
@@ -26,7 +26,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',
@@ -55,7 +55,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',
@@ -73,7 +73,7 @@ describe('Compare Campaigns', () => {
 
             const result2 = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',
@@ -93,7 +93,7 @@ describe('Compare Campaigns', () => {
         it('fail - no campaign', async () => {
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',
@@ -121,7 +121,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',
@@ -149,7 +149,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',
@@ -178,7 +178,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',
@@ -207,7 +207,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: mutation({
+                source: graphqlMutation({
                     name: 'submitComparison',
                     args: {
                         campaignId: 'campaign1',

@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { graphql } from 'graphql'
-import { query } from '@orderify/app'
+import { graphqlQuery } from '@orderify/io'
 
 import {
     sequelize,
@@ -27,7 +27,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'randomActiveCampaign',
                     fields: campaignDefaultFields,
                 }),
@@ -57,7 +57,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'randomActiveCampaign',
                     fields: campaignDefaultFields,
                 }),
@@ -87,7 +87,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'randomActiveCampaign',
                     fields: campaignDefaultFields,
                 }),
@@ -111,7 +111,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'randomActiveCampaign',
                     fields: campaignDefaultFields,
                 }),
@@ -136,7 +136,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'randomActiveCampaign',
                     fields: campaignDefaultFields,
                 }),
@@ -161,7 +161,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'randomActiveCampaign',
                     fields: campaignDefaultFields,
                 }),
@@ -185,7 +185,7 @@ describe('Compare Campaigns', () => {
 
             const result = await graphql({
                 schema,
-                source: query({
+                source: graphqlQuery({
                     name: 'randomActiveCampaign',
                     fields: campaignDefaultFields,
                 }),
