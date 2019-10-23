@@ -8,7 +8,7 @@ import { FacebookGraph } from '@orderify/facebook_oauth'
 
 import { facebookPhotosServiceFactory } from '..'
 
-export const sequelize = SequelizeFactory(IO_CONFIG.DATABASE)
+export const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).DATABASE)
 
 export const { usersMetadataStorage, imagesMetadataStorage, albumsMetadataStorage } = metadataStorageServiceFactory(sequelize)
 export const { imageLibraty, imageStorage } = imageLibraryServiceFactory({

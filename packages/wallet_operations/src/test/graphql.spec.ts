@@ -12,7 +12,8 @@ const {
 } = walletOperationsServiceFactory(sequelize)
 const schema = graphqlSchemaFactory(walletOperationsGraphql)
 
-describe.only('Wallet Operations', () => {
+describe('Wallet Operations', () => {
+    console.log(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })

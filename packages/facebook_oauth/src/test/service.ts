@@ -13,7 +13,7 @@ import { oauthServerServiceFactory, OAUTH_SERVER_CONFIG } from '@orderify/oauth_
 import { userProfileServiceFactory } from '@orderify/user_profile'
 import { metadataStorageServiceFactory } from '@orderify/metadata_storage'
 
-export const sequelize = SequelizeFactory(IO_CONFIG.DATABASE)
+export const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).DATABASE)
 
 export const { auth, pkce, jwtAccessToken } = oauthServerServiceFactory(OAUTH_SERVER_CONFIG, sequelize)
 export const { usersMetadataStorage } = metadataStorageServiceFactory(sequelize)

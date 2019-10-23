@@ -4,7 +4,7 @@ import { SequelizeFactory, IO_CONFIG } from '@orderify/io'
 
 import { oauthServerServiceFactory, OAUTH_SERVER_CONFIG } from '..'
 
-export const sequelize = SequelizeFactory(IO_CONFIG.DATABASE)
+export const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).DATABASE)
 export const {
     AccessToken,
     PKCECode,
