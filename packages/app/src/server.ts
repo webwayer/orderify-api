@@ -6,7 +6,7 @@ const CONFIG = updateConfig(DEFAULT_APP_CONFIG, process.env)
 const sequelize = SequelizeFactory(CONFIG.DATABASE)
 const jobs = new Jobs(LambdaFactory(CONFIG.AWS))
 
-const app = appFactory(CONFIG, sequelize, jobs)
+const { app } = appFactory(CONFIG, sequelize, jobs)
 
 app.listen(CONFIG.API.PORT, err => {
     if (err) {

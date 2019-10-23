@@ -5,7 +5,7 @@ import { Sequelize } from 'sequelize'
 
 import {
     graphqlSchemaFactory,
-    Jobs,
+    IJobs,
 } from '@orderify/io'
 
 import { oauthServerServiceFactory } from '@orderify/oauth_server'
@@ -19,7 +19,7 @@ import { walletOperationsServiceFactory } from '@orderify/wallet_operations'
 
 import { DEFAULT_APP_CONFIG } from '../config'
 
-export function appFactory(CONFIG: typeof DEFAULT_APP_CONFIG, sequelize: Sequelize, jobs: Jobs) {
+export function appFactory(CONFIG: typeof DEFAULT_APP_CONFIG, sequelize: Sequelize, jobs: IJobs) {
     const { usersMetadataStorage, albumsMetadataStorage, imagesMetadataStorage } = metadataStorageServiceFactory(sequelize)
     const { userProfileGraphql, userProfile } = userProfileServiceFactory(sequelize)
     const { auth, jwtAccessToken, pkce, authGuardRouter } = oauthServerServiceFactory(CONFIG, sequelize)
@@ -33,7 +33,7 @@ export function appFactory(CONFIG: typeof DEFAULT_APP_CONFIG, sequelize: Sequeli
 
     const app = express()
 
-    app.use(facebookOauthRouter)
+    app.use('/auth/facebook', facebookOauthRouter)
     app.use(authGuardRouter)
 
     const schema = graphqlSchemaFactory({
@@ -58,5 +58,5 @@ export function appFactory(CONFIG: typeof DEFAULT_APP_CONFIG, sequelize: Sequeli
         res.status(500).end()
     })
 
-    return app
+    return { app, schema }
 }

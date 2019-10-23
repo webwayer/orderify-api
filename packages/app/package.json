@@ -2,6 +2,9 @@
   "name": "@orderify/app",
   "version": "0.0.0",
   "main": "src/index",
+  "scripts": {
+    "test": "TS_NODE_TRANSPILE_ONLY=true mocha -r ts-node/register src/test/**/*.spec.ts --timeout 60000"
+  },
   "dependencies": {
     "@orderify/compare_campaigns": "0.0.0",
     "@orderify/facebook_oauth": "0.0.0",
@@ -19,9 +22,11 @@
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.5.7",
+    "nock": "^11.5.0",
     "ramda": "^0.26.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "sequelize": "^5.21.1"
+    "sequelize": "^5.21.1",
+    "supertest": "^4.0.2"
   }
 }

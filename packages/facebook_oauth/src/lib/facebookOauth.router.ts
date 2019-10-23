@@ -78,7 +78,7 @@ export function facebookAuthRouterFactory(
                     const user = await userProfileOnFacebook.createOrUpdate(accessData)
                     const pkceCode = await pkce.start(user.id, decodedState.code_challenge)
 
-                    res.redirect(`${decodedState.redirect_uri}#code=${pkceCode}&state=${decodedState.state}`)
+                    res.redirect(`${decodedState.redirect_uri}#code=${pkceCode}&state=${decodedState.state || ''}`)
                 }
             }
         } catch (err) {
