@@ -12,7 +12,7 @@ const {
 } = walletOperationsServiceFactory(sequelize)
 const schema = graphqlSchemaFactory(walletOperationsGraphql)
 
-describe('Wallet Operations', () => {
+describe.only('Wallet Operations', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
