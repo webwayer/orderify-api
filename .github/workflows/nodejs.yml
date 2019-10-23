@@ -18,6 +18,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Setup PostgreSQL
         uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql db: "orderify"
+          postgresql user: "orderify"
+          postgresql password: "orderify"
       - name: lint & build & test
         run: |
           npm install -g yarn
@@ -26,3 +30,5 @@ jobs:
           yarn test
         env:
           CI: true
+          DATABASE_USER: "orderify"
+          DATABASE_PASSWORD: "orderify"
