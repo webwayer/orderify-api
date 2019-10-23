@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "main": "src/index",
     "scripts": {
-        "test": "TS_NODE_TRANSPILE_ONLY=true mocha -r ts-node/register src/test/*.ts"
+        "test": "TS_NODE_TRANSPILE_ONLY=true mocha -r ts-node/register src/test/*.ts --timeout 10000"
     },
     "dependencies": {
         "@orderify/app": "0.0.0",

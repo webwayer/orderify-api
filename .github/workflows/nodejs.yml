@@ -22,11 +22,15 @@ jobs:
           postgresql db: "orderify"
           postgresql user: "orderify"
           postgresql password: "orderify"
-      - name: lint & build & test
+      - name: install yarn & dependencies
         run: |
           npm install -g yarn
           yarn
+      - name: tslint
+        run: |
           yarn lint
+      - name: test
+        run: |
           yarn test
         env:
           CI: true
