@@ -13,6 +13,7 @@ const {
 const schema = graphqlSchemaFactory(walletOperationsGraphql)
 
 describe('Wallet Operations', () => {
+    // tslint:disable-next-line: no-console
     console.log(updateConfig(DEFAULT_CONFIG, process.env).DATABASE)
     beforeEach(async () => {
         await sequelize.sync({ force: true })
