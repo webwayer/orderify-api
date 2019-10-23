@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { SequelizeFactory, IO_CONFIG } from '@orderify/io'
+import { SequelizeFactory, IO_CONFIG, updateConfig } from '@orderify/io'
 
 import { oauthServerServiceFactory, OAUTH_SERVER_CONFIG } from '..'
 

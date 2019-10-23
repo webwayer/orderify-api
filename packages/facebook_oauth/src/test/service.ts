@@ -3,7 +3,7 @@ import express from 'express'
 
 import { facebookOauthServiceFactory } from '..'
 
-import { SequelizeFactory, IO_CONFIG } from '@orderify/io'
+import { SequelizeFactory, IO_CONFIG, updateConfig } from '@orderify/io'
 
 // sha256 from `code_verifier_string`
 export const code_challenge = 'b1794757a33814aabb551136200573b1aa29bd5f67e7ef8324cbb6850c082cec'

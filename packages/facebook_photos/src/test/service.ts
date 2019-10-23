@@ -1,6 +1,6 @@
 import request from 'request-promise'
 
-import { SequelizeFactory, IO_CONFIG, graphqlSchemaFactory } from '@orderify/io'
+import { SequelizeFactory, IO_CONFIG, graphqlSchemaFactory, updateConfig } from '@orderify/io'
 
 import { metadataStorageServiceFactory } from '@orderify/metadata_storage'
 import { imageLibraryServiceFactory } from '@orderify/image_library'
