@@ -12,7 +12,8 @@
     "lint": "tslint --project tsconfig.json",
     "build": "tsc",
     "start": "ts-node packages/app/src/server.ts",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "fillers": "ts-node packages/fillers/src/bin/sync.ts"
   },
   "dependencies": {
     "@types/mocha": "^5.2.7",
@@ -21,6 +22,6 @@
     "nyc": "^14.1.1",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
-    "typescript": "^3.8.0-dev.20191023"
+    "typescript": "^3.7.1-rc"
   }
 }

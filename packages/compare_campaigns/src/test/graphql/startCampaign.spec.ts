@@ -12,7 +12,6 @@ describe('Compare Campaigns', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('startCampaign', () => {
         it('success', async () => {
             const result = await graphql({

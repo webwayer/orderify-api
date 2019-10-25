@@ -9,7 +9,6 @@ describe('JWTAccessToken', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('create - verify', () => {
         it('success', async () => {
             const accessToken = await auth.logIn('user1')

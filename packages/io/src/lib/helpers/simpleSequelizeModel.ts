@@ -19,6 +19,7 @@ export function simpleSequelizeModelFactory<I extends object, IReadonly = IDefau
         update: async (i, ops) => (await model.update(i, { ...ops, returning: true }))[1].map(ins => ins.toJSON()),
         updateOne: async (i, ops) => (await model.update(i, { ...ops, limit: 1, returning: true }))[1][0]?.toJSON(),
         destroyById: async id => !!await model.destroy({ where: { id } }),
+        destroy: async ops => await model.destroy(ops),
     }
 }
 
@@ -32,6 +33,7 @@ interface IModel<I extends object, IReadonly = IDefaultReadonly> {
     updateOne: (i: Partial<I>, ops: ISSFindOptions<I & IReadonly>) => Promise<Readonly<I & IReadonly>>
     bulkCreate: (is: Array<I & Partial<IReadonly>>) => Promise<Array<Readonly<I & IReadonly>>>
     destroyById: (pk: string) => Promise<boolean>
+    destroy: (ops: ISSFindOptions<I & IReadonly>) => Promise<void>
 }
 
 interface ISSFindOptions<I> {
@@ -46,6 +48,20 @@ interface ISSFindOptions<I> {
             [KK in keyof I]?: I[KK] | {
                 [Op.contains]: I[KK],
             }
+        },
+    } & {
+        [Op.or]?: {
+            [K in keyof I]?: I[K] | {
+                [Op.not]?: I[K]
+                [Op.contains]?: I[K],
+                [Op.in]?: Array<I[K]>,
+            }
+        } & {
+            [Op.not]?: {
+                [KK in keyof I]?: I[KK] | {
+                    [Op.contains]: I[KK],
+                }
+            },
         },
     }
     order?: string[] | ReturnType<typeof Sequelize.literal>

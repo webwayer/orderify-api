@@ -9,7 +9,6 @@ describe('redirect', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     it('success', async () => {
         const result = await request(app).get('/auth/facebook').query({
             code_challenge,
@@ -85,7 +84,6 @@ describe('exchangeCode', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     it('success', async () => {
         const code = await pkce.start('user1', code_challenge)
 

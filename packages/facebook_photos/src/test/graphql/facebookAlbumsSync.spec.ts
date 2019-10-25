@@ -12,7 +12,6 @@ describe('Facebook photos', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('facebookAlbums', () => {
         it('success', async () => {
             nock('https://graph.facebook.com:443')

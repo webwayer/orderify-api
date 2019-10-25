@@ -6,7 +6,6 @@ describe('Auth', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('login - verify - logout - verify', () => {
         it('success', async () => {
             const accessToken = await auth.logIn('user1')

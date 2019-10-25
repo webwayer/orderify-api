@@ -23,13 +23,13 @@ export function appFactory(CONFIG: typeof DEFAULT_APP_CONFIG, sequelize: Sequeli
     const { usersMetadataStorage, albumsMetadataStorage, imagesMetadataStorage } = metadataStorageServiceFactory(sequelize)
     const { userProfileGraphql, userProfile } = userProfileServiceFactory(sequelize)
     const { auth, jwtAccessToken, pkce, authGuardRouter } = oauthServerServiceFactory(CONFIG, sequelize)
-    const { imageStorage, imageLibraty, imageLibraryGraphql } = imageLibraryServiceFactory(CONFIG.STORAGE, sequelize, jobs)
+    const { imageStorage, imageLibrary, imageLibraryGraphql } = imageLibraryServiceFactory(CONFIG.STORAGE, sequelize, jobs)
     const { walletOperations, walletOperationsGraphql } = walletOperationsServiceFactory(sequelize)
     const { facebookOauthRouter, facebookGraph, userProfileOnFacebook } =
         facebookOauthServiceFactory(CONFIG.API, CONFIG.OAUTH, CONFIG.FACEBOOK, request, usersMetadataStorage, userProfile, auth, pkce, jwtAccessToken)
     const { photoLibraryOnFacebookGraphql } =
-        facebookPhotosServiceFactory(imageLibraty, imageStorage, imagesMetadataStorage, albumsMetadataStorage, facebookGraph, userProfileOnFacebook)
-    const { compareCampaignsGraphql } = compareCampaignsServiceFactory(sequelize, imageLibraty, walletOperations)
+        facebookPhotosServiceFactory(imageLibrary, imageStorage, imagesMetadataStorage, albumsMetadataStorage, facebookGraph, userProfileOnFacebook)
+    const { compareCampaignsGraphql } = compareCampaignsServiceFactory(sequelize, imageLibrary, walletOperations)
 
     const app = express()
 

@@ -8,7 +8,6 @@ describe('APP', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     it('e2e', async () => {
         const code_challenge = 'b1794757a33814aabb551136200573b1aa29bd5f67e7ef8324cbb6850c082cec'
         const code_verifier = 'code_verifier_string'

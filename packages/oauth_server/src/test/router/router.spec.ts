@@ -6,7 +6,6 @@ describe('logout', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     it('success', async () => {
         const accessToken = await auth.logIn('user')
         const jwt = await jwtAccessToken.create(accessToken)

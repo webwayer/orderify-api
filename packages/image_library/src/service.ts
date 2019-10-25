@@ -19,8 +19,8 @@ export function imageLibraryServiceFactory(
     const Album = AlbumFactory(sequelize)
     const Image = ImageFactory(sequelize)
     const imageStorage = new ImageStorage(CONFIG_STORAGE, jobs)
-    const imageLibraty = new ImageLibrary(Image, Album)
-    const imageLibraryGraphql = ImageLibraryGraphqlFactory(imageLibraty, imageStorage)
+    const imageLibrary = new ImageLibrary(Image, Album)
+    const imageLibraryGraphql = ImageLibraryGraphqlFactory(imageLibrary, imageStorage)
 
-    return { Album, Image, imageStorage, imageLibraty, imageLibraryGraphql }
+    return { Album, Image, imageStorage, imageLibrary, imageLibraryGraphql }
 }

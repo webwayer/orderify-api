@@ -1,0 +1,17 @@
+{
+    "name": "@orderify/fillers",
+    "version": "0.0.0",
+    "main": "src/index",
+    "scripts": {
+        "test": "TS_NODE_TRANSPILE_ONLY=true mocha -r ts-node/register src/test/**/*.spec.ts --timeout 10000"
+    },
+    "dependencies": {
+        "@orderify/compare_campaigns": "0.0.0",
+        "@orderify/image_library": "0.0.0",
+        "@orderify/io": "0.0.0",
+        "dotenv": "^8.2.0",
+        "ramda": "^0.26.1",
+        "sequelize": "^5.19.1",
+        "short-uuid": "^3.1.1"
+    }
+}

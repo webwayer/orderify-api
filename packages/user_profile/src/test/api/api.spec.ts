@@ -6,7 +6,6 @@ describe('api', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('findByEmail', () => {
         it('success', async () => {
             await userProfile.create({

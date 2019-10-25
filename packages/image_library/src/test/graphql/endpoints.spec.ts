@@ -4,16 +4,15 @@ import { graphql } from 'graphql'
 
 import { graphqlQuery } from '@orderify/io'
 
-import { schema, sequelize, imageLibraty } from '../service'
+import { schema, sequelize, imageLibrary } from '../service'
 
 describe('Image Library', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('albums', () => {
         it('success', async () => {
-            await imageLibraty.bulkCreateAlbums([
+            await imageLibrary.bulkCreateAlbums([
                 {
                     userId: 'user1',
                     name: 'album1',
@@ -45,7 +44,7 @@ describe('Image Library', () => {
 
     describe('images', () => {
         it('success', async () => {
-            await imageLibraty.bulkCreateImages([
+            await imageLibrary.bulkCreateImages([
                 {
                     userId: 'user1',
                     albumId: 'album1',

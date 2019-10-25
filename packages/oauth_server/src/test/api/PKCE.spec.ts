@@ -10,7 +10,6 @@ describe('PKCE', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('start - verify - verify', () => {
         it('success', async () => {
             const pkceCode = await pkce.start('user1', code_challenge)

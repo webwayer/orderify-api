@@ -9,7 +9,6 @@ describe('me', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     it('success', async () => {
         await User.create({
             id: 'user1',

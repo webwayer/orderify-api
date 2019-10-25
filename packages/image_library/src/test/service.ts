@@ -5,7 +5,7 @@ import { imageLibraryServiceFactory } from '..'
 export const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).DATABASE)
 export const {
     imageLibraryGraphql,
-    imageLibraty,
+    imageLibrary,
     imageStorage,
     Image,
     Album,

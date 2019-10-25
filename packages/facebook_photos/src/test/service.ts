@@ -11,14 +11,14 @@ import { facebookPhotosServiceFactory } from '..'
 export const sequelize = SequelizeFactory(updateConfig(IO_CONFIG, process.env).DATABASE)
 
 export const { usersMetadataStorage, imagesMetadataStorage, albumsMetadataStorage } = metadataStorageServiceFactory(sequelize)
-export const { imageLibraty, imageStorage } = imageLibraryServiceFactory({
+export const { imageLibrary, imageStorage } = imageLibraryServiceFactory({
     BUCKET_NAME: 'bucket',
 }, sequelize, {
     async url_to_s3() { return },
 })
 
 export const { photoLibraryOnFacebook, photoLibraryOnFacebookGraphql } = facebookPhotosServiceFactory(
-    imageLibraty,
+    imageLibrary,
     imageStorage,
     imagesMetadataStorage,
     albumsMetadataStorage,

@@ -13,7 +13,6 @@ describe('Compare Campaigns', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
-
     describe('randomActiveCampaign', () => {
         it('success', async () => {
             await Campaign.bulkCreate(
