@@ -37,6 +37,10 @@ export function facebookAuthRouterFactory(
                 throw new Error('state length is limited to 256 chars')
             }
 
+            if (!CONFIG_OAUTH.DEV_EMAILS && dev_email) {
+                throw new Error('dev_emails are disabled')
+            }
+
             const facebookLoginUrl = facebookOauth.generateStartOauthUrl({
                 redirect_uri: `${CONFIG_API.PROTOCOL}://${CONFIG_API.HOST}:${CONFIG_API.PORT}${req.originalUrl.split('?')[0]}/callback`,
                 scope: 'email,user_photos',
@@ -76,7 +80,7 @@ export function facebookAuthRouterFactory(
                         denied_scopes,
                     }
 
-                    const user = await userProfileOnFacebook.createOrUpdate(accessData, decodedState.dev_email)
+                    const user = await userProfileOnFacebook.createOrUpdate(accessData, CONFIG_OAUTH.DEV_EMAILS ? decodedState.dev_email : undefined)
                     const pkceCode = await pkce.start(user.id, decodedState.code_challenge)
 
                     res.redirect(`${decodedState.redirect_uri}#code=${pkceCode}&state=${decodedState.state || ''}`)

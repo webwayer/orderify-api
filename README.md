@@ -18,6 +18,10 @@ const queryParams = {
     redirect_uri: 'http://localhost/', // one of the accepted redirect uris
     state?: 'optional_string_that_comes_back_to_you_in_the_next_step_unchanged',
     // you're free to use `state` param as you want
+
+    dev_email?: '1@2',
+    // optional thing that works ONLY IN NON-PRODUCTIONS environements
+    // forces email for the user, you can use any value here instead of email returned by facebook
 }
 ```
 

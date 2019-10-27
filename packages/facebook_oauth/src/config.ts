@@ -5,5 +5,6 @@ export const FACEBOOK_OAUTH_CONFIG = {
     },
     OAUTH: {
         REDIRECT_URIS: 'http://localhost/',
+        DEV_EMAILS: '',
     },
 }
