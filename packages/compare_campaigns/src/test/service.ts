@@ -3,6 +3,8 @@ import { SequelizeFactory, IO_CONFIG, updateConfig, graphqlSchemaFactory } from 
 import { IImageLibrary } from '@orderify/image_library'
 import { IWalletOperations } from '@orderify/wallet_operations'
 
+import { COMPARE_CAMPAIGNS_CONFIG } from '../config'
+
 import { compareCampaignsServiceFactory } from '../service'
 
 class StubImageLibraryApi implements IImageLibrary {
@@ -77,6 +79,6 @@ export const {
     compareCampaignsGraphql,
     compareCampaigns,
     Campaign,
-} = compareCampaignsServiceFactory(sequelize, new StubImageLibraryApi(), new StubWalletOperations())
+} = compareCampaignsServiceFactory(COMPARE_CAMPAIGNS_CONFIG, sequelize, new StubImageLibraryApi(), new StubWalletOperations())
 
 export const schema = graphqlSchemaFactory(compareCampaignsGraphql)

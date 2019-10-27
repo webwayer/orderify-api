@@ -19,7 +19,7 @@ export function facebookAuthRouterFactory(
 
     router.get('/', (req, res, next) => {
         try {
-            const { code_challenge, code_challenge_method, redirect_uri, state } = req.query
+            const { code_challenge, code_challenge_method, redirect_uri, state, dev_email } = req.query
 
             if (code_challenge?.length !== 64) {
                 throw new Error('code_challenge shouldnt be empty but sha256 of code_verifier (64 chars)')
@@ -45,6 +45,7 @@ export function facebookAuthRouterFactory(
                     code_challenge,
                     redirect_uri,
                     state,
+                    dev_email,
                 }), 'utf8').toString('base64'),
             })
 
@@ -75,7 +76,7 @@ export function facebookAuthRouterFactory(
                         denied_scopes,
                     }
 
-                    const user = await userProfileOnFacebook.createOrUpdate(accessData)
+                    const user = await userProfileOnFacebook.createOrUpdate(accessData, decodedState.dev_email)
                     const pkceCode = await pkce.start(user.id, decodedState.code_challenge)
 
                     res.redirect(`${decodedState.redirect_uri}#code=${pkceCode}&state=${decodedState.state || ''}`)

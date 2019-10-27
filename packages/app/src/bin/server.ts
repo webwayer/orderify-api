@@ -1,6 +1,6 @@
 import { updateConfig, SequelizeFactory, Jobs, LambdaFactory } from '@orderify/io'
-import { appFactory } from './lib/appFactory'
-import { DEFAULT_APP_CONFIG } from './config'
+import { appFactory } from '../lib/appFactory'
+import { DEFAULT_APP_CONFIG } from '../config'
 
 const CONFIG = updateConfig(DEFAULT_APP_CONFIG, process.env)
 const sequelize = SequelizeFactory(CONFIG.DATABASE)

@@ -3,7 +3,7 @@ export const OAUTH_SERVER_CONFIG = {
         SECRET: 'keyboard mouse',
     },
     ACCESSTOKEN: {
-        EXPIRES_IN_SECONDS: '120000',
+        EXPIRES_IN_SECONDS: '1200000',
     },
     PKCECODE: {
         EXPIRES_IN_SECONDS: '30',

@@ -31,7 +31,7 @@ export class PKCE {
 
         await this.PKCECode.destroyById(pkceCode.id)
 
-        if (pkceCode.expiresAt < addSecondsToDate(new Date(), this.CONFIG.EXPIRES_IN_SECONDS)) {
+        if (pkceCode.expiresAt < new Date()) {
             throw new Error('code expired')
         }
 

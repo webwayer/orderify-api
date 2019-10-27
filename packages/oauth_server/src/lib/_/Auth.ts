@@ -28,7 +28,7 @@ export class Auth {
             throw new Error('token not found')
         }
 
-        if (accessToken.expiresAt < addSecondsToDate(new Date(), this.CONFIG.EXPIRES_IN_SECONDS)) {
+        if (accessToken.expiresAt < new Date()) {
             throw new Error('token expired')
         }
 

@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "build": "tsc",
-    "start": "ts-node packages/app/src/server.ts",
+    "start": "ts-node packages/app/src/bin/server.ts",
     "test": "lerna run test",
     "fillers": "ts-node packages/fillers/src/bin/sync.ts"
   },

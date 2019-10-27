@@ -6,10 +6,13 @@ import { IWalletOperations } from '@orderify/wallet_operations'
 import { ICampaign } from './_/Campaign'
 import { IComparison } from './_/Comparison'
 
+import { COMPARE_CAMPAIGNS_CONFIG } from '../../config'
+
 import { prop, propEq, equals } from 'ramda'
 
 export class CompareCampaigns {
     constructor(
+        private CONFIG: typeof COMPARE_CAMPAIGNS_CONFIG,
         private Campaign: ICampaign,
         private Comparison: IComparison,
         private WalletOperations: IWalletOperations,
@@ -35,7 +38,7 @@ export class CompareCampaigns {
 
         const comparisons = await this.Comparison.findAll({
             where: {
-                id: {
+                campaignId: {
                     [Op.in]: campaigns.map(prop('id')),
                 },
             },
@@ -106,12 +109,13 @@ export class CompareCampaigns {
             throw new Error('user isnt owner of photo2')
         }
 
-        await this.WalletOperations.withdraw(userId, 20)
+        await this.WalletOperations.withdraw(userId, parseInt(this.CONFIG.COSTS.CAMPAIGN_COST, 10))
 
         return this.Campaign.create({
             userId,
             photo1Id,
             photo2Id,
+            comparisonsCount: parseInt(this.CONFIG.COMPARISONS.TO_FINISH, 10),
         })
     }
 
@@ -161,7 +165,7 @@ export class CompareCampaigns {
             },
         })
 
-        await this.WalletOperations.deposit(userId, 1)
+        await this.WalletOperations.deposit(userId, parseInt(this.CONFIG.COSTS.COMPARISON_REWARD, 10))
 
         return this.Comparison.create({
             userId,

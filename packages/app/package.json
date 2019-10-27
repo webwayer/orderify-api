@@ -10,6 +10,7 @@
     "@orderify/facebook_oauth": "0.0.0",
     "@orderify/facebook_photos": "0.0.0",
     "@orderify/image_library": "0.0.0",
+    "@orderify/fillers": "0.0.0",
     "@orderify/io": "0.0.0",
     "@orderify/metadata_storage": "0.0.0",
     "@orderify/oauth_server": "0.0.0",

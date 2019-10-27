@@ -1,5 +1,8 @@
-import { app, sequelize } from '../app'
+import assert from 'assert'
+
+import { app, sequelize, Album, Image, Campaign } from '../app'
 import { graphqlQuery, graphqlMutation } from '@orderify/io'
+import { syncFillers } from '@orderify/fillers'
 import request from 'supertest'
 import nock from 'nock'
 import { fbAlbums, fbPhotosProfile, fbPhotosCover } from '@orderify/facebook_photos'
@@ -8,57 +11,164 @@ describe('APP', () => {
     beforeEach(async () => {
         await sequelize.sync({ force: true })
     })
+    after(async () => {
+        await sequelize.close()
+    })
+
     it('e2e', async () => {
-        const code_challenge = 'b1794757a33814aabb551136200573b1aa29bd5f67e7ef8324cbb6850c082cec'
-        const code_verifier = 'code_verifier_string'
+        await syncFillers(['1', '2', '3', '4', '5'], Album, Image, Campaign, async () => true)
 
-        const { state, link } = await getFacebookOauthLink(code_challenge)
+        const { me, accessToken } = await makeUser()
+        const { images } = await syncPhotoLibrary(accessToken)
 
-        // tslint:disable-next-line: no-console
-        console.log(`> REDIRECT: ${link}`)
+        await earnPoints(6, accessToken)
 
-        const { code } = await sendFacebookCodeToApp(state)
+        const { campaign } = await startCampaign(accessToken, images[0].id, images[1].id)
 
-        // tslint:disable-next-line: no-console
-        console.log(`> CODE: ${code}`)
+        const { campaigns } = await activeCampaigns(accessToken)
 
-        const { accessToken } = await exchangeCodeForAccessToken(code, code_verifier)
+        assert.equal(campaign.id, campaigns[0].id)
 
-        // tslint:disable-next-line: no-console
-        console.log(`> TOKEN: ${accessToken}`)
+        const { balance } = await getBalance(accessToken)
 
-        const { me } = await getMe(accessToken)
+        assert.equal(balance, 1)
 
-        // tslint:disable-next-line: no-console
-        console.log(`> ME: ${JSON.stringify(me)}`)
+        const { accessToken: accessToken1 } = await makeUser('1@1')
+        const { accessToken: accessToken2 } = await makeUser('2@2')
 
-        const { facebookAlbums } = await getFacebookAlbums(accessToken)
+        await earnPoints(1, accessToken1)
+        await earnPoints(1, accessToken2)
 
-        // tslint:disable-next-line: no-console
-        console.log('> FACEBOOK ALBUMS COUNT: ' + facebookAlbums.length)
+        assert.equal(0, (await activeCampaigns(accessToken)).campaigns.length)
 
-        const { result } = await performFacebookAlbumsSync(accessToken, ['1741869492762915'])
+        const { campaigns: finishedCampaigns } = await getFinishedCampaigns(accessToken)
 
-        // tslint:disable-next-line: no-console
-        console.log('> SYNC: ' + result)
-
-        const { albums } = await getUserAlbums(accessToken)
-
-        // tslint:disable-next-line: no-console
-        console.log('> ALBUMS COUNT: ' + albums.length)
-
-        const { images } = await getAlbumImages(accessToken, albums[1].id)
-
-        // tslint:disable-next-line: no-console
-        console.log('> IMAGES COUNT (profile, #1 album): ' + images.length)
+        assert.equal(finishedCampaigns[0].photo1Id, finishedCampaigns[0].selectedPhotoIds[0])
     })
 })
 
-async function getFacebookOauthLink(code_challenge: string) {
+async function makeUser(email?: string) {
+    const code_challenge = 'b1794757a33814aabb551136200573b1aa29bd5f67e7ef8324cbb6850c082cec'
+    const code_verifier = 'code_verifier_string'
+
+    const { state } = await getFacebookOauthLink(code_challenge, email)
+    const { code } = await sendFacebookCodeToApp(state)
+    const { accessToken } = await exchangeCodeForAccessToken(code, code_verifier)
+    const { me } = await getMe(accessToken)
+
+    return { accessToken, me }
+}
+
+async function earnPoints(num: number, accessToken: string) {
+    for (const i of Array(num).fill(null).map((_, index) => index)) {
+        const { campaign } = await getRandomCampaign(accessToken)
+
+        await submitComparison(accessToken, campaign.id, campaign.photo1Id)
+    }
+}
+
+async function syncPhotoLibrary(accessToken: string) {
+    const { facebookAlbums } = await getFacebookAlbums(accessToken)
+
+    const { result } = await performFacebookAlbumsSync(accessToken, ['1741869492762915'])
+    const { albums } = await getUserAlbums(accessToken)
+    const { images } = await getAlbumImages(accessToken, albums[1].id)
+
+    return { images }
+}
+
+async function getFinishedCampaigns(accessToken) {
+    const result = await request(app).get('/').query({
+        query: graphqlQuery({
+            name: 'finishedCampaigns',
+            fields: ['id', 'photo1Id', 'photo2Id', 'selectedPhotoIds'],
+        }),
+    }).set({
+        Authorization: `Bearer ${accessToken}`,
+    }).expect(200)
+
+    return { campaigns: result.body.data.finishedCampaigns }
+}
+
+async function activeCampaigns(accessToken) {
+    const result = await request(app).get('/').query({
+        query: graphqlQuery({
+            name: 'activeCampaigns',
+            fields: ['id', 'photo1Id', 'photo2Id'],
+        }),
+    }).set({
+        Authorization: `Bearer ${accessToken}`,
+    }).expect(200)
+
+    return { campaigns: result.body.data.activeCampaigns }
+}
+
+async function startCampaign(accessToken: string, photo1Id: string, photo2Id: string) {
+    const result = await request(app).post('/').query({
+        query: graphqlMutation({
+            name: 'startCampaign',
+            args: {
+                photo1Id,
+                photo2Id,
+            },
+            fields: ['id', 'photo1Id', 'photo2Id'],
+        }),
+    }).set({
+        Authorization: `Bearer ${accessToken}`,
+    }).expect(200)
+
+    return { campaign: result.body.data.startCampaign }
+}
+
+async function getBalance(accessToken: string) {
+    const result = await request(app).get('/').query({
+        query: graphqlQuery({
+            name: 'walletBalance',
+        }),
+    }).set({
+        Authorization: `Bearer ${accessToken}`,
+    }).expect(200)
+
+    return { balance: result.body.data.walletBalance }
+}
+
+async function submitComparison(accessToken: string, campaignId: string, selectedPhotoId: string) {
+    const result = await request(app).post('/').query({
+        query: graphqlMutation({
+            name: 'submitComparison',
+            args: {
+                campaignId,
+                selectedPhotoId,
+                selectedPhotoPosition: { enum: 'left' },
+            },
+            fields: ['id'],
+        }),
+    }).set({
+        Authorization: `Bearer ${accessToken}`,
+    }).expect(200)
+
+    return { comparison: result.body.data.submitComparison }
+}
+
+async function getRandomCampaign(accessToken: string) {
+    const result = await request(app).get('/').query({
+        query: graphqlQuery({
+            name: 'randomActiveCampaign',
+            fields: ['id', 'photo1Id', 'photo2Id'],
+        }),
+    }).set({
+        Authorization: `Bearer ${accessToken}`,
+    }).expect(200)
+
+    return { campaign: result.body.data.randomActiveCampaign }
+}
+
+async function getFacebookOauthLink(code_challenge: string, email?: string) {
     const result = await request(app).get('/auth/facebook').query({
         code_challenge,
         code_challenge_method: 'S256',
         redirect_uri: 'http://localhost/',
+        dev_email: email,
     }).redirects(0).expect(302)
 
     const state = result.header.location.split('?')[1].split('&')[3].split('=')[1]

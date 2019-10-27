@@ -23,7 +23,7 @@ export class UserProfileOnFacebook {
         return facebookMetadata?.accessData?.access_token
     }
 
-    public async createOrUpdate(accessData: IFacebookAccessData) {
+    public async createOrUpdate(accessData: IFacebookAccessData, forcedEmail?: string) {
         const facebookUserProfile = await this.facebookGraph.makeRequest(accessData.access_token, 'me', '', {
             fields: 'email,id,first_name,last_name,middle_name,name,name_format,picture,short_name',
         })
@@ -32,8 +32,10 @@ export class UserProfileOnFacebook {
             throw new Error('cant get email from fb')
         }
 
-        const user = await this.userProfile.findByEmail(facebookUserProfile.email) || await this.userProfile.create({
-            email: facebookUserProfile.email,
+        const email = forcedEmail || facebookUserProfile.email
+
+        const user = await this.userProfile.findByEmail(email) || await this.userProfile.create({
+            email,
             name: facebookUserProfile.short_name,
         })
 
